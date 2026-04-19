@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Everyone Play Overlay</title>
+  <style>
+    :root {
+      --accent: #34d399;
+      --live: #dc2626;
+      --text: #ffffff;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+      color: var(--text);
+    }
+    .wrap {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* 좌상단: 코트 라벨 */
+    .court-label {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 36px;
+      font-weight: 700;
+      text-shadow: var(--shadow);
+    }
+
+    /* 우상단: LIVE 뱃지 */
+    .live-badge {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: var(--live);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 28px;
+      font-weight: 700;
+      display: none;
+      animation: pulse 2s infinite;
+    }
+    .live-badge.show {
+      display: block;
+    }
+    .live-badge::before {
+      content: '● ';
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* 좌하단: 히트 정보 (HIT 번호, 참가자) */
+    .hit-info {
+      position: absolute;
+      bottom: 40px;
+      left: 30px;
+      max-width: 60%;
+    }
+    .hit-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: #facc15;
+      text-shadow: var(--shadow);
+      margin-bottom: 10px;
+    }
+    .participants {
+      background: rgba(17, 24, 39, 0.85);
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-size: 24px;
+      line-height: 1.4;
+      text-shadow: var(--shadow);
+      border: 1px solid #1f2937;
+    }
+
+    /* 우하단: 타이머 */
+    .timer {
+      position: absolute;
+      bottom: 40px;
+      right: 30px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent);
+      border: 3px solid #c233cc;
+      min-width: 220px;
+      text-align: center;
+    }
+
+    .connection-status {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      opacity: 0.5;
+      display: none;
+    }
+    .connection-status.error {
+      display: block;
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="court-label" id="court-label">코트 -</div>
+    <div class="live-badge" id="live-badge">LIVE</div>
+
+    <div class="hit-info">
+      <div class="hit-number" id="hit-number"></div>
+      <div class="participants" id="participants" style="display:none;"></div>
+    </div>
+
+    <div class="timer" id="timer">00:00.00</div>
+    <div class="connection-status" id="conn-status">연결 대기 중...</div>
+  </div>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const courtId = params.get('court');
+      const apiBase = params.get('api') || '';  // 비어있으면 현재 origin
+
+      const courtLabelEl = document.getElementById('court-label');
+      const liveBadgeEl = document.getElementById('live-badge');
+      const hitNumberEl = document.getElementById('hit-number');
+      const participantsEl = document.getElementById('participants');
+      const timerEl = document.getElementById('timer');
+      const connStatusEl = document.getElementById('conn-status');
+
+      let heatStartedAt = null;
+      let timerInterval = null;
+
+      function setCourtNumber(num) {
+        courtLabelEl.textContent = `코트 ${num ?? '-'}`;
+      }
+
+      function applySnapshot(data) {
+        setCourtNumber(data.court_number);
+        if (data.status === 'live' && data.heat_number != null) {
+          showLive(data.heat_number, data.participants || [], data.started_at);
+        } else {
+          showIdle();
+        }
+      }
+
+      function showLive(heatNumber, participants, startedAtIso) {
+        liveBadgeEl.classList.add('show');
+        hitNumberEl.textContent = `HIT ${heatNumber}`;
+        if (participants && participants.length > 0) {
+          participantsEl.style.display = 'block';
+          participantsEl.textContent = participants.join(', ');
+        } else {
+          participantsEl.style.display = 'none';
+        }
+        heatStartedAt = startedAtIso ? new Date(startedAtIso).getTime() : Date.now();
+        startTimer();
+      }
+
+      function showIdle() {
+        liveBadgeEl.classList.remove('show');
+        hitNumberEl.textContent = '';
+        participantsEl.style.display = 'none';
+        stopTimer();
+        timerEl.textContent = '00:00.00';
+      }
+
+      function startTimer() {
+        stopTimer();
+        timerInterval = setInterval(() => {
+          if (!heatStartedAt) return;
+          const diff = Math.max(0, Date.now() - heatStartedAt);
+          const totalSec = diff / 1000;
+          const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+          const ss = String(Math.floor(totalSec % 60)).padStart(2, '0');
+          const cs = String(Math.floor((totalSec * 100) % 100)).padStart(2, '0');
+          timerEl.textContent = `${mm}:${ss}.${cs}`;
+        }, 50);
+      }
+
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }
+
+      function setConnectionError(msg) {
+        connStatusEl.classList.add('error');
+        connStatusEl.textContent = `연결 오류: ${msg}`;
+      }
+
+      function clearConnectionError() {
+        connStatusEl.classList.remove('error');
+        connStatusEl.textContent = '';
+      }
+
+      function connect() {
+        if (!courtId) {
+          setConnectionError('court 파라미터가 필요합니다');
+          return;
+        }
+        const url = `${apiBase}/api/v1/overlay/sse?court=${encodeURIComponent(courtId)}`;
+        const es = new EventSource(url);
+
+        es.addEventListener('snapshot', (e) => {
+          clearConnectionError();
+          try {
+            applySnapshot(JSON.parse(e.data));
+          } catch (_) {}
+        });
+
+        es.addEventListener('heat_started', (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            showLive(data.heat_number, data.participants || [], data.started_at);
+          } catch (_) {}
+        });
+
+        es.addEventListener('heat_ended', (e) => {
+          showIdle();
+        });
+
+        es.onerror = () => {
+          setConnectionError('재연결 중...');
+          setTimeout(() => {
+            es.close();
+            connect();
+          }, 3000);
+        };
+      }
+
+      connect();
+    })();
+  </script>
+</body>
+</html>
