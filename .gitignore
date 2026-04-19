@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.venv/
+venv/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Secrets
+secrets.json
+*.key
+*.pem
+service-account*.json
+
+# Node
+node_modules/
+dist/
+.vite/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Build
+build/
+out/
+
+# Test / QA 결과물
+clips/
+*.mp4
+*.mkv
+safety-audit.log
+safety-api.log
+
+# DB
+*.db
+*.sqlite
