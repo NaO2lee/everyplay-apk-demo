@@ -1,0 +1,20 @@
+[server]
+# 백엔드 API 주소 (Cloudflare 터널 또는 로컬 네트워크)
+api_url = https://dev-play.everystof.com/api/v1
+
+# 관리자 계정 (토큰 발급용)
+admin_username = admin
+admin_password = admin
+
+[worker]
+# 이 PC가 담당하는 스테이션 ID (UUID). 비워두면 전체 스테이션 처리.
+station_id =
+
+# 잘린 클립 저장 폴더
+output_dir = ./clips
+
+# 서버 폴링 주기 (초)
+poll_interval = 5
+
+# ffmpeg 실행 파일 경로 (같은 폴더에 있으면 ./ffmpeg.exe)
+ffmpeg_path = ./ffmpeg.exe

@@ -1,0 +1,15 @@
+# 클립 워커는 백엔드의 app/ 모듈을 sys.path로 재사용하므로
+# app.models 연쇄 의존성까지 전부 포함해야 함
+sqlalchemy==2.0.25
+aiomysql==0.2.0
+pymysql==1.1.0
+requests==2.31.0
+
+# app.models → app.core.config → pydantic-settings
+pydantic==2.5.3
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# app.models.user (UserRole) → passlib/jose
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
