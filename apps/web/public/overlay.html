@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Everyone Play Overlay</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: transparent;
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+      color: #ffffff;
+    }
+    .wrap { position: relative; width: 100vw; height: 100vh; }
+
+    .overlay-el {
+      position: absolute;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    .connection-status { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: 12px; opacity: 0.5; display: none; }
+    .connection-status.error { display: block; color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <div class="connection-status" id="conn-status">연결 대기 중...</div>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var courtId = params.get('station');
+      var eventId = params.get('event');
+      var apiBase = params.get('api') || '';
+      var isPreview = params.get('preview') === 'true';
+
+      var wrap = document.getElementById('wrap');
+      var connStatusEl = document.getElementById('conn-status');
+
+      var heatStartedAt = null;
+      var timerInterval = null;
+      var designWidth = 1920;
+
+      // Current state — preview 모드면 더미 데이터로 모든 요소 표시
+      var currentConfig = null;
+      var currentHeatData = isPreview
+        ? { status: 'live', heat_number: 3, participants: ['김도윤 (서울초)', '이서연 (부산초)'], station_number: 1, event_type_display: '30초 번갈아뛰기', division_display: '남자-9세미만', next_heat_number: null, next_event_type_display: null, next_division_display: null, next_participants: [] }
+        : { status: 'idle', heat_number: null, participants: [], station_number: null, event_type_display: null, division_display: null, next_heat_number: null, next_event_type_display: null, next_division_display: null, next_participants: [] };
+      var elementDomMap = {}; // id -> DOM element
+
+      // -- Resize observer --
+      var resizeObserver = new ResizeObserver(function () {
+        if (currentConfig) renderAllElements(currentConfig);
+      });
+      resizeObserver.observe(wrap);
+
+      // -- Render elements from config --
+
+      function renderAllElements(config) {
+        if (!config) return;
+
+        if (config.resolution && config.resolution.width) {
+          designWidth = config.resolution.width;
+        }
+
+        var scale = wrap.offsetWidth / designWidth;
+
+        // New format: elements array
+        if (config.elements && Array.isArray(config.elements)) {
+          renderElementsArray(config.elements, scale);
+          return;
+        }
+
+        // Legacy format: flat key-value
+        renderLegacyConfig(config, scale);
+      }
+
+      function renderElementsArray(elements, scale) {
+        // Remove old elements that no longer exist
+        var newIds = {};
+        for (var i = 0; i < elements.length; i++) {
+          newIds[elements[i].id] = true;
+        }
+        for (var id in elementDomMap) {
+          if (!newIds[id]) {
+            if (elementDomMap[id].parentNode) elementDomMap[id].parentNode.removeChild(elementDomMap[id]);
+            delete elementDomMap[id];
+          }
+        }
+
+        for (var i = 0; i < elements.length; i++) {
+          var el = elements[i];
+          var dom = elementDomMap[el.id];
+          if (!dom) {
+            dom = document.createElement('div');
+            dom.className = 'overlay-el';
+            dom.id = 'el-' + el.id;
+            wrap.appendChild(dom);
+            elementDomMap[el.id] = dom;
+          }
+
+          // Migrate old format to new format inline
+          var elType = el.elementType || (el.type === 'system' && el.systemKey === 'timer' ? 'timer' : 'text');
+          var elBinding = el.binding;
+          if (!elBinding && el.type === 'system' && el.systemKey) {
+            var bindingMap = { courtLabel: 'station_number', liveBadge: 'live_badge', timer: 'none', hitNumber: 'heat_number', participant: 'participants' };
+            elBinding = bindingMap[el.systemKey] || 'none';
+          }
+          if (!elBinding) elBinding = 'none';
+
+          // Visibility
+          if (!el.visible) {
+            dom.style.display = 'none';
+            continue;
+          }
+
+          // Binding-based visibility rules
+          if (elBinding === 'live_badge') {
+            dom.style.display = '';
+            dom.style.animation = currentHeatData.status === 'live' ? 'pulse 2s infinite' : '';
+          } else if (elBinding === 'participants') {
+            if (!currentHeatData.participants || currentHeatData.participants.length === 0) {
+              dom.style.display = 'none';
+              continue;
+            }
+            dom.style.display = '';
+          } else if (elBinding === 'heat_number' || elBinding === 'event_type' || elBinding === 'division') {
+            dom.style.display = '';
+          } else {
+            dom.style.display = '';
+            dom.style.animation = '';
+          }
+
+          // Position — 가장자리 근처 요소는 overflow 방지
+          var ox = el.offsetX || 0;
+          var oy = el.offsetY || 0;
+          dom.style.left = ox + '%';
+          dom.style.top = oy + '%';
+          // 50% 이상이면 우측/하단 정렬, 미만이면 좌측/상단 정렬
+          var tx = ox > 50 ? '-100%' : '0%';
+          var ty = oy > 50 ? '-100%' : '0%';
+          dom.style.transform = 'translate(' + tx + ', ' + ty + ')';
+
+          // Font
+          dom.style.fontSize = (el.fontSize * scale) + 'px';
+          if (el.fontFamily) dom.style.fontFamily = el.fontFamily;
+          if (el.fontWeight) dom.style.fontWeight = el.fontWeight;
+
+          // Colors
+          if (el.color) dom.style.color = el.color;
+          if (el.backgroundColor) dom.style.backgroundColor = el.backgroundColor;
+
+          // Border
+          if (el.borderWidth != null && el.borderColor) {
+            dom.style.border = el.borderWidth > 0
+              ? (el.borderWidth * scale) + 'px solid ' + el.borderColor
+              : 'none';
+          }
+
+          // Padding & border-radius
+          dom.style.padding = (Math.max(4, 10 * scale)) + 'px ' + (Math.max(6, 16 * scale)) + 'px';
+          dom.style.borderRadius = (Math.max(2, 6 * scale)) + 'px';
+
+          // Content by elementType + binding
+          if (elType === 'timer') {
+            // Timer content is set by interval; just ensure it has something
+            if (!dom.textContent || dom.textContent === '') dom.textContent = '00:00.00';
+          } else {
+            applyBindingContent(dom, elBinding, el.content);
+          }
+        }
+      }
+
+      function applyBindingContent(dom, binding, staticContent) {
+        switch (binding) {
+          case 'station_number':
+            dom.textContent = '스테이션 ' + (currentHeatData.station_number || '-');
+            break;
+          case 'live_badge':
+            dom.textContent = currentHeatData.status === 'live' ? '진행 중' : '대기';
+            break;
+          case 'heat_number':
+            dom.textContent = currentHeatData.heat_number != null ? 'HIT ' + currentHeatData.heat_number : '';
+            break;
+          case 'event_type':
+            dom.textContent = currentHeatData.event_type_display || '';
+            break;
+          case 'division':
+            dom.textContent = currentHeatData.division_display || '';
+            break;
+          case 'participants':
+            dom.textContent = (currentHeatData.participants || []).join(', ');
+            break;
+          case 'none':
+          default:
+            dom.textContent = staticContent || '';
+            break;
+        }
+      }
+
+      // -- Legacy format support --
+
+      function renderLegacyConfig(config, scale) {
+        // Build elements from legacy keys for backward compatibility
+        var legacyKeys = ['courtLabel', 'liveBadge', 'timer', 'hitNumber', 'participant', 'infoBar'];
+        var bindingMap = { courtLabel: 'station_number', liveBadge: 'live_badge', timer: 'none', hitNumber: 'heat_number', participant: 'participants' };
+        var legacyElements = [];
+        for (var i = 0; i < legacyKeys.length; i++) {
+          var key = legacyKeys[i];
+          if (!config[key]) continue;
+          var c = config[key];
+          legacyElements.push({
+            id: key,
+            elementType: key === 'timer' ? 'timer' : 'text',
+            binding: bindingMap[key] || 'none',
+            visible: c.visible !== false,
+            offsetX: c.offsetX != null ? c.offsetX : 0,
+            offsetY: c.offsetY != null ? c.offsetY : 0,
+            fontSize: c.fontSize || 24,
+            fontFamily: c.fontFamily || 'Pretendard',
+            fontWeight: c.fontWeight || 'normal',
+            color: c.color || '#ffffff',
+            backgroundColor: c.backgroundColor || 'transparent',
+            borderColor: c.borderColor || 'transparent',
+            borderWidth: c.borderWidth || 0,
+            content: '',
+            label: key,
+          });
+        }
+        if (legacyElements.length > 0) {
+          renderElementsArray(legacyElements, scale);
+        }
+      }
+
+      // -- Heat state management --
+
+      function setStationNumber(num) {
+        currentHeatData.station_number = num;
+      }
+
+      function applySnapshot(data) {
+        setStationNumber(data.station_number);
+
+        if (data.overlay_config) {
+          currentConfig = data.overlay_config;
+        }
+
+        if (isPreview) {
+          // preview 모드: 더미 데이터 유지, 타이머 시작
+          if (!heatStartedAt) {
+            heatStartedAt = Date.now();
+            startTimer();
+          }
+          renderAllElements(currentConfig);
+          return;
+        }
+
+        if (data.status === 'live' && data.heat_number != null) {
+          currentHeatData.status = 'live';
+          currentHeatData.heat_number = data.heat_number;
+          currentHeatData.participants = data.participants || [];
+          currentHeatData.event_type_display = data.event_type_display || null;
+          currentHeatData.division_display = data.division_display || null;
+          heatStartedAt = data.started_at ? new Date(data.started_at).getTime() : Date.now();
+          startTimer();
+        } else {
+          currentHeatData.status = 'idle';
+          currentHeatData.next_heat_number = data.next_heat_number || null;
+          currentHeatData.next_event_type_display = data.next_event_type_display || null;
+          currentHeatData.next_division_display = data.next_division_display || null;
+          currentHeatData.next_participants = data.next_participants || [];
+          currentHeatData.heat_number = data.next_heat_number || null;
+          currentHeatData.event_type_display = data.next_event_type_display || null;
+          currentHeatData.division_display = data.next_division_display || null;
+          currentHeatData.participants = data.next_participants || [];
+          stopTimer();
+        }
+
+        renderAllElements(currentConfig);
+      }
+
+      function showLive(heatNumber, participants, startedAtIso, eventTypeDisplay, divisionDisplay) {
+        currentHeatData.status = 'live';
+        currentHeatData.heat_number = heatNumber;
+        currentHeatData.participants = participants || [];
+        currentHeatData.event_type_display = eventTypeDisplay || null;
+        currentHeatData.division_display = divisionDisplay || null;
+        heatStartedAt = startedAtIso ? new Date(startedAtIso).getTime() : Date.now();
+        startTimer();
+        renderAllElements(currentConfig);
+      }
+
+      function showIdle(nextPreview) {
+        currentHeatData.status = 'idle';
+        if (nextPreview) {
+          currentHeatData.heat_number = nextPreview.next_heat_number || null;
+          currentHeatData.event_type_display = nextPreview.next_event_type_display || null;
+          currentHeatData.division_display = nextPreview.next_division_display || null;
+          currentHeatData.participants = nextPreview.next_participants || [];
+          currentHeatData.next_heat_number = nextPreview.next_heat_number || null;
+          currentHeatData.next_event_type_display = nextPreview.next_event_type_display || null;
+          currentHeatData.next_division_display = nextPreview.next_division_display || null;
+          currentHeatData.next_participants = nextPreview.next_participants || [];
+        } else {
+          currentHeatData.heat_number = null;
+          currentHeatData.participants = [];
+          currentHeatData.event_type_display = null;
+          currentHeatData.division_display = null;
+        }
+        stopTimer();
+        // Reset timer text
+        var timerDom = elementDomMap['timer'];
+        if (timerDom) timerDom.textContent = '00:00.00';
+        renderAllElements(currentConfig);
+      }
+
+      function startTimer() {
+        stopTimer();
+        timerInterval = setInterval(function () {
+          if (!heatStartedAt) return;
+          var timerDom = elementDomMap['timer'];
+          if (!timerDom) return;
+          var diff = Math.max(0, Date.now() - heatStartedAt);
+          var totalSec = diff / 1000;
+          var mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+          var ss = String(Math.floor(totalSec % 60)).padStart(2, '0');
+          var cs = String(Math.floor((totalSec * 100) % 100)).padStart(2, '0');
+          timerDom.textContent = mm + ':' + ss + '.' + cs;
+        }, 50);
+      }
+
+      function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      }
+
+      function setConnectionError(msg) {
+        connStatusEl.classList.add('error');
+        connStatusEl.textContent = '연결 오류: ' + msg;
+      }
+
+      function clearConnectionError() {
+        connStatusEl.classList.remove('error');
+        connStatusEl.textContent = '';
+      }
+
+      // -- Preview mode: fetch config via API, no SSE --
+
+      function startPreviewMode() {
+        if (eventId) {
+          // 이벤트 ID 로 설정 가져오기
+          fetch((apiBase || '') + '/api/v1/public/events/' + encodeURIComponent(eventId))
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (d.data && d.data.overlay_config) {
+                currentConfig = d.data.overlay_config;
+              }
+              heatStartedAt = Date.now();
+              startTimer();
+              renderAllElements(currentConfig);
+            })
+            .catch(function () {
+              heatStartedAt = Date.now();
+              startTimer();
+              renderAllElements(currentConfig);
+            });
+        } else if (courtId) {
+          // station 로 SSE 연결해서 config 받기 (기존 preview 동작)
+          connect();
+        } else {
+          // 아무 파라미터 없으면 기본값으로 표시
+          heatStartedAt = Date.now();
+          startTimer();
+        }
+        // 주기적으로 config 리로드 (관리자가 설정 바꿀 때 반영)
+        if (eventId) {
+          setInterval(function () {
+            fetch((apiBase || '') + '/api/v1/public/events/' + encodeURIComponent(eventId))
+              .then(function (r) { return r.json(); })
+              .then(function (d) {
+                if (d.data && d.data.overlay_config) {
+                  currentConfig = d.data.overlay_config;
+                  renderAllElements(currentConfig);
+                }
+              })
+              .catch(function () {});
+          }, 3000);
+        }
+      }
+
+      // -- SSE connection --
+
+      function connect() {
+        if (!courtId) {
+          setConnectionError('station 파라미터가 필요합니다');
+          return;
+        }
+        var url = (apiBase || '') + '/api/v1/overlay/sse?station=' + encodeURIComponent(courtId);
+        var es = new EventSource(url);
+
+        es.addEventListener('snapshot', function (e) {
+          clearConnectionError();
+          try { applySnapshot(JSON.parse(e.data)); } catch (_) {}
+        });
+
+        es.addEventListener('heat_started', function (e) {
+          try {
+            var data = JSON.parse(e.data);
+            showLive(data.heat_number, data.participants || [], data.started_at, data.event_type_display, data.division_display);
+          } catch (_) {}
+        });
+
+        es.addEventListener('heat_ended', function (e) {
+          try {
+            var data = JSON.parse(e.data);
+            showIdle({
+              next_heat_number: data.next_heat_number,
+              next_event_type_display: data.next_event_type_display,
+              next_division_display: data.next_division_display,
+              next_participants: data.next_participants,
+            });
+          } catch (_) {
+            showIdle();
+          }
+        });
+
+        es.addEventListener('config_update', function (e) {
+          try {
+            var data = JSON.parse(e.data);
+            if (data.overlay_config) {
+              currentConfig = data.overlay_config;
+              renderAllElements(currentConfig);
+            }
+          } catch (_) {}
+        });
+
+        es.onerror = function () {
+          setConnectionError('재연결 중...');
+          setTimeout(function () { es.close(); connect(); }, 3000);
+        };
+      }
+
+      if (isPreview) {
+        startPreviewMode();
+      } else {
+        connect();
+      }
+    })();
+  </script>
+</body>
+</html>
