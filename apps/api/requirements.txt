@@ -10,9 +10,9 @@ pymysql==1.1.0
 aiosqlite==0.19.0   # 로컬 테스트용 SQLite 드라이버
 alembic==1.13.1
 
-# Validation & Serialization
-pydantic==2.5.3
-pydantic-settings==2.1.0
+# Validation & Serialization (Python 3.13 호환을 위해 최신화)
+pydantic>=2.10.0,<3.0.0
+pydantic-settings>=2.6.0,<3.0.0
 email-validator==2.1.0
 
 # Auth
