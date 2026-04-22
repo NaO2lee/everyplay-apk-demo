@@ -160,3 +160,37 @@ async def bulk_import_participants(
             errors=errors,
         )
     )
+
+
+MAX_PDF_BYTES = 30 * 1024 * 1024  # 30 MB
+
+
+@router.post("/import-pdf", response_model=APIResponse[BulkImportResult])
+async def import_participants_pdf(
+    event_id: UUID,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+):
+    """대진표 PDF 에서 참가자 추출 후 일괄 등록.
+
+    한국어/영어 이름 패턴을 매칭. 휴대전화는 PDF에 없으면 dummy 값(`pdf-NNNN`)으로 채움.
+    """
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="PDF 파일만 업로드 가능합니다")
+
+    content = await file.read()
+    if len(content) > MAX_PDF_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"파일이 너무 큽니다 ({len(content)/1024/1024:.1f} MB). 최대 {MAX_PDF_BYTES//1024//1024} MB",
+        )
+
+    imported, failed, errors = await participant_service.import_from_pdf(db, event_id, content)
+
+    return APIResponse(
+        data=BulkImportResult(
+            imported=imported,
+            failed=failed,
+            errors=errors,
+        )
+    )

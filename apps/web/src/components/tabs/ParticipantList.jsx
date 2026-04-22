@@ -11,6 +11,8 @@ export function ParticipantList({ eventId }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
   const [pdfUploading, setPdfUploading] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState(0);
+  const [pdfPhase, setPdfPhase] = useState(null);
   const fileInputRef = useRef(null);
   const pdfInputRef = useRef(null);
   const [newParticipant, setNewParticipant] = useState({
@@ -111,7 +113,9 @@ export function ParticipantList({ eventId }) {
             title="대진표 PDF (예: Korea Open Heat Sheets)"
           >
             <FileText className="w-4 h-4" />
-            {pdfUploading ? 'PDF 분석 중...' : 'PDF 업로드'}
+            {pdfUploading
+              ? (pdfPhase === 'parsing' ? 'PDF 분석 중...' : `업로드 ${pdfProgress}%`)
+              : 'PDF 업로드'}
           </button>
           <a
             href="/samples/participants_template.csv"
@@ -148,14 +152,23 @@ export function ParticipantList({ eventId }) {
               const file = e.target.files?.[0];
               if (!file) return;
               setPdfUploading(true);
+              setPdfProgress(0);
+              setPdfPhase('uploading');
               try {
-                const result = await api.importParticipantsPdf(eventId, file);
+                const result = await api.importParticipantsPdf(eventId, file, {
+                  onProgress: (p) => {
+                    setPdfProgress(p);
+                    if (p >= 100) setPdfPhase('parsing');
+                  },
+                });
                 setUploadResult(result.data || result);
                 loadParticipants(1, pageSize);
               } catch (err) {
                 await modal.alert('PDF 업로드 실패: ' + err.message + '\n\n(백엔드 PDF 파서가 아직 준비되지 않은 경우 정석님께 확인 필요)');
               } finally {
                 setPdfUploading(false);
+                setPdfProgress(0);
+                setPdfPhase(null);
                 e.target.value = '';
               }
             }}
@@ -222,6 +235,26 @@ export function ParticipantList({ eventId }) {
             >
               취소
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* PDF 업로드 진행 바 */}
+      {pdfUploading && (
+        <div className="bg-white border rounded-lg p-3 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-700 font-medium">
+              {pdfPhase === 'parsing' ? 'PDF 분석 중 (서버에서 텍스트 추출 + 이름 추출)' : `업로드 중... ${pdfProgress}%`}
+            </span>
+            <span className="text-xs text-gray-400">
+              {pdfPhase === 'parsing' ? '잠시만 기다려주세요' : `${pdfProgress}/100`}
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div
+              className={`h-full transition-all ${pdfPhase === 'parsing' ? 'bg-purple-500 animate-pulse' : 'bg-red-500'}`}
+              style={{ width: pdfPhase === 'parsing' ? '100%' : `${pdfProgress}%` }}
+            />
           </div>
         </div>
       )}

@@ -133,7 +133,7 @@ export function EventDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b">
-        <div className="max-w-5xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
@@ -232,7 +232,7 @@ export function EventDetail() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         {activeTab === 'info' && <EventInfo event={event} onUpdate={handleEventUpdate} />}
         {activeTab === 'stations' && <StationSettings event={event} onUpdate={handleEventUpdate} onObsStatusChange={checkObsStatus} />}
         {activeTab === 'overlay' && <OverlaySettings event={event} onUpdate={handleEventUpdate} />}
@@ -242,7 +242,7 @@ export function EventDetail() {
 
       {!isOperating && !allConfiguredConnected && (
         <div className="fixed bottom-0 left-0 right-0 bg-yellow-50 border-t border-yellow-200 p-3">
-          <div className="max-w-5xl mx-auto text-center text-yellow-700 text-sm">
+          <div className="max-w-7xl mx-auto text-center text-yellow-700 text-sm">
             {configuredStations.length === 0
               ? '운영을 시작하려면 최소 1개 스테이션에 OBS 접속 정보를 설정하세요.'
               : '스테이션 설정 탭에서 OBS 테스트를 먼저 통과하세요.'}

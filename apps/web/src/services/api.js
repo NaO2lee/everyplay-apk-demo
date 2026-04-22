@@ -274,16 +274,32 @@ class ApiService {
   }
 
   // PDF 대진표 업로드 (백엔드에서 파싱 → 참가자 + 히트 자동 생성)
-  async importParticipantsPdf(eventId, pdfFile) {
-    const formData = new FormData();
-    formData.append('file', pdfFile);
-    const res = await fetch(`${API_BASE}/events/${eventId}/participants/import-pdf`, {
-      method: 'POST',
-      headers: this.token ? { 'Authorization': `Bearer ${this.token}` } : {},
-      body: formData,
+  // onProgress(percent: 0~100) 콜백 옵션. XHR 기반이라 업로드 진행률 추적 가능.
+  importParticipantsPdf(eventId, pdfFile, { onProgress } = {}) {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('file', pdfFile);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${API_BASE}/events/${eventId}/participants/import-pdf`);
+      if (this.token) xhr.setRequestHeader('Authorization', `Bearer ${this.token}`);
+
+      xhr.upload.onprogress = (e) => {
+        if (!e.lengthComputable || !onProgress) return;
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      };
+      xhr.upload.onload = () => onProgress && onProgress(100);
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try { resolve(JSON.parse(xhr.responseText)); } catch { resolve({}); }
+        } else {
+          reject(new Error(xhr.responseText || `HTTP ${xhr.status}`));
+        }
+      };
+      xhr.onerror = () => reject(new Error('네트워크 오류'));
+      xhr.onabort = () => reject(new Error('업로드 취소됨'));
+      xhr.send(formData);
     });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
   }
 
   // Excel import

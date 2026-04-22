@@ -1,7 +1,43 @@
-import { useState, useEffect } from 'react';
-import { Save, Check, RotateCcw, Link as LinkIcon, Wifi, Download, Upload } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Save, Check, RotateCcw, Link as LinkIcon, Wifi, Download, Upload, Radio } from 'lucide-react';
 import { api } from '../../services/api';
 import { useModal } from '../Modal';
+
+const OPERATION_POLL_INTERVAL = 3000;
+
+function useOperationStatus(eventId, isOperating) {
+  const [obsByStation, setObsByStation] = useState({});
+  const [activeHeats, setActiveHeats] = useState({});
+
+  useEffect(() => {
+    if (!isOperating || !eventId) {
+      setObsByStation({});
+      setActiveHeats({});
+      return;
+    }
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const [obsRes, heatsRes] = await Promise.all([
+          api.obsStatus().catch(() => ({ data: [] })),
+          api.getHeats(eventId, { status: 'active', perPage: 50 }).catch(() => ({ data: { items: [] } })),
+        ]);
+        if (cancelled) return;
+        const obsMap = {};
+        (obsRes.data || []).forEach(s => { obsMap[s.station_id] = s; });
+        setObsByStation(obsMap);
+        const heatMap = {};
+        (heatsRes.data?.items || []).forEach(h => { heatMap[h.station_id] = h; });
+        setActiveHeats(heatMap);
+      } catch { /* ignore */ }
+    };
+    poll();
+    const t = setInterval(poll, OPERATION_POLL_INTERVAL);
+    return () => { cancelled = true; clearInterval(t); };
+  }, [eventId, isOperating]);
+
+  return { obsByStation, activeHeats };
+}
 
 export default function StationSettings({ event, onUpdate, onObsStatusChange }) {
   const modal = useModal();
@@ -224,10 +260,23 @@ export default function StationSettings({ event, onUpdate, onObsStatusChange }) 
     }
   };
 
-  const sorted = [...stations].sort((a, b) => a.station_number - b.station_number);
+  const sorted = useMemo(
+    () => [...stations].sort((a, b) => a.station_number - b.station_number),
+    [stations]
+  );
+
+  const isOperating = event?.status === 'active';
+  const { obsByStation, activeHeats } = useOperationStatus(event?.id, isOperating);
 
   return (
     <div className="space-y-4">
+      {isOperating && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center gap-2 text-sm text-blue-900">
+          <Radio className="w-4 h-4 text-blue-600 animate-pulse" />
+          <span className="font-semibold">운영 중</span>
+          <span className="text-blue-700">— 각 스테이션 카드에 실시간 상태 표시</span>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">
           스테이션 OBS 설정 <span className="text-sm font-normal text-gray-400">(Host/포트/비밀번호/YouTube URL 모두 입력 시 "설정됨")</span>
@@ -354,10 +403,18 @@ export default function StationSettings({ event, onUpdate, onObsStatusChange }) 
         </div>
       )}
 
-      {sorted.map(station => (
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      {sorted.map((station, idx) => {
+        const obs = obsByStation[station.id];
+        const activeHeat = activeHeats[station.id];
+        return (
         <div key={station.id} className="border rounded-lg p-4 space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center font-bold">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white ${
+              isOperating && obs?.recording ? 'bg-red-500' :
+              isOperating && obs?.connected ? 'bg-blue-500' :
+              'bg-green-500'
+            }`}>
               {station.station_number}
             </div>
             <h3 className="font-semibold">스테이션 {station.station_number}</h3>
@@ -366,9 +423,30 @@ export default function StationSettings({ event, onUpdate, onObsStatusChange }) 
             ) : (
               <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">미설정</span>
             )}
+            {isOperating && (
+              <div className="flex items-center gap-1.5 ml-auto">
+                {obs?.recording && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />REC
+                  </span>
+                )}
+                {obs?.streaming && (
+                  <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-bold">LIVE</span>
+                )}
+                {activeHeat ? (
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">
+                    HIT {activeHeat.heat_number} 진행 중
+                  </span>
+                ) : obs?.connected ? (
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">대기</span>
+                ) : (
+                  <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded">OBS 끊김</span>
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm text-gray-600 mb-1">OBS Host (IP)</label>
               <input
@@ -480,23 +558,31 @@ export default function StationSettings({ event, onUpdate, onObsStatusChange }) 
                 <Download className="w-4 h-4" />
                 불러오기
               </button>
-              {presetOpen[station.id] && (
-                <div className="absolute right-0 top-full mt-1 w-72 bg-white border rounded-xl shadow-lg z-50 p-3 max-h-60 overflow-y-auto">
-                  <div className="text-xs font-semibold text-gray-600 mb-2">저장된 프리셋</div>
-                  {presets.length === 0 && (
-                    <div className="text-xs text-gray-400 text-center py-4">없음 (프리셋 관리에서 추가하세요)</div>
-                  )}
-                  <div className="space-y-1.5">
-                  {presets.map(p => (
-                    <button key={p.id} onClick={() => handleLoadPreset(station.id, p)}
-                      className="w-full text-left border rounded-lg p-2.5 hover:bg-purple-50 hover:border-purple-200 transition text-sm">
-                      <div className="font-medium text-gray-800">{p.name}</div>
-                      <div className="text-xs text-gray-400 mt-0.5">{p.obs_host || '-'}:{p.obs_port}</div>
-                    </button>
-                  ))}
+              {presetOpen[station.id] && (() => {
+                // 화면 절반 아래쪽 카드는 위로 펼쳐서 화면 밖으로 나가지 않게
+                const halfIdx = Math.ceil(sorted.length / 2);
+                const dropUp = idx >= halfIdx;
+                const posClass = dropUp
+                  ? 'bottom-full mb-1'
+                  : 'top-full mt-1';
+                return (
+                  <div className={`absolute right-0 ${posClass} w-72 bg-white border rounded-xl shadow-lg z-50 p-3 max-h-60 overflow-y-auto`}>
+                    <div className="text-xs font-semibold text-gray-600 mb-2">저장된 프리셋</div>
+                    {presets.length === 0 && (
+                      <div className="text-xs text-gray-400 text-center py-4">없음 (프리셋 관리에서 추가하세요)</div>
+                    )}
+                    <div className="space-y-1.5">
+                    {presets.map(p => (
+                      <button key={p.id} onClick={() => handleLoadPreset(station.id, p)}
+                        className="w-full text-left border rounded-lg p-2.5 hover:bg-purple-50 hover:border-purple-200 transition text-sm">
+                        <div className="font-medium text-gray-800">{p.name}</div>
+                        <div className="text-xs text-gray-400 mt-0.5">{p.obs_host || '-'}:{p.obs_port}</div>
+                      </button>
+                    ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
             <button
               onClick={() => handleTest(station)}
@@ -533,7 +619,9 @@ export default function StationSettings({ event, onUpdate, onObsStatusChange }) 
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
+      </div>
     </div>
   );
 }

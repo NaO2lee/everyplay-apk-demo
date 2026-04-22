@@ -18,8 +18,8 @@ function LogPanel({ logs, onClear }) {
   }, [logs]);
 
   return (
-    <div className="bg-gray-900 text-gray-100 border-t-2 border-blue-500">
-      <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
+    <div className="bg-gray-900 text-gray-100 h-full flex flex-col">
+      <div className="px-3 py-2 border-b border-gray-800 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2 text-xs">
           <Terminal className="w-4 h-4 text-blue-400" />
           <span className="font-semibold">실시간 로그</span>
@@ -27,25 +27,23 @@ function LogPanel({ logs, onClear }) {
         </div>
         <button onClick={onClear} className="text-xs text-gray-400 hover:text-white">지우기</button>
       </div>
-      <div className="max-w-6xl mx-auto px-4 pb-3">
-        <div className="bg-black/40 rounded h-44 overflow-y-auto font-mono text-xs leading-relaxed px-3 py-2">
-          {logs.length === 0 ? (
-            <div className="text-gray-500">아직 로그 없음</div>
-          ) : (
-            logs.map((l, i) => (
-              <div key={i} className="flex gap-2">
-                <span className="text-gray-500 shrink-0">{l.time}</span>
-                <span className={
-                  l.level === 'error' ? 'text-red-400' :
-                  l.level === 'warn' ? 'text-yellow-300' :
-                  l.level === 'success' ? 'text-green-400' :
-                  'text-gray-200'
-                }>{l.message}</span>
-              </div>
-            ))
-          )}
-          <div ref={bottomRef} />
-        </div>
+      <div className="flex-1 overflow-y-auto font-mono text-xs leading-relaxed px-3 py-2">
+        {logs.length === 0 ? (
+          <div className="text-gray-500">아직 로그 없음</div>
+        ) : (
+          logs.map((l, i) => (
+            <div key={i} className="flex gap-2 mb-0.5">
+              <span className="text-gray-500 shrink-0">{l.time}</span>
+              <span className={
+                l.level === 'error' ? 'text-red-400' :
+                l.level === 'warn' ? 'text-yellow-300' :
+                l.level === 'success' ? 'text-green-400' :
+                'text-gray-200'
+              }>{l.message}</span>
+            </div>
+          ))
+        )}
+        <div ref={bottomRef} />
       </div>
     </div>
   );
@@ -391,7 +389,7 @@ export function Dashboard() {
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto px-4 py-6 pb-72">
+      <div className="max-w-6xl mx-auto px-4 py-6 pb-72 lg:pr-[22rem] lg:pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedStations.map((station) => {
             const snap = obsByStationId[station.id];
@@ -487,7 +485,11 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30">
+      {/* 데스크톱(lg+): 우측 사이드 패널, 모바일: 하단 고정 */}
+      <div className="hidden lg:block fixed top-0 right-0 bottom-0 w-80 border-l border-gray-800 z-30 pt-[5.5rem]">
+        <LogPanel logs={logs} onClear={() => setLogs([])} />
+      </div>
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 h-60 border-t-2 border-blue-500">
         <LogPanel logs={logs} onClear={() => setLogs([])} />
       </div>
     </div>
