@@ -1,10 +1,55 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { RefreshCw, ArrowLeft, Wifi, WifiOff, Play, Square, Clock, RotateCcw } from 'lucide-react';
+import { RefreshCw, ArrowLeft, Wifi, WifiOff, Play, Square, Clock, RotateCcw, Terminal } from 'lucide-react';
 import { api } from '../services/api';
 import { useModal } from '../components/Modal';
 
 const POLL_INTERVAL = 3000;
+const LOG_MAX = 100;
+
+function formatTime(d) {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+}
+
+function LogPanel({ logs, onClear }) {
+  const bottomRef = useRef(null);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [logs]);
+
+  return (
+    <div className="bg-gray-900 text-gray-100 border-t-2 border-blue-500">
+      <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-xs">
+          <Terminal className="w-4 h-4 text-blue-400" />
+          <span className="font-semibold">실시간 로그</span>
+          <span className="text-gray-500">· {logs.length}건</span>
+        </div>
+        <button onClick={onClear} className="text-xs text-gray-400 hover:text-white">지우기</button>
+      </div>
+      <div className="max-w-6xl mx-auto px-4 pb-3">
+        <div className="bg-black/40 rounded h-44 overflow-y-auto font-mono text-xs leading-relaxed px-3 py-2">
+          {logs.length === 0 ? (
+            <div className="text-gray-500">아직 로그 없음</div>
+          ) : (
+            logs.map((l, i) => (
+              <div key={i} className="flex gap-2">
+                <span className="text-gray-500 shrink-0">{l.time}</span>
+                <span className={
+                  l.level === 'error' ? 'text-red-400' :
+                  l.level === 'warn' ? 'text-yellow-300' :
+                  l.level === 'success' ? 'text-green-400' :
+                  'text-gray-200'
+                }>{l.message}</span>
+              </div>
+            ))
+          )}
+          <div ref={bottomRef} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function useWakeLock() {
   const wakeLockRef = useRef(null);
@@ -40,6 +85,15 @@ export function Dashboard() {
   const [currentHeatNumber, setCurrentHeatNumber] = useState(1);
   const [error, setError] = useState(null);
   const [stopping, setStopping] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const prevSnapshotsRef = useRef({});
+
+  const addLog = useCallback((message, level = 'info') => {
+    setLogs(prev => {
+      const next = [...prev, { time: formatTime(new Date()), message, level }];
+      return next.length > LOG_MAX ? next.slice(next.length - LOG_MAX) : next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!eventId) return;
@@ -107,12 +161,32 @@ export function Dashboard() {
     const poll = async () => {
       try {
         const res = await api.obsStatus();
-        if (!cancelled) {
-          setObsSnapshots(res.data || []);
-          setPollError(null);
-        }
+        if (cancelled) return;
+        const snapshots = res.data || [];
+        // 상태 변화 감지 → 로그
+        const prev = prevSnapshotsRef.current;
+        snapshots.forEach((s) => {
+          const p = prev[s.station_id];
+          if (!p) return;
+          if (p.connected !== s.connected) {
+            addLog(`스테이션 ${s.station_number ?? s.station_id} OBS ${s.connected ? '연결됨' : '끊김'}`, s.connected ? 'success' : 'warn');
+          }
+          if (p.recording !== s.recording) {
+            addLog(`스테이션 ${s.station_number ?? s.station_id} 녹화 ${s.recording ? '시작' : '종료'}`, 'info');
+          }
+          if (p.streaming !== s.streaming) {
+            addLog(`스테이션 ${s.station_number ?? s.station_id} 스트리밍 ${s.streaming ? '시작' : '종료'}`, 'info');
+          }
+        });
+        prevSnapshotsRef.current = Object.fromEntries(snapshots.map(s => [s.station_id, s]));
+        setObsSnapshots(snapshots);
+        if (pollError) addLog('OBS 상태 조회 복구', 'success');
+        setPollError(null);
       } catch (e) {
-        if (!cancelled) setPollError(e.message || 'OBS 상태 조회 실패');
+        if (cancelled) return;
+        const msg = e.message || 'OBS 상태 조회 실패';
+        if (!pollError) addLog(`OBS 상태 조회 실패: ${msg}`, 'error');
+        setPollError(msg);
       }
     };
     poll();
@@ -121,7 +195,8 @@ export function Dashboard() {
       cancelled = true;
       clearInterval(t);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addLog]);
 
   const obsByStationId = useMemo(() => {
     const m = {};
@@ -133,7 +208,9 @@ export function Dashboard() {
     try {
       const res = await api.startHeat(station.id, currentHeatNumber, [], competitionDate);
       setActiveHeats((prev) => ({ ...prev, [station.id]: res.data }));
+      addLog(`스테이션 ${station.station_number} HIT ${currentHeatNumber} 시작`, 'success');
     } catch (e) {
+      addLog(`스테이션 ${station.station_number} 히트 시작 실패: ${e.message}`, 'error');
       await modal.alert('히트 시작 실패: ' + e.message);
     }
   };
@@ -148,12 +225,14 @@ export function Dashboard() {
         delete next[station.id];
         return next;
       });
+      addLog(`스테이션 ${station.station_number} HIT ${heat.heat_number} 종료`, 'success');
       // 모든 히트 종료됐으면 다음 번호로 (StrictMode 중복 호출 방지를 위해 콜백 밖에서)
       const remaining = Object.keys(activeHeats).filter((k) => k !== station.id);
       if (remaining.length === 0) {
         setCurrentHeatNumber((n) => n + 1);
       }
     } catch (e) {
+      addLog(`스테이션 ${station.station_number} 히트 종료 실패: ${e.message}`, 'error');
       await modal.alert('히트 종료 실패: ' + e.message);
     }
   };
@@ -179,6 +258,7 @@ export function Dashboard() {
     });
     setActiveHeats((prev) => ({ ...prev, ...newHeats }));
     const failed = results.filter((r) => r.status === 'rejected').length;
+    addLog(`전체 시작 — HIT ${heatNumber} (성공 ${targets.length - failed} / 실패 ${failed})`, failed > 0 ? 'warn' : 'success');
     if (failed > 0) await modal.alert(`${targets.length}개 중 ${failed}개 스테이션 히트 시작 실패`);
   };
 
@@ -206,6 +286,7 @@ export function Dashboard() {
       setCurrentHeatNumber((n) => n + 1);
     }
     const failed = results.filter((r) => r.status === 'rejected').length;
+    addLog(`전체 종료 (성공 ${active.length - failed} / 실패 ${failed})`, failed > 0 ? 'warn' : 'success');
     if (failed > 0) await modal.alert(`${active.length}개 중 ${failed}개 스테이션 히트 종료 실패`);
   };
 
@@ -310,7 +391,7 @@ export function Dashboard() {
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto px-4 py-6 pb-72">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedStations.map((station) => {
             const snap = obsByStationId[station.id];
@@ -404,6 +485,10 @@ export function Dashboard() {
             );
           })}
         </div>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 z-30">
+        <LogPanel logs={logs} onClear={() => setLogs([])} />
       </div>
     </div>
   );

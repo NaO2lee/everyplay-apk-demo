@@ -4,9 +4,20 @@
 프로덕션에서는 Redis/DB 권장이지만, 단일 프로세스 + 행사용 단기 운영에는 파일이 충분하다.
 """
 
-import fcntl
 import json
 import os
+import sys
+
+if sys.platform == "win32":
+    class _FcntlShim:
+        LOCK_SH = 0
+        LOCK_EX = 0
+        LOCK_UN = 0
+        @staticmethod
+        def flock(f, op): pass
+    fcntl = _FcntlShim()
+else:
+    import fcntl
 import secrets
 from datetime import datetime, timedelta
 from pathlib import Path

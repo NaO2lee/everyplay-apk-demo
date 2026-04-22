@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Upload, Plus, Download, Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Upload, Plus, Download, Search, RefreshCw, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { api } from '../../services/api';
 import { useModal } from '../Modal';
 
@@ -10,7 +10,9 @@ export function ParticipantList({ eventId }) {
   const [search, setSearch] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
+  const [pdfUploading, setPdfUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
   const [newParticipant, setNewParticipant] = useState({
     name: '',
     phone: '',
@@ -102,6 +104,15 @@ export function ParticipantList({ eventId }) {
             <Upload className="w-4 h-4" />
             CSV 업로드
           </button>
+          <button
+            onClick={() => pdfInputRef.current?.click()}
+            disabled={pdfUploading}
+            className="flex items-center gap-1 bg-red-500 text-white py-1.5 px-3 rounded text-sm hover:bg-red-600 disabled:opacity-50"
+            title="대진표 PDF (예: Korea Open Heat Sheets)"
+          >
+            <FileText className="w-4 h-4" />
+            {pdfUploading ? 'PDF 분석 중...' : 'PDF 업로드'}
+          </button>
           <a
             href="/samples/participants_template.csv"
             download
@@ -128,16 +139,36 @@ export function ParticipantList({ eventId }) {
               e.target.value = '';
             }}
           />
+          <input
+            ref={pdfInputRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setPdfUploading(true);
+              try {
+                const result = await api.importParticipantsPdf(eventId, file);
+                setUploadResult(result.data || result);
+                loadParticipants(1, pageSize);
+              } catch (err) {
+                await modal.alert('PDF 업로드 실패: ' + err.message + '\n\n(백엔드 PDF 파서가 아직 준비되지 않은 경우 정석님께 확인 필요)');
+              } finally {
+                setPdfUploading(false);
+                e.target.value = '';
+              }
+            }}
+          />
         </div>
       </div>
 
-      {/* 추가 폼 — 모달 */}
+      {/* 추가 폼 — 인라인 전개 */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-lg">참가자 추가</h3>
-            <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-600 text-xl">X</button>
+        <div className="bg-white border rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold">참가자 추가</h3>
+            <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -191,7 +222,6 @@ export function ParticipantList({ eventId }) {
             >
               취소
             </button>
-          </div>
           </div>
         </div>
       )}

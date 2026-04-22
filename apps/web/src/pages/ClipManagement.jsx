@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Scissors, Download, Loader2, CheckCircle, XCircle, Clock, Upload } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Scissors, Download, Loader2, CheckCircle, XCircle, Clock, Upload, MessageSquare, Send } from 'lucide-react';
 import { api } from '../services/api';
 import { useModal } from '../components/Modal';
 
@@ -126,6 +126,46 @@ export function ClipManagement() {
     loadHeats();
   };
 
+  const handleNotify = async (heat) => {
+    const names = (heat.participants || []).map(p => p.name).filter(Boolean);
+    if (names.length === 0) {
+      await modal.alert('이 히트에 참가자가 없습니다.');
+      return;
+    }
+    const ok = await modal.confirm(
+      `HIT ${heat.heat_number} 영상 링크를 SMS로 발송합니다.\n\n대상: ${names.join(', ')} (${names.length}명)\n\n진행할까요?`
+    );
+    if (!ok) return;
+    try {
+      const res = await api.notifyHeat(heat.id);
+      const sent = res?.data?.sent ?? names.length;
+      const failed = res?.data?.failed ?? 0;
+      await modal.alert(`발송 완료 — 성공 ${sent}건${failed ? ` / 실패 ${failed}건` : ''}`);
+      loadHeats();
+    } catch (e) {
+      await modal.alert('SMS 발송 실패: ' + e.message);
+    }
+  };
+
+  const handleNotifyAll = async () => {
+    const targets = heats.filter(h => h.clip_status === 'uploaded' && h.clip_url);
+    if (targets.length === 0) {
+      await modal.alert('발송 가능한 히트가 없습니다 (영상 업로드 완료 + 링크 있는 히트만 가능).');
+      return;
+    }
+    const totalRecipients = targets.reduce((sum, h) => sum + (h.participants?.length || 0), 0);
+    const ok = await modal.confirm(
+      `${targets.length}개 히트의 영상 링크를 SMS로 일괄 발송합니다.\n총 수신자 약 ${totalRecipients}명. 진행할까요?`
+    );
+    if (!ok) return;
+    let success = 0, failed = 0;
+    for (const h of targets) {
+      try { await api.notifyHeat(h.id); success++; } catch (_) { failed++; }
+    }
+    await modal.alert(`일괄 발송 완료 — 성공 ${success}건 / 실패 ${failed}건`);
+    loadHeats();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -206,6 +246,15 @@ export function ClipManagement() {
                   >
                     <Scissors className="w-4 h-4" />
                     전체 자르기
+                  </button>
+                  <button
+                    onClick={handleNotifyAll}
+                    disabled={heats.length === 0}
+                    className="flex items-center gap-1 px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 text-sm"
+                    title="업로드된 히트 전체에 SMS 발송"
+                  >
+                    <Send className="w-4 h-4" />
+                    전체 SMS 발송
                   </button>
                 </div>
               </div>
@@ -323,6 +372,21 @@ export function ClipManagement() {
                                 <Upload className="w-3 h-3" />
                                 YouTube 링크
                               </a>
+                            )}
+                            {(heat.clip_status === 'uploaded' || heat.clip_status === 'sent') && (
+                              <button
+                                onClick={() => handleNotify(heat)}
+                                disabled={!heat.clip_url || !heat.participants?.length}
+                                className={`flex items-center gap-1 px-2 py-1 rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed ${
+                                  heat.clip_status === 'sent'
+                                    ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                    : 'bg-purple-500 text-white hover:bg-purple-600'
+                                }`}
+                                title={heat.clip_status === 'sent' ? '재발송' : 'SMS 발송'}
+                              >
+                                <MessageSquare className="w-3 h-3" />
+                                {heat.clip_status === 'sent' ? '재발송' : 'SMS'}
+                              </button>
                             )}
                             <button
                               onClick={() => handleExtract(heat)}

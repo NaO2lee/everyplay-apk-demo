@@ -273,6 +273,19 @@ class ApiService {
     return res.json();
   }
 
+  // PDF 대진표 업로드 (백엔드에서 파싱 → 참가자 + 히트 자동 생성)
+  async importParticipantsPdf(eventId, pdfFile) {
+    const formData = new FormData();
+    formData.append('file', pdfFile);
+    const res = await fetch(`${API_BASE}/events/${eventId}/participants/import-pdf`, {
+      method: 'POST',
+      headers: this.token ? { 'Authorization': `Bearer ${this.token}` } : {},
+      body: formData,
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
   // Excel import
   async importExcel(eventId, file) {
     const formData = new FormData();
@@ -334,6 +347,18 @@ class ApiService {
 
   async deletePreset(presetId) {
     return this.request(`/presets/${presetId}`, { method: 'DELETE' });
+  }
+
+  // Overlay 이미지 업로드 (로고/워터마크)
+  async uploadOverlayImage(eventId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const url = `${this.baseUrl}/events/${eventId}/overlay/upload-image`;
+    const headers = {};
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+    const res = await fetch(url, { method: 'POST', headers, body: formData });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
   }
 
   // Notifications

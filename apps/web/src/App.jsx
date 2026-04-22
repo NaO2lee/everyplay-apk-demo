@@ -9,6 +9,7 @@ import EventDetail from './pages/EventDetail';
 import Dashboard from './pages/Dashboard';
 import ClipManagement from './pages/ClipManagement';
 import TimestampVerify from './pages/TimestampVerify';
+import Scoreboard from './pages/Scoreboard';
 import Home from './pages/Home';
 import ViewerEvent from './pages/ViewerEvent';
 
@@ -42,6 +43,9 @@ function App() {
         } />
         <Route path="/admin/events/:eventId/timestamps" element={
           <AdminRoute><TimestampVerify /></AdminRoute>
+        } />
+        <Route path="/admin/events/:eventId/scoreboard" element={
+          <AdminRoute><Scoreboard /></AdminRoute>
         } />
       </Routes>
       </ModalProvider>

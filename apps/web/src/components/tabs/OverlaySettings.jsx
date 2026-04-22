@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Save, RotateCcw, Plus, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Save, RotateCcw, Plus, Trash2, Eye, EyeOff, ExternalLink, Upload } from 'lucide-react';
 import { api } from '../../services/api';
 import { useModal } from '../Modal';
 
@@ -39,6 +39,7 @@ const PREVIEW_BY_BINDING = {
   event_type: '30초 번갈아뛰기',
   division: '남자-9세미만',
   participants: 'Wing Tung Wong, 송기쁨, 류자람',
+  next_heat: '다음 HIT 4: 김선수, 이선수, 박선수',
   none: null,
 };
 
@@ -49,6 +50,7 @@ const BINDING_OPTIONS = [
   { value: 'event_type', label: '종목' },
   { value: 'division', label: '참가부' },
   { value: 'participants', label: '선수명' },
+  { value: 'next_heat', label: '다음 히트 + 참가자' },
   { value: 'live_badge', label: 'LIVE 뱃지' },
 ];
 
@@ -60,25 +62,31 @@ function getPreviewText(el) {
   return el.content || el.label || '텍스트';
 }
 
-function createNewElement(elementType, binding) {
+function createNewElement(elementType, binding, extra = {}) {
   const bindingOption = BINDING_OPTIONS.find(b => b.value === binding);
-  return {
+  const base = {
     id: `custom_${Date.now()}`,
     elementType: elementType,
-    binding: binding || 'none',
-    label: elementType === 'timer' ? '타이머' : (bindingOption ? bindingOption.label : '새 텍스트'),
+    binding: elementType === 'image' ? 'none' : (binding || 'none'),
+    label:
+      elementType === 'timer' ? '타이머' :
+      elementType === 'image' ? '로고' :
+      (bindingOption ? bindingOption.label : '새 텍스트'),
     content: '',
     fontSize: elementType === 'timer' ? 48 : 24,
     fontFamily: elementType === 'timer' ? 'JetBrains Mono, monospace' : 'Pretendard',
     fontWeight: 'normal',
     color: '#ffffff',
-    backgroundColor: '#000000b3',
+    backgroundColor: elementType === 'image' ? 'transparent' : '#000000b3',
     borderColor: 'transparent',
     borderWidth: 0,
-    offsetX: 50,
-    offsetY: 50,
+    offsetX: elementType === 'image' ? 90 : 50,
+    offsetY: elementType === 'image' ? 5 : 50,
     visible: true,
+    imageUrl: extra.imageUrl || null,
+    widthPct: 10,
   };
+  return base;
 }
 
 export function OverlaySettings({ event, onUpdate }) {
@@ -90,6 +98,8 @@ export function OverlaySettings({ event, onUpdate }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newElType, setNewElType] = useState('text');
   const [newElBinding, setNewElBinding] = useState('none');
+  const [newImageFile, setNewImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(null);
   const [saveStatus, setSaveStatus] = useState('idle');
   const [showSample, setShowSample] = useState(false);
@@ -144,11 +154,38 @@ export function OverlaySettings({ event, onUpdate }) {
     setShowAddDialog(true);
     setNewElType('text');
     setNewElBinding('none');
+    setNewImageFile(null);
   };
 
   const confirmAddElement = async () => {
     if (newElType === 'timer' && elements.some(e => e.elementType === 'timer')) {
       await modal.alert('타이머는 하나만 추가할 수 있습니다');
+      return;
+    }
+    if (newElType === 'image') {
+      if (!newImageFile) {
+        await modal.alert('이미지 파일을 선택해주세요');
+        return;
+      }
+      if (!event?.id) {
+        await modal.alert('이벤트 정보가 없습니다');
+        return;
+      }
+      setUploading(true);
+      try {
+        const res = await api.uploadOverlayImage(event.id, newImageFile);
+        const url = res?.data?.url || res?.url;
+        if (!url) throw new Error('업로드 응답에 URL이 없습니다');
+        const newEl = createNewElement('image', 'none', { imageUrl: url });
+        setElements(prev => [...prev, newEl]);
+        setSelectedId(newEl.id);
+        setShowAddDialog(false);
+        setNewImageFile(null);
+      } catch (e) {
+        await modal.alert('이미지 업로드 실패: ' + e.message + '\n\n(백엔드 업로드 API가 아직 준비되지 않은 경우 정석님께 확인 필요)');
+      } finally {
+        setUploading(false);
+      }
       return;
     }
     const newEl = createNewElement(newElType, newElType === 'timer' ? 'none' : newElBinding);
@@ -213,8 +250,37 @@ export function OverlaySettings({ event, onUpdate }) {
   const renderPreviewElement = (el) => {
     if (!el.visible) return null;
 
-    const scaledFontSize = Math.max(8, el.fontSize * PREVIEW_SCALE);
     const scaledBorderWidth = Math.max(0, el.borderWidth * PREVIEW_SCALE);
+
+    if (el.elementType === 'image') {
+      const previewWidthPct = el.widthPct ?? 10;
+      return (
+        <div
+          key={el.id}
+          onMouseDown={(e) => handlePreviewMouseDown(e, el.id)}
+          className={`absolute cursor-move select-none transition-shadow ${
+            selectedId === el.id ? 'ring-2 ring-blue-400 ring-offset-1' : ''
+          } ${dragging === el.id ? 'z-50 opacity-90' : 'z-10'}`}
+          style={{
+            left: `${el.offsetX}%`,
+            top: `${el.offsetY}%`,
+            transform: `translate(${el.offsetX > 50 ? '-100%' : '0%'}, ${el.offsetY > 50 ? '-100%' : '0%'})`,
+            width: `${previewWidthPct}%`,
+            border: scaledBorderWidth > 0 ? `${scaledBorderWidth}px solid ${el.borderColor}` : 'none',
+            backgroundColor: el.backgroundColor !== 'transparent' ? el.backgroundColor : undefined,
+            borderRadius: `${Math.max(2, 6 * PREVIEW_SCALE)}px`,
+          }}
+        >
+          {el.imageUrl ? (
+            <img src={el.imageUrl} alt={el.label} className="w-full h-auto block pointer-events-none" draggable={false} />
+          ) : (
+            <div className="w-full aspect-video flex items-center justify-center bg-white/10 text-white/60 text-xs">이미지 없음</div>
+          )}
+        </div>
+      );
+    }
+
+    const scaledFontSize = Math.max(8, el.fontSize * PREVIEW_SCALE);
     const scaledPadding = `${Math.max(4, 10 * PREVIEW_SCALE)}px ${Math.max(6, 16 * PREVIEW_SCALE)}px`;
 
     return (
@@ -236,7 +302,8 @@ export function OverlaySettings({ event, onUpdate }) {
           border: scaledBorderWidth > 0 ? `${scaledBorderWidth}px solid ${el.borderColor}` : 'none',
           padding: scaledPadding,
           borderRadius: `${Math.max(2, 6 * PREVIEW_SCALE)}px`,
-          whiteSpace: 'nowrap',
+          whiteSpace: el.binding === 'next_heat' ? 'normal' : 'nowrap',
+          maxWidth: el.binding === 'next_heat' ? '60%' : undefined,
         }}
       >
         {getPreviewText(el)}
@@ -374,7 +441,9 @@ export function OverlaySettings({ event, onUpdate }) {
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${el.visible ? 'bg-green-400' : 'bg-gray-300'}`} />
                 <span className="flex-1 truncate font-medium">{el.label}</span>
                 <span className="text-[10px] text-gray-400 flex-shrink-0">
-                  {el.elementType === 'timer' ? '타이머' : (el.binding && el.binding !== 'none' ? (BINDING_OPTIONS.find(b => b.value === el.binding)?.label || el.binding) : '텍스트')}
+                  {el.elementType === 'timer' ? '타이머' :
+                   el.elementType === 'image' ? '이미지' :
+                   (el.binding && el.binding !== 'none' ? (BINDING_OPTIONS.find(b => b.value === el.binding)?.label || el.binding) : '텍스트')}
                 </span>
                 <button
                   onClick={(e) => { e.stopPropagation(); updateElement(el.id, { visible: !el.visible }); }}
@@ -419,9 +488,52 @@ export function OverlaySettings({ event, onUpdate }) {
             {/* Element type (read-only) */}
             <div>
               <label className="text-xs text-gray-500 block mb-1">타입</label>
-              <input type="text" value={selectedElement.elementType === 'timer' ? '타이머' : '텍스트'} disabled
+              <input type="text" value={
+                selectedElement.elementType === 'timer' ? '타이머' :
+                selectedElement.elementType === 'image' ? '이미지' :
+                '텍스트'
+              } disabled
                 className="w-full px-2 py-1.5 border rounded-lg text-xs bg-gray-50 text-gray-400" />
             </div>
+
+            {/* Image controls */}
+            {selectedElement.elementType === 'image' && (
+              <>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">이미지 URL</label>
+                  <input type="text" value={selectedElement.imageUrl || ''}
+                    onChange={(e) => updateElement(selectedId, { imageUrl: e.target.value })}
+                    className="w-full px-2 py-1.5 border rounded-lg text-xs font-mono"
+                    placeholder="이미지 URL" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">이미지 교체</label>
+                  <input type="file" accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !event?.id) return;
+                      try {
+                        const res = await api.uploadOverlayImage(event.id, file);
+                        const url = res?.data?.url || res?.url;
+                        if (url) updateElement(selectedId, { imageUrl: url });
+                      } catch (err) {
+                        await modal.alert('업로드 실패: ' + err.message);
+                      }
+                      e.target.value = '';
+                    }}
+                    className="w-full text-xs" />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs text-gray-500">너비</label>
+                    <span className="text-xs text-gray-400 font-mono">{selectedElement.widthPct ?? 10}%</span>
+                  </div>
+                  <input type="range" min={3} max={80} value={selectedElement.widthPct ?? 10}
+                    onChange={(e) => updateElement(selectedId, { widthPct: Number(e.target.value) })}
+                    className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+                </div>
+              </>
+            )}
 
             {/* Data binding (text elements only) */}
             {selectedElement.elementType === 'text' && (
@@ -459,42 +571,44 @@ export function OverlaySettings({ event, onUpdate }) {
               </div>
             )}
 
-            {/* Font size */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs text-gray-500">글꼴 크기</label>
-                <span className="text-xs text-gray-400 font-mono">{selectedElement.fontSize}px</span>
-              </div>
-              <input type="range" min={8} max={72} value={selectedElement.fontSize}
-                onChange={(e) => updateElement(selectedId, { fontSize: Number(e.target.value) })}
-                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-            </div>
+            {/* Font size — text/timer only */}
+            {selectedElement.elementType !== 'image' && (
+              <>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs text-gray-500">글꼴 크기</label>
+                    <span className="text-xs text-gray-400 font-mono">{selectedElement.fontSize}px</span>
+                  </div>
+                  <input type="range" min={8} max={72} value={selectedElement.fontSize}
+                    onChange={(e) => updateElement(selectedId, { fontSize: Number(e.target.value) })}
+                    className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+                </div>
 
-            {/* Font family */}
-            <div>
-              <label className="text-xs text-gray-500 block mb-1">서체</label>
-              <select value={selectedElement.fontFamily}
-                onChange={(e) => updateElement(selectedId, { fontFamily: e.target.value })}
-                className="w-full px-2 py-1.5 border rounded-lg text-xs">
-                {FONT_FAMILIES.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">서체</label>
+                  <select value={selectedElement.fontFamily}
+                    onChange={(e) => updateElement(selectedId, { fontFamily: e.target.value })}
+                    className="w-full px-2 py-1.5 border rounded-lg text-xs">
+                    {FONT_FAMILIES.map(f => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                </div>
 
-            {/* Font weight */}
-            <div>
-              <label className="text-xs text-gray-500 block mb-1">두께</label>
-              <div className="flex gap-1">
-                {FONT_WEIGHTS.map(fw => (
-                  <button key={fw.value}
-                    onClick={() => updateElement(selectedId, { fontWeight: fw.value })}
-                    className={`flex-1 px-2 py-1 rounded text-xs transition ${
-                      selectedElement.fontWeight === fw.value ? 'bg-blue-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                    }`}>
-                    {fw.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">두께</label>
+                  <div className="flex gap-1">
+                    {FONT_WEIGHTS.map(fw => (
+                      <button key={fw.value}
+                        onClick={() => updateElement(selectedId, { fontWeight: fw.value })}
+                        className={`flex-1 px-2 py-1 rounded text-xs transition ${
+                          selectedElement.fontWeight === fw.value ? 'bg-blue-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}>
+                        {fw.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Colors */}
             <div className="grid grid-cols-3 gap-2">
@@ -551,17 +665,22 @@ export function OverlaySettings({ event, onUpdate }) {
 
       </div>
 
-      {/* Add element dialog */}
+      {/* Add element — 인라인 전개 패널 */}
       {showAddDialog && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowAddDialog(false)}>
-          <div className="bg-white rounded-xl border shadow-lg p-5 w-80 space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-xl border shadow-sm p-4 space-y-3">
+          <div className="flex items-center justify-between">
             <h4 className="text-sm font-semibold">요소 추가</h4>
+            <button onClick={() => !uploading && setShowAddDialog(false)} disabled={uploading}
+              className="text-gray-400 hover:text-gray-600 text-xl leading-none disabled:opacity-50">×</button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-gray-500 block mb-1">요소 타입</label>
-              <select value={newElType} onChange={(e) => setNewElType(e.target.value)}
+              <select value={newElType} onChange={(e) => { setNewElType(e.target.value); setNewImageFile(null); }}
                 className="w-full px-2 py-1.5 border rounded-lg text-xs">
                 <option value="text">텍스트</option>
                 <option value="timer">타이머</option>
+                <option value="image">이미지 (로고)</option>
               </select>
             </div>
             {newElType === 'text' && (
@@ -573,12 +692,26 @@ export function OverlaySettings({ event, onUpdate }) {
                 </select>
               </div>
             )}
-            <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowAddDialog(false)}
-                className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg">취소</button>
-              <button onClick={confirmAddElement}
-                className="px-3 py-1.5 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded-lg">추가</button>
-            </div>
+            {newElType === 'image' && (
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">이미지 파일 (PNG/JPG)</label>
+                <input type="file" accept="image/*"
+                  onChange={(e) => setNewImageFile(e.target.files?.[0] || null)}
+                  className="w-full text-xs" />
+                {newImageFile && (
+                  <p className="text-xs text-gray-500 mt-1 truncate">{newImageFile.name}</p>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => setShowAddDialog(false)} disabled={uploading}
+              className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50">취소</button>
+            <button onClick={confirmAddElement} disabled={uploading || (newElType === 'image' && !newImageFile)}
+              className="flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded-lg disabled:opacity-50">
+              {uploading && <Upload className="w-3 h-3 animate-pulse" />}
+              {uploading ? '업로드 중...' : '추가'}
+            </button>
           </div>
         </div>
       )}

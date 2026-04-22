@@ -1,7 +1,8 @@
 from typing import Optional
-from uuid import UUID
+from uuid import UUID, uuid4
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -18,6 +19,13 @@ from app.schemas import (
 from app.services import event_service
 
 router = APIRouter(prefix="/events", tags=["events"])
+
+# 업로드 폴더 (main.py 와 동일)
+UPLOADS_ROOT = Path(__file__).resolve().parent.parent.parent.parent / "uploads"
+OVERLAY_IMAGE_DIR = UPLOADS_ROOT / "overlay-images"
+
+ALLOWED_IMAGE_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp", "image/svg+xml"}
+MAX_IMAGE_BYTES = 4 * 1024 * 1024  # 4 MB
 
 
 @router.post("", response_model=APIResponse[EventDetailResponse])
@@ -128,6 +136,50 @@ async def save_overlay_config(
         })
 
     return APIResponse(data={"ok": True})
+
+
+@router.post("/{event_id}/overlay/upload-image", response_model=APIResponse[dict])
+async def upload_overlay_image(
+    event_id: UUID,
+    request: Request,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+):
+    """오버레이용 이미지(로고/워터마크) 업로드. 저장 후 공개 URL 반환.
+
+    프론트는 이 URL 을 overlay element 의 imageUrl 에 그대로 사용.
+    """
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail=f"이미지 형식만 허용됩니다 (받은 형식: {file.content_type})")
+
+    content = await file.read()
+    if len(content) > MAX_IMAGE_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"이미지가 너무 큽니다 ({len(content)/1024/1024:.1f} MB). 최대 {MAX_IMAGE_BYTES//1024//1024} MB",
+        )
+
+    # 이벤트 존재 확인
+    event = await event_service.get_event(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="이벤트를 찾을 수 없습니다")
+
+    # 확장자 결정
+    ext_map = {
+        "image/png": ".png", "image/jpeg": ".jpg", "image/jpg": ".jpg",
+        "image/gif": ".gif", "image/webp": ".webp", "image/svg+xml": ".svg",
+    }
+    ext = ext_map.get(file.content_type, ".bin")
+    filename = f"{event_id}_{uuid4().hex}{ext}"
+
+    OVERLAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    target = OVERLAY_IMAGE_DIR / filename
+    target.write_bytes(content)
+
+    # 공개 URL 생성 (요청 호스트 기반)
+    base = str(request.base_url).rstrip("/")
+    url = f"{base}/uploads/overlay-images/{filename}"
+    return APIResponse(data={"url": url, "filename": filename, "size": len(content)})
 
 
 @router.patch("/{event_id}", response_model=APIResponse[EventResponse])
