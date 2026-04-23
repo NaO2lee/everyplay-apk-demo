@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Upload, Plus, Download, Search, RefreshCw, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { Upload, Plus, Download, Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { api } from '../../services/api';
 import { useModal } from '../Modal';
 
@@ -10,11 +10,7 @@ export function ParticipantList({ eventId }) {
   const [search, setSearch] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
-  const [pdfUploading, setPdfUploading] = useState(false);
-  const [pdfProgress, setPdfProgress] = useState(0);
-  const [pdfPhase, setPdfPhase] = useState(null);
   const fileInputRef = useRef(null);
-  const pdfInputRef = useRef(null);
   const [newParticipant, setNewParticipant] = useState({
     name: '',
     phone: '',
@@ -106,17 +102,6 @@ export function ParticipantList({ eventId }) {
             <Upload className="w-4 h-4" />
             CSV 업로드
           </button>
-          <button
-            onClick={() => pdfInputRef.current?.click()}
-            disabled={pdfUploading}
-            className="flex items-center gap-1 bg-red-500 text-white py-1.5 px-3 rounded text-sm hover:bg-red-600 disabled:opacity-50"
-            title="대진표 PDF (예: Korea Open Heat Sheets)"
-          >
-            <FileText className="w-4 h-4" />
-            {pdfUploading
-              ? (pdfPhase === 'parsing' ? 'PDF 분석 중...' : `업로드 ${pdfProgress}%`)
-              : 'PDF 업로드'}
-          </button>
           <a
             href="/samples/participants_template.csv"
             download
@@ -141,36 +126,6 @@ export function ParticipantList({ eventId }) {
                 await modal.alert('업로드 실패: ' + err.message);
               }
               e.target.value = '';
-            }}
-          />
-          <input
-            ref={pdfInputRef}
-            type="file"
-            accept=".pdf,application/pdf"
-            className="hidden"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setPdfUploading(true);
-              setPdfProgress(0);
-              setPdfPhase('uploading');
-              try {
-                const result = await api.importParticipantsPdf(eventId, file, {
-                  onProgress: (p) => {
-                    setPdfProgress(p);
-                    if (p >= 100) setPdfPhase('parsing');
-                  },
-                });
-                setUploadResult(result.data || result);
-                loadParticipants(1, pageSize);
-              } catch (err) {
-                await modal.alert('PDF 업로드 실패: ' + err.message + '\n\n(백엔드 PDF 파서가 아직 준비되지 않은 경우 정석님께 확인 필요)');
-              } finally {
-                setPdfUploading(false);
-                setPdfProgress(0);
-                setPdfPhase(null);
-                e.target.value = '';
-              }
             }}
           />
         </div>
@@ -235,26 +190,6 @@ export function ParticipantList({ eventId }) {
             >
               취소
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* PDF 업로드 진행 바 */}
-      {pdfUploading && (
-        <div className="bg-white border rounded-lg p-3 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-700 font-medium">
-              {pdfPhase === 'parsing' ? 'PDF 분석 중 (서버에서 텍스트 추출 + 이름 추출)' : `업로드 중... ${pdfProgress}%`}
-            </span>
-            <span className="text-xs text-gray-400">
-              {pdfPhase === 'parsing' ? '잠시만 기다려주세요' : `${pdfProgress}/100`}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-            <div
-              className={`h-full transition-all ${pdfPhase === 'parsing' ? 'bg-purple-500 animate-pulse' : 'bg-red-500'}`}
-              style={{ width: pdfPhase === 'parsing' ? '100%' : `${pdfProgress}%` }}
-            />
           </div>
         </div>
       )}

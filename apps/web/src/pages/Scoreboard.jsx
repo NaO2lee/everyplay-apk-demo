@@ -31,7 +31,7 @@ function LiveTimer({ startedAt }) {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [startedAt]);
-  return <span className="font-mono tabular-nums">{elapsed}</span>;
+  return <span className="font-mono tabular-nums inline-block">{elapsed}</span>;
 }
 
 function useAllStationHeats(stations) {
@@ -129,8 +129,7 @@ function StationCard({ station, heat, onDoubleClick, label }) {
   return (
     <div
       onDoubleClick={onDoubleClick}
-      className="relative cursor-pointer rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition group"
-      style={{ aspectRatio: '16 / 9' }}
+      className="relative cursor-pointer rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition group w-full h-full min-h-0"
       title="더블클릭하면 크게 보기"
     >
       <VideoFrame station={station} isLive={isLive} />
@@ -154,7 +153,7 @@ function ThumbCard({ station, heat, onClick, label, isActive }) {
   return (
     <div
       onClick={onClick}
-      className={`relative cursor-pointer rounded-md overflow-hidden border-2 transition ${
+      className={`relative cursor-pointer rounded-md overflow-hidden border-2 transition flex-shrink-0 ${
         isActive ? 'border-blue-400' : 'border-gray-700 hover:border-gray-400'
       }`}
       style={{ aspectRatio: '16 / 9' }}
@@ -172,44 +171,44 @@ function InfoBar({ station, heat }) {
   const isLive = heat?.status === 'live';
   const participants = heat?.participants || [];
   return (
-    <div className="bg-gray-900 border-t-2 border-blue-500 text-white px-6 py-4">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <div className="text-3xl font-bold tabular-nums">코트 {station.station_number}</div>
-          <div className="h-10 w-px bg-gray-600" />
+    <div className="bg-gray-900 border-t-2 border-blue-500 text-white px-6 py-5 flex-shrink-0">
+      <div className="flex items-center justify-between gap-6 flex-wrap">
+        <div className="flex items-center gap-6">
+          <div className="text-6xl font-black tabular-nums leading-none">코트 {station.station_number}</div>
+          <div className="h-16 w-px bg-gray-600" />
           <div>
-            <div className="text-xs text-gray-400 mb-0.5">종목 / 참가부</div>
-            <div className="text-lg font-semibold">
+            <div className="text-sm text-gray-400 mb-1">종목 / 참가부</div>
+            <div className="text-3xl font-bold">
               {heat?.event_type || '—'}
-              {heat?.division ? <span className="text-gray-400 font-normal text-base ml-2">{heat.division}</span> : null}
+              {heat?.division ? <span className="text-gray-300 font-medium text-2xl ml-3">{heat.division}</span> : null}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8">
           <div>
-            <div className="text-xs text-gray-400 mb-0.5">HIT</div>
-            <div className="text-2xl font-bold tabular-nums">
+            <div className="text-sm text-gray-400 mb-1">HIT</div>
+            <div className="text-5xl font-black tabular-nums leading-none">
               {heat?.heat_number != null ? `#${heat.heat_number}` : '—'}
             </div>
           </div>
           {isLive && (
             <div>
-              <div className="text-xs text-gray-400 mb-0.5">경과</div>
-              <div className="text-2xl font-bold">
+              <div className="text-sm text-gray-400 mb-1">경과</div>
+              <div className="text-5xl font-black leading-none">
                 <LiveTimer startedAt={heat.started_at} />
               </div>
             </div>
           )}
         </div>
       </div>
-      <div className="mt-3 pt-3 border-t border-gray-800">
-        <div className="text-xs text-gray-400 mb-1">선수</div>
+      <div className="mt-4 pt-4 border-t border-gray-800">
+        <div className="text-sm text-gray-400 mb-2">선수</div>
         {participants.length === 0 ? (
-          <div className="text-gray-500 text-sm">대기 중</div>
+          <div className="text-gray-500 text-xl">대기 중</div>
         ) : (
           <div className="flex flex-wrap gap-2">
             {participants.map((p, i) => (
-              <span key={i} className="px-3 py-1 rounded-full bg-blue-600/30 text-blue-100 text-sm font-medium">
+              <span key={i} className="px-4 py-1.5 rounded-full bg-blue-600/30 text-blue-100 text-xl font-semibold">
                 {p.name || p}
               </span>
             ))}
@@ -276,8 +275,8 @@ export function Scoreboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
-      <header className="bg-gray-950 border-b border-gray-800 text-white px-4 py-2 flex items-center justify-between">
+    <div className="h-screen bg-black flex flex-col">
+      <header className="bg-gray-950 border-b border-gray-800 text-white px-4 py-2 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(`/admin/events/${eventId}`)}
@@ -300,9 +299,9 @@ export function Scoreboard() {
         )}
       </header>
 
-      <main className="flex-1 p-4 overflow-hidden">
+      <main className="flex-1 min-h-0 p-4">
         {mainStationId === null ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 h-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr gap-3 h-full">
             {stations.map(station => (
               <StationCard
                 key={station.id}
@@ -320,12 +319,12 @@ export function Scoreboard() {
           </div>
         ) : (
           <div className="flex gap-3 h-full">
-            <div className="flex-1 relative rounded-lg overflow-hidden border border-gray-700">
+            <div className="flex-1 relative rounded-lg overflow-hidden border border-gray-700 h-full">
               {mainStation && (
                 <VideoFrame station={mainStation} isLive={mainHeat?.status === 'live'} />
               )}
             </div>
-            <div className="w-56 flex flex-col gap-2 overflow-y-auto">
+            <div className="w-64 flex flex-col gap-2 overflow-y-auto h-full">
               {thumbStations.map(station => (
                 <ThumbCard
                   key={station.id}
