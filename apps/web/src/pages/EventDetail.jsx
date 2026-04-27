@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Settings, Users, Play, Edit, Layers, Scissors, Clock, Monitor } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Settings, Users, Play, Edit, Layers, Scissors, Clock, Monitor, BookOpen } from 'lucide-react';
 import { api } from '../services/api';
 import { useModal } from '../components/Modal';
 
@@ -169,6 +169,14 @@ export function EventDetail() {
               >
                 <Monitor className="w-5 h-5" />
                 전광판
+              </button>
+              <button
+                onClick={() => navigate(`/admin/events/${eventId}/guide`)}
+                className="flex items-center gap-2 py-2 px-4 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+                title="운영자 사용 가이드"
+              >
+                <BookOpen className="w-5 h-5" />
+                가이드
               </button>
               <button
                 onClick={() => navigate(`/admin/events/${eventId}/clips`)}

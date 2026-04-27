@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import ClipManagement from './pages/ClipManagement';
 import TimestampVerify from './pages/TimestampVerify';
 import Scoreboard from './pages/Scoreboard';
+import OperatorGuide from './pages/OperatorGuide';
 import Home from './pages/Home';
 import ViewerEvent from './pages/ViewerEvent';
 
@@ -46,6 +47,9 @@ function App() {
         } />
         <Route path="/admin/events/:eventId/scoreboard" element={
           <AdminRoute><Scoreboard /></AdminRoute>
+        } />
+        <Route path="/admin/events/:eventId/guide" element={
+          <AdminRoute><OperatorGuide /></AdminRoute>
         } />
       </Routes>
       </ModalProvider>
