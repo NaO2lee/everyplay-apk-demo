@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { trackCourtClick, trackSearchUse, trackSearchResultClick, trackEventView } from '../services/analytics';
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -88,14 +89,24 @@ function useStationHeat(stationId) {
   return heat;
 }
 
-function CourtCard({ station, onOpen }) {
+function CourtCard({ station, onOpen, eventCode }) {
   const heat = useStationHeat(station.id);
   const videoId = extractYouTubeId(station.youtube_stream_url);
   const isLive = heat.status === 'live';
 
+  const handleClick = () => {
+    trackCourtClick({
+      stationId: station.id,
+      stationNumber: station.station_number,
+      eventCode,
+      isLive,
+    });
+    onOpen(station, heat);
+  };
+
   return (
     <div
-      onClick={() => onOpen(station, heat)}
+      onClick={handleClick}
       className="bg-white rounded-xl border overflow-hidden cursor-pointer hover:shadow-lg transition active:scale-[0.99]"
     >
       <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
@@ -241,6 +252,7 @@ function SearchPanel({ event, onClose }) {
   const runSearch = async () => {
     const q = query.trim();
     if (!q) return;
+    trackSearchUse({ eventCode: event.event_code });
     setLoading(true);
     setError(null);
     try {
@@ -303,6 +315,12 @@ function SearchPanel({ event, onClose }) {
                   href={r.clip_url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackSearchResultClick({
+                    eventCode: event.event_code,
+                    stationNumber: r.station_number,
+                    heatNumber: r.heat_number,
+                    participantName: r.participant_name || r.name,
+                  })}
                   className="block p-3 border rounded-lg hover:border-blue-300 hover:bg-blue-50 transition"
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -336,6 +354,7 @@ export function ViewerEvent() {
       try {
         const res = await api.getPublicEventByCode(eventCode);
         setEvent(res.data);
+        trackEventView({ eventCode, eventName: res.data?.name });
       } catch (e) {
         setError(e.message || '이벤트를 불러올 수 없습니다');
       } finally {
@@ -418,7 +437,7 @@ export function ViewerEvent() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {courts.map((station) => (
-              <CourtCard key={station.id} station={station} onOpen={(s) => setOpenStation(s)} />
+              <CourtCard key={station.id} station={station} onOpen={(s) => setOpenStation(s)} eventCode={event.event_code} />
             ))}
           </div>
         )}
