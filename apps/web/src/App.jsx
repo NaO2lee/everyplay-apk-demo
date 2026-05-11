@@ -28,6 +28,7 @@ import AdminUsers from './pages/AdminUsers';
 import OperatorRunner from './pages/OperatorRunner';
 import JudgeGrid from './pages/JudgeGrid';
 import Hub from './pages/Hub';
+import AdminSponsors from './pages/AdminSponsors';
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
         <Route path="/operate-runner" element={<OperatorRunner />} />
         <Route path="/judge-grid" element={<JudgeGrid />} />
         <Route path="/hub" element={<Hub />} />
+        <Route path="/admin-sponsors" element={<AdminSponsors />} />
 
         {/* 관리자 로그인 */}
         <Route path="/admin" element={<AdminLogin />} />

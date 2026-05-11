@@ -16,6 +16,7 @@ const ROUTES = [
     { url: '/admin-users', label: '사용자 관리 (CRUD)', desc: '가입자 / 역할 / 활성화', device: 'pc' },
     { url: '/admin-matrix', label: '채점 제출 매트릭스', desc: '🟢🟡🔴', device: 'pc' },
     { url: '/admin-audit', label: 'Audit 로그', desc: '모든 변경 immutable 기록', device: 'pc' },
+    { url: '/admin-sponsors', label: '🎨 스폰서 / 광고', desc: '배너·CTA·이벤트 연결 (5/11)', device: 'pc' },
   ]},
   { role: '📺 운영위원/중계', color: '#2563eb', items: [
     { url: '/operate', label: '호명 큐 + AI 음성', desc: '5초 자동 갱신, 스피커 연결', device: 'pc' },

@@ -94,10 +94,18 @@ async def get_events(
     status: Optional[EventStatus] = None,
     skip: int = 0,
     limit: int = 20,
+    trash: bool = False,
 ) -> tuple[List[Event], int]:
-    """Get list of events"""
+    """Get list of events. `trash=True` → soft-deleted only (휴지통)."""
     query = select(Event)
     count_query = select(func.count(Event.id))
+
+    if trash:
+        query = query.where(Event.deleted_at.is_not(None))
+        count_query = count_query.where(Event.deleted_at.is_not(None))
+    else:
+        query = query.where(Event.deleted_at.is_(None))
+        count_query = count_query.where(Event.deleted_at.is_(None))
 
     if status:
         query = query.where(Event.status == status)
