@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from sqlalchemy import String, DateTime, Integer, Float, Enum as SQLEnum, ForeignKey, Table, Column
+from sqlalchemy import String, Text, DateTime, Integer, Float, Enum as SQLEnum, ForeignKey, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -11,6 +11,7 @@ from app.core.types import GUID
 
 
 class HeatStatus(str, Enum):
+    SCHEDULED = "scheduled"  # 5/11 — 사전 대진표 임포트 (아직 시작 안 함)
     ACTIVE = "active"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
@@ -39,6 +40,8 @@ class Heat(Base):
     clip_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     clip_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     clip_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, default=None)  # pending, processing, ready, failed, sent
+    # 5/11 — 클립 추출 실패 사유 (워커가 채움)
+    clip_error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     # OBS 녹화 시작 기준 오프셋 (서버 시계 계산, 기존 방식 유지)
     recording_offset_start: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     recording_offset_end: Mapped[Optional[float]] = mapped_column(Float, nullable=True)

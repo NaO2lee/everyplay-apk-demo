@@ -13,6 +13,9 @@ from app.core.types import GUID
 class UserRole(str, Enum):
     ADMIN = "admin"
     OPERATOR = "operator"
+    JUDGE = "judge"
+    PLAYER = "player"
+    COACH = "coach"
 
 
 class User(Base):
@@ -26,3 +29,6 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    # v3.3 — 회원가입 추가 필드
+    phone_number: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+    country_code: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)  # ISO 3166: KR, US, JP …

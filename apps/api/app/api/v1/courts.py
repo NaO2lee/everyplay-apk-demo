@@ -87,3 +87,104 @@ async def update_court_status(
     if not station:
         raise HTTPException(status_code=404, detail="스테이션를 찾을 수 없습니다")
     return APIResponse(data=StationResponse.from_orm_with_mask(station))
+
+
+# ─── v3.3 — 코트 동적 메타데이터 ──────────────────────────────
+
+class StationMeta(BaseModel):
+    """v3.3 — 코트 동적 메타. 모두 부분 업데이트 가능."""
+    is_active: Optional[bool] = None
+    position_x: Optional[int] = None
+    position_y: Optional[int] = None
+    display_name: Optional[str] = None
+
+
+@router.patch("/{station_id}/meta", response_model=APIResponse[dict])
+async def update_station_meta(
+    station_id: UUID,
+    meta: StationMeta,
+    db: AsyncSession = Depends(get_db),
+):
+    """코트 동적 메타 업데이트 — admin 토글용. audit_log + SSE 브로드캐스트."""
+    from sqlalchemy import select as _sel
+    from datetime import datetime as _dt
+    from app.models import Station, AuditLog
+    res = await db.execute(_sel(Station).where(Station.id == station_id))
+    station = res.scalar_one_or_none()
+    if not station:
+        raise HTTPException(status_code=404, detail="스테이션을 찾을 수 없습니다")
+
+    before = {
+        "is_active": station.is_active,
+        "position_x": station.position_x,
+        "position_y": station.position_y,
+        "display_name": station.display_name,
+    }
+    changed = {}
+    if meta.is_active is not None and meta.is_active != station.is_active:
+        station.is_active = meta.is_active
+        changed["is_active"] = meta.is_active
+    if meta.position_x is not None and meta.position_x != station.position_x:
+        station.position_x = meta.position_x
+        changed["position_x"] = meta.position_x
+    if meta.position_y is not None and meta.position_y != station.position_y:
+        station.position_y = meta.position_y
+        changed["position_y"] = meta.position_y
+    if meta.display_name is not None and meta.display_name != station.display_name:
+        station.display_name = meta.display_name
+        changed["display_name"] = meta.display_name
+
+    if changed:
+        db.add(AuditLog(
+            actor_role="admin",
+            action_type="court_meta_changed",
+            target_type="station",
+            target_id=station.id,
+            before_value={k: before[k] for k in changed.keys()},
+            after_value=changed,
+            timestamp=_dt.utcnow(),
+        ))
+
+    await db.commit()
+    await db.refresh(station)
+
+    # SSE 푸시
+    if changed:
+        try:
+            from app.api.v1.realtime import event_broker
+            await event_broker.publish(str(station.event_id), {
+                "type": "court_meta_changed",
+                "station_id": str(station.id),
+                "changed": changed,
+            })
+        except Exception:
+            pass
+
+    return APIResponse(data={
+        "id": str(station.id),
+        "station_number": station.station_number,
+        "is_active": station.is_active,
+        "position_x": station.position_x,
+        "position_y": station.position_y,
+        "display_name": station.display_name,
+    })
+
+
+@router.get("/event/{event_id}", response_model=APIResponse[list[dict]])
+async def list_stations_with_meta(event_id: UUID, db: AsyncSession = Depends(get_db)):
+    """이벤트의 모든 스테이션 + v3.3 메타 (admin 토글 UI용)."""
+    from app.models import Station
+    from sqlalchemy import select as _sel
+    res = await db.execute(_sel(Station).where(Station.event_id == event_id).order_by(Station.station_number))
+    stations = res.scalars().all()
+    return APIResponse(data=[
+        {
+            "id": str(s.id),
+            "station_number": s.station_number,
+            "is_active": s.is_active,
+            "position_x": s.position_x,
+            "position_y": s.position_y,
+            "display_name": s.display_name,
+            "status": s.status.value if hasattr(s.status, "value") else s.status,
+        } for s in stations
+    ])

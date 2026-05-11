@@ -1,0 +1,25 @@
+{
+  "name": "모두의 플레이 — 선수/코치",
+  "short_name": "모두의 플레이",
+  "description": "줄넘기 대회 선수·코치용 PWA. 차례 알림, 결과, 시상.",
+  "start_url": "/me",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff7ed",
+  "theme_color": "#ea580c",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/weplay-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

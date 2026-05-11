@@ -39,3 +39,24 @@ from app.schemas.notification import (
     NotifyResult,
     BulkNotifyResult,
 )
+from app.schemas.sponsor import (
+    SponsorCreate, SponsorUpdate, SponsorResponse, SponsorListResponse,
+    EventSponsorCreate, EventSponsorUpdate, EventSponsorResponse, EventSponsorListResponse,
+)
+from app.schemas.ads import (
+    AdSettingResponse, AdSettingUpdate,
+    AdSlotCreate, AdSlotUpdate, AdSlotResponse, AdSlotListResponse,
+    PublicAdSlotItem, PublicAdGridResponse,
+)
+from app.schemas.score import (
+    ScorePayload,
+    SpeedPayload,
+    FreestylePayload,
+    TripleUnderPayload,
+    ShowPayload,
+    ScoreSubmit,
+    ScoreResponse,
+    SubmissionStatusItem,
+    EVENT_TO_PAYLOAD_KIND,
+    expected_payload_kind,
+)

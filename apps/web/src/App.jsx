@@ -13,6 +13,21 @@ import Scoreboard from './pages/Scoreboard';
 import OperatorGuide from './pages/OperatorGuide';
 import Home from './pages/Home';
 import ViewerEvent from './pages/ViewerEvent';
+import JudgeHome from './pages/JudgeHome';
+import PlayerMe from './pages/PlayerMe';
+import OperatorPanel from './pages/OperatorPanel';
+import AdminMatrix from './pages/AdminMatrix';
+import WatchEvent from './pages/WatchEvent';
+import AdminCourts from './pages/AdminCourts';
+import AdminAwards from './pages/AdminAwards';
+import SignUp from './pages/SignUp';
+import AdminCsvUpload from './pages/AdminCsvUpload';
+import AdminAudit from './pages/AdminAudit';
+import AdminHeats from './pages/AdminHeats';
+import AdminUsers from './pages/AdminUsers';
+import OperatorRunner from './pages/OperatorRunner';
+import JudgeGrid from './pages/JudgeGrid';
+import Hub from './pages/Hub';
 
 function App() {
   return (
@@ -22,6 +37,23 @@ function App() {
         {/* 공개 페이지 */}
         <Route path="/" element={<Home />} />
         <Route path="/events/:eventCode" element={<ViewerEvent />} />
+
+        {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
+        <Route path="/judge" element={<JudgeHome />} />
+        <Route path="/me" element={<PlayerMe />} />
+        <Route path="/operate" element={<OperatorPanel />} />
+        <Route path="/admin-matrix" element={<AdminMatrix />} />
+        <Route path="/watch" element={<WatchEvent />} />
+        <Route path="/admin-courts" element={<AdminCourts />} />
+        <Route path="/admin-awards" element={<AdminAwards />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/admin-csv" element={<AdminCsvUpload />} />
+        <Route path="/admin-audit" element={<AdminAudit />} />
+        <Route path="/admin-heats" element={<AdminHeats />} />
+        <Route path="/admin-users" element={<AdminUsers />} />
+        <Route path="/operate-runner" element={<OperatorRunner />} />
+        <Route path="/judge-grid" element={<JudgeGrid />} />
+        <Route path="/hub" element={<Hub />} />
 
         {/* 관리자 로그인 */}
         <Route path="/admin" element={<AdminLogin />} />

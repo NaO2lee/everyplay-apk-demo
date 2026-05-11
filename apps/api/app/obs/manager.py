@@ -126,6 +126,14 @@ class ObsManager:
             logger.error(f"[OBS {station_id}] failed to auto-end zombie heats: {e}")
 
     def start_poller(self) -> None:
+        """5/11 — OBS_POLLER_ENABLED=0 으로 비활성화 가능.
+        외부 노출용 백엔드가 venue OBS 에 도달 못해 zombie cleanup 오작동하는 환경에서 사용.
+        (Korea Open 5/2 incident 재발 방지)
+        """
+        import os
+        if os.environ.get("OBS_POLLER_ENABLED", "1") == "0":
+            logger.info("OBS poller disabled via OBS_POLLER_ENABLED=0")
+            return
         if self._poller_task and not self._poller_task.done():
             return
         self._poller_task = asyncio.create_task(self._poll_loop())

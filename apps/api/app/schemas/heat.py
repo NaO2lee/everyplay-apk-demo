@@ -24,6 +24,7 @@ class HeatResponse(BaseModel):
     clip_path: Optional[str] = None
     clip_url: Optional[str] = None
     clip_status: Optional[str] = None
+    clip_error: Optional[str] = None
     # OBS 녹화 시작 기준 오프셋 (초) — 서버 시계 계산
     recording_offset_start: Optional[float] = None
     recording_offset_end: Optional[float] = None
@@ -57,6 +58,7 @@ class ParticipantBrief(BaseModel):
     id: UUID
     name: str
     team: Optional[str]
+    country_code: Optional[str] = None  # v3.3 — 국기 표시
 
     class Config:
         from_attributes = True

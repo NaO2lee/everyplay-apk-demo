@@ -45,3 +45,8 @@ safety-api.log
 # DB
 *.db
 *.sqlite
+*.db.backup*
+local.db.backup*
+
+# Dev tokens (JWTs — do NOT commit)
+apps/api/tokens.json
