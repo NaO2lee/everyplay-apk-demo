@@ -16,6 +16,7 @@ class UserRole(str, Enum):
     JUDGE = "judge"
     PLAYER = "player"
     COACH = "coach"
+    GUARDIAN = "guardian"
 
 
 class User(Base):

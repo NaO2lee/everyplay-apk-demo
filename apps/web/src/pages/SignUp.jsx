@@ -1,93 +1,195 @@
 /**
- * 회원가입 — v3.3 Phase 2 (옵트인).
- * 이메일 + 폰 + 비번 + 국적 + 이름. SMS OTP는 Phase 5에서.
+ * 회원가입 / 로그인 — v3.3 Phase 2.
+ * 가입은 옵션 (관람·결과 조회는 가입 없이도 가능).
+ * 가입하면: 자녀/본인 결과 푸시, 다음 차례 알림, 본인 시상 호명 사전 알림.
  *
- * 가입 후 자동 로그인 → /me 이동.
+ * 한/영 토글 (localization), 소셜 로그인 자리 (카카오/네이버/구글) — OAuth 키 받으면 활성화.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const STRINGS = {
+  ko: {
+    signup: '회원가입',
+    signin: '로그인',
+    welcome: '🏃 모두의 플레이',
+    intro: '결과 알림, 다음 차례 알림, 시상 호명 사전 안내를 받으려면 가입하세요.\n관람만 한다면 가입 없이도 모든 라이브 화면을 볼 수 있어요.',
+    quickSignup: '간편 가입 / 로그인',
+    or: '또는 이메일로',
+    email: '이메일',
+    password: '비밀번호',
+    name: '이름',
+    phone: '휴대번호 (선택)',
+    nationality: '국적',
+    role: '나는...',
+    rolePlayer: '🏃 선수',
+    roleCoach: '🧢 코치',
+    roleGuardian: '👨‍👧 보호자 / 부모',
+    rolePlayerDesc: '본인 결과·일정 알림',
+    roleCoachDesc: '팀 선수 결과·일정 일괄 알림',
+    roleGuardianDesc: '자녀 결과·다음 차례 알림',
+    submitSignup: '가입하고 시작하기',
+    submitSignin: '로그인',
+    success: '성공',
+    placeholderEmail: 'me@example.com',
+    placeholderName: '홍길동',
+    placeholderPhone: '010-1234-5678',
+    socialKakao: '카카오톡으로 시작',
+    socialNaver: '네이버로 시작',
+    socialGoogle: '구글로 시작',
+    socialComing: 'OAuth 키 받은 후 활성화 예정',
+    noConsent14:
+      '만 14세 미만은 부모·보호자 동의 후 가입 (정보통신망법).',
+    minPassword: '비밀번호 4자 이상',
+    privacyNote:
+      '이메일·휴대번호는 알림 발송에만 사용하며 제3자에게 공개되지 않습니다.',
+  },
+  en: {
+    signup: 'Sign up',
+    signin: 'Sign in',
+    welcome: '🏃 Modu Play',
+    intro:
+      'Sign up to receive result updates, next-round alerts, and award announcements.\nNo account is needed to watch any live screen.',
+    quickSignup: 'Quick sign up / sign in',
+    or: 'or use email',
+    email: 'Email',
+    password: 'Password',
+    name: 'Name',
+    phone: 'Phone (optional)',
+    nationality: 'Country',
+    role: 'I am a...',
+    rolePlayer: '🏃 Athlete',
+    roleCoach: '🧢 Coach',
+    roleGuardian: '👨‍👧 Parent / Guardian',
+    rolePlayerDesc: 'Get your own results and schedule',
+    roleCoachDesc: 'Get team results and schedule in one place',
+    roleGuardianDesc: "Get your child's results and next turn alerts",
+    submitSignup: 'Sign up & start',
+    submitSignin: 'Sign in',
+    success: 'OK',
+    placeholderEmail: 'me@example.com',
+    placeholderName: 'Your name',
+    placeholderPhone: '+82 10 1234 5678',
+    socialKakao: 'Continue with Kakao',
+    socialNaver: 'Continue with Naver',
+    socialGoogle: 'Continue with Google',
+    socialComing: 'Available once OAuth keys are added',
+    noConsent14:
+      'Under-14 users need parent/guardian consent (KR Information & Communication Network Act).',
+    minPassword: 'Password must be at least 4 characters',
+    privacyNote:
+      'Email and phone are used only for notifications and never shared with third parties.',
+  },
+};
+
 const COUNTRIES = [
-  ['KR', '🇰🇷 대한민국'], ['US', '🇺🇸 USA'], ['JP', '🇯🇵 일본'],
-  ['CN', '🇨🇳 중국'], ['BR', '🇧🇷 브라질'], ['DE', '🇩🇪 독일'],
-  ['IN', '🇮🇳 인도'], ['BD', '🇧🇩 방글라데시'], ['NP', '🇳🇵 네팔'],
-  ['VN', '🇻🇳 베트남'], ['TH', '🇹🇭 태국'], ['XX', '기타'],
+  ['KR', '🇰🇷 대한민국 / Korea'],
+  ['US', '🇺🇸 USA'],
+  ['JP', '🇯🇵 일본 / Japan'],
+  ['CN', '🇨🇳 중국 / China'],
+  ['VN', '🇻🇳 베트남 / Vietnam'],
+  ['TH', '🇹🇭 태국 / Thailand'],
+  ['IN', '🇮🇳 인도 / India'],
+  ['BD', '🇧🇩 방글라데시 / Bangladesh'],
+  ['NP', '🇳🇵 네팔 / Nepal'],
+  ['BR', '🇧🇷 브라질 / Brazil'],
+  ['DE', '🇩🇪 독일 / Germany'],
+  ['XX', '기타 / Other'],
 ];
 
 export default function SignUp() {
   const nav = useNavigate();
-  const [mode, setMode] = useState('signup');  // 'signup' or 'signin'
+  const [lang, setLang] = useState(() => localStorage.getItem('lang') || (navigator.language?.startsWith('ko') ? 'ko' : 'en'));
+  const t = STRINGS[lang];
+
+  const [mode, setMode] = useState('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [country, setCountry] = useState('KR');
+  const [country, setCountry] = useState(lang === 'ko' ? 'KR' : 'US');
   const [role, setRole] = useState('player');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
 
+  useEffect(() => { localStorage.setItem('lang', lang); }, [lang]);
+
   const submit = async () => {
     setLoading(true); setError(null); setResult(null);
     try {
-      if (mode === 'signup') {
-        const r = await fetch('/api/v1/auth/signup', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, name, phone_number: phone, country_code: country, role }),
-        });
-        const j = await r.json();
-        if (j.success) {
-          localStorage.setItem('player_token', j.data.token);
-          setResult(j.data);
-          setTimeout(() => nav('/me'), 1500);
-        } else setError(j.detail || '가입 실패');
-      } else {
-        const r = await fetch('/api/v1/auth/signin', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: email, password }),
-        });
-        const j = await r.json();
-        if (j.success) {
-          localStorage.setItem('player_token', j.data.token);
-          setResult(j.data);
-          setTimeout(() => nav('/me'), 1500);
-        } else setError(j.detail || '로그인 실패');
-      }
+      const url = mode === 'signup' ? '/api/v1/auth/signup' : '/api/v1/auth/signin';
+      const body = mode === 'signup'
+        ? { email, password, name, phone_number: phone || null, country_code: country, role }
+        : { username: email, password };
+      const r = await fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const j = await r.json();
+      if (j.success) {
+        localStorage.setItem('player_token', j.data.token);
+        setResult(j.data);
+        setTimeout(() => nav('/me'), 1200);
+      } else setError(j.detail || (mode === 'signup' ? 'Signup failed' : 'Signin failed'));
     } catch (e) { setError(String(e)); }
     setLoading(false);
   };
 
+  const social = (provider) => alert(`${provider}: ${t.socialComing}`);
+
+  const formValid = email && password.length >= 4 && (mode === 'signin' || name);
+
   return (
     <div style={page}>
       <div style={card}>
-        <h1 style={h1}>{mode === 'signup' ? '🏃 회원가입' : '🔑 로그인'}</h1>
-        <p style={{ ...muted, marginBottom: 16 }}>
-          선수 또는 코치만 가입 가능. 옵트인 — 어린 선수는 가입 안 해도 됩니다.
-        </p>
-
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-          <button onClick={() => setMode('signup')} style={tabBtn(mode === 'signup')}>회원가입</button>
-          <button onClick={() => setMode('signin')} style={tabBtn(mode === 'signin')}>로그인</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 style={h1}>{t.welcome}</h1>
+          <div style={langWrap}>
+            <button onClick={() => setLang('ko')} style={langBtn(lang === 'ko')}>한국어</button>
+            <button onClick={() => setLang('en')} style={langBtn(lang === 'en')}>English</button>
+          </div>
         </div>
 
-        <Field label="이메일" type="email" value={email} onChange={setEmail} placeholder="me@example.com" />
-        <Field label="비밀번호" type="password" value={password} onChange={setPassword} />
+        <p style={intro}>{t.intro}</p>
+
+        <div style={{ display: 'flex', gap: 8, marginTop: 18, marginBottom: 14 }}>
+          <button onClick={() => setMode('signup')} style={tabBtn(mode === 'signup')}>{t.signup}</button>
+          <button onClick={() => setMode('signin')} style={tabBtn(mode === 'signin')}>{t.signin}</button>
+        </div>
+
+        {/* 소셜 로그인 (UI 자리 마련) */}
+        <div style={{ display: 'grid', gap: 8 }}>
+          <SocialBtn bg="#FEE500" color="#3C1E1E" label={t.socialKakao} icon="💬" onClick={() => social('Kakao')} />
+          <SocialBtn bg="#03C75A" color="white" label={t.socialNaver} icon="N" onClick={() => social('Naver')} />
+          <SocialBtn bg="white" color="#3c4043" label={t.socialGoogle} icon="G" border="1px solid #dadce0" onClick={() => social('Google')} />
+        </div>
+        <p style={{ ...muted, textAlign: 'center', margin: '10px 0 18px', fontSize: 11 }}>{t.socialComing}</p>
+
+        <div style={divider}><span style={dividerLabel}>{t.or}</span></div>
+
+        <Field label={t.email} type="email" value={email} onChange={setEmail} placeholder={t.placeholderEmail} />
+        <Field label={t.password} type="password" value={password} onChange={setPassword} hint={password && password.length < 4 ? t.minPassword : null} />
 
         {mode === 'signup' && (
           <>
-            <Field label="이름 (영문/한글)" value={name} onChange={setName} placeholder="홍길동" />
-            <Field label="휴대번호" value={phone} onChange={setPhone} placeholder="010-1234-5678" />
-            <label style={{ display: 'block', marginBottom: 12 }}>
-              <span style={{ display: 'block', fontSize: 12, color: '#64748b', marginBottom: 4 }}>국적</span>
+            <Field label={t.name} value={name} onChange={setName} placeholder={t.placeholderName} />
+            <Field label={t.phone} value={phone} onChange={setPhone} placeholder={t.placeholderPhone} />
+            <label style={fieldWrap}>
+              <span style={lbl}>{t.nationality}</span>
               <select value={country} onChange={(e) => setCountry(e.target.value)} style={inp}>
                 {COUNTRIES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
               </select>
             </label>
-            <label style={{ display: 'block', marginBottom: 12 }}>
-              <span style={{ display: 'block', fontSize: 12, color: '#64748b', marginBottom: 4 }}>역할</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <RadioBtn label="🏃 선수" checked={role === 'player'} onClick={() => setRole('player')} />
-                <RadioBtn label="🧢 코치" checked={role === 'coach'} onClick={() => setRole('coach')} />
+            <label style={fieldWrap}>
+              <span style={lbl}>{t.role}</span>
+              <div style={{ display: 'grid', gap: 6 }}>
+                <RoleCard checked={role === 'player'} onClick={() => setRole('player')}
+                  title={t.rolePlayer} desc={t.rolePlayerDesc} />
+                <RoleCard checked={role === 'coach'} onClick={() => setRole('coach')}
+                  title={t.roleCoach} desc={t.roleCoachDesc} />
+                <RoleCard checked={role === 'guardian'} onClick={() => setRole('guardian')}
+                  title={t.roleGuardian} desc={t.roleGuardianDesc} />
               </div>
             </label>
           </>
@@ -96,59 +198,86 @@ export default function SignUp() {
         {error && <div style={errBox}>{error}</div>}
         {result && (
           <div style={okBox}>
-            ✓ {mode === 'signup' ? '가입 완료' : '로그인 완료'} — {result.email || result.user_id} ({result.role}). /me 이동 중...
+            ✓ {t.success} — {result.email || result.user_id} ({result.role})
           </div>
         )}
 
-        <button onClick={submit} disabled={loading || !email || !password || (mode === 'signup' && !name)} style={{ ...btn('#ea580c'), width: '100%', marginTop: 12 }}>
-          {loading ? '...' : (mode === 'signup' ? '가입하고 시작하기' : '로그인')}
+        <button onClick={submit} disabled={loading || !formValid} style={{ ...primaryBtn, opacity: (loading || !formValid) ? 0.5 : 1 }}>
+          {loading ? '...' : (mode === 'signup' ? t.submitSignup : t.submitSignin)}
         </button>
 
         {mode === 'signup' && (
-          <p style={{ ...muted, marginTop: 14, fontSize: 11 }}>
-            ※ 만 14세 미만은 부모/보호자 동의 후 가입 (정보통신망법). SMS OTP 본인 확인은 Phase 5에서 추가.
-          </p>
+          <div style={{ marginTop: 14 }}>
+            <p style={fineprint}>{t.noConsent14}</p>
+            <p style={fineprint}>{t.privacyNote}</p>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-function Field({ label, value, onChange, type = 'text', placeholder }) {
+function Field({ label, value, onChange, type = 'text', placeholder, hint }) {
   return (
-    <label style={{ display: 'block', marginBottom: 12 }}>
-      <span style={{ display: 'block', fontSize: 12, color: '#64748b', marginBottom: 4 }}>{label}</span>
+    <label style={fieldWrap}>
+      <span style={lbl}>{label}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={inp} />
+      {hint && <span style={{ color: '#dc2626', fontSize: 11, marginTop: 4 }}>{hint}</span>}
     </label>
   );
 }
 
-function RadioBtn({ label, checked, onClick }) {
+function RoleCard({ checked, onClick, title, desc }) {
   return (
     <button type="button" onClick={onClick} style={{
-      flex: 1, padding: '12px 14px',
-      border: `2px solid ${checked ? '#ea580c' : '#cbd5e1'}`,
+      textAlign: 'left', padding: '10px 14px',
+      border: `2px solid ${checked ? '#ea580c' : '#e2e8f0'}`,
       background: checked ? '#fff7ed' : 'white',
-      color: checked ? '#7c2d12' : '#64748b',
-      borderRadius: 8, cursor: 'pointer', fontWeight: 700,
-    }}>{label}</button>
+      color: '#0f172a',
+      borderRadius: 10, cursor: 'pointer',
+    }}>
+      <div style={{ fontWeight: 700, fontSize: 14 }}>{title}</div>
+      <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{desc}</div>
+    </button>
   );
 }
 
-function tabBtn(active) {
-  return {
-    flex: 1, padding: '8px 14px',
-    background: active ? '#ea580c' : '#e5e7eb',
-    color: active ? 'white' : '#475569',
-    border: 0, borderRadius: 6, cursor: 'pointer', fontWeight: 700, fontSize: 13,
-  };
+function SocialBtn({ bg, color, label, icon, border, onClick }) {
+  return (
+    <button onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+      padding: '11px 14px', background: bg, color, border: border || 'none',
+      borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 14,
+    }}>
+      <span style={{ width: 20, textAlign: 'center', fontWeight: 800 }}>{icon}</span>
+      <span>{label}</span>
+    </button>
+  );
 }
 
 const page = { minHeight: '100vh', background: '#fff7ed', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, fontFamily: 'system-ui, sans-serif' };
-const card = { background: 'white', borderRadius: 16, padding: 32, maxWidth: 420, width: '100%', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' };
-const h1 = { fontSize: 24, fontWeight: 800, margin: '0 0 4px' };
-const muted = { color: '#94a3b8', fontSize: 12 };
-const inp = { width: '100%', padding: 10, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 };
+const card = { background: 'white', borderRadius: 16, padding: 28, maxWidth: 440, width: '100%', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' };
+const h1 = { fontSize: 22, fontWeight: 800, margin: 0 };
+const intro = { color: '#475569', fontSize: 13.5, lineHeight: 1.55, marginTop: 8, whiteSpace: 'pre-line' };
+const muted = { color: '#94a3b8' };
+const langWrap = { display: 'flex', gap: 4, background: '#f1f5f9', borderRadius: 8, padding: 2 };
+const langBtn = (on) => ({
+  padding: '4px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer',
+  background: on ? 'white' : 'transparent', color: on ? '#0f172a' : '#64748b',
+  border: 'none', borderRadius: 6, boxShadow: on ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+});
+const tabBtn = (active) => ({
+  flex: 1, padding: '10px 14px',
+  background: active ? '#ea580c' : '#f1f5f9',
+  color: active ? 'white' : '#475569',
+  border: 0, borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 14,
+});
+const divider = { position: 'relative', textAlign: 'center', margin: '4px 0 14px', borderTop: '1px solid #e2e8f0' };
+const dividerLabel = { background: 'white', padding: '0 10px', position: 'relative', top: -10, color: '#94a3b8', fontSize: 11 };
+const fieldWrap = { display: 'block', marginBottom: 12 };
+const lbl = { display: 'block', fontSize: 12, color: '#64748b', marginBottom: 4, fontWeight: 700 };
+const inp = { width: '100%', padding: 10, border: '1px solid #cbd5e1', borderRadius: 8, fontSize: 14, fontFamily: 'inherit' };
 const errBox = { background: '#fee2e2', color: '#991b1b', padding: 10, borderRadius: 6, fontSize: 13, marginBottom: 8 };
 const okBox = { background: '#dcfce7', color: '#166534', padding: 10, borderRadius: 6, fontSize: 13, marginBottom: 8 };
-const btn = (color) => ({ padding: '12px 20px', background: color, color: 'white', border: 0, borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 });
+const primaryBtn = { width: '100%', marginTop: 8, padding: '13px 20px', background: '#ea580c', color: 'white', border: 0, borderRadius: 10, cursor: 'pointer', fontWeight: 800, fontSize: 15 };
+const fineprint = { color: '#94a3b8', fontSize: 11, lineHeight: 1.5, margin: '4px 0' };

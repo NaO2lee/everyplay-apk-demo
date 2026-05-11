@@ -45,7 +45,8 @@ ROLE_OPERATOR = "operator"
 ROLE_JUDGE = "judge"
 ROLE_PLAYER = "player"
 ROLE_COACH = "coach"
-ALL_ROLES = {ROLE_ADMIN, ROLE_OPERATOR, ROLE_JUDGE, ROLE_PLAYER, ROLE_COACH}
+ROLE_GUARDIAN = "guardian"  # 부모 / 보호자 — 자녀 결과 알림용
+ALL_ROLES = {ROLE_ADMIN, ROLE_OPERATOR, ROLE_JUDGE, ROLE_PLAYER, ROLE_COACH, ROLE_GUARDIAN}
 
 
 class TokenData(BaseModel):
@@ -286,8 +287,8 @@ async def signup(data: SignupRequest):
 
     SMS OTP 검증은 Phase 5에서 추가. 지금은 자유 가입(데모 단계).
     """
-    if data.role not in (ROLE_PLAYER, ROLE_COACH):
-        raise HTTPException(status_code=400, detail=f"signup으로는 player/coach만 가능 (받은 role: {data.role})")
+    if data.role not in (ROLE_PLAYER, ROLE_COACH, ROLE_GUARDIAN):
+        raise HTTPException(status_code=400, detail=f"signup으로는 player/coach/guardian만 가능 (받은 role: {data.role})")
     if "@" not in data.email or len(data.email) < 5:
         raise HTTPException(status_code=400, detail="유효한 이메일이 필요합니다")
     if len(data.password) < 4:
