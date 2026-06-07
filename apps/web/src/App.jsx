@@ -29,6 +29,7 @@ import OperatorRunner from './pages/OperatorRunner';
 import JudgeGrid from './pages/JudgeGrid';
 import Hub from './pages/Hub';
 import AdminSponsors from './pages/AdminSponsors';
+import ViewerApp from './features/viewer/ViewerApp';
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
         {/* 공개 페이지 */}
         <Route path="/" element={<Home />} />
         <Route path="/events/:eventCode" element={<ViewerEvent />} />
+        {/* 신규 사용자 앱 (모듈화 v2 — 위플레이 브랜드, 4탭). 기존 ViewerEvent와 비교용 */}
+        <Route path="/app/:eventCode" element={<ViewerApp />} />
 
         {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
         <Route path="/judge" element={<JudgeHome />} />
