@@ -48,6 +48,16 @@ export function SponsorScreen() {
         </div>
         <div className={styles.dots}><i className={styles.on} /><i /><i /></div>
 
+        {/* 공식 주관/협회 (KRSA) */}
+        <div className={styles.sec}>🏆 공식 주관 · 협회</div>
+        <div className={styles.krsa}>
+          <img className={styles.krsaLogo} src="/brand/krsa-logo.jpg" alt="대한민국줄넘기협회" />
+          <div>
+            <div className={styles.krsaName}>대한민국줄넘기협회</div>
+            <div className={styles.krsaSub}>KRSA · Korea Rope Skipping Association</div>
+          </div>
+        </div>
+
         {/* 공식 후원사 */}
         <div className={styles.sec}>🏅 이 대회 공식 후원사 <span className={styles.more}>전체보기</span></div>
         <div className={styles.sgrid}>

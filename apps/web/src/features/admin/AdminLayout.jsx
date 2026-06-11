@@ -44,9 +44,9 @@ export function AdminLayout({ active = 'dashboard', children }) {
       <header className={styles.hdr}>
         <button className={styles.ham} onClick={onHamburger} title="메뉴 접기/펴기">☰</button>
         <Link className={styles.brand} to="/console">
-          <span className={styles.mark}>W</span>
+          <img className={styles.brandLogo} src="/brand/weplay-wordmark-white.png" alt="WEPLAY" />
+          <img className={styles.brandLogoLight} src="/brand/weplay-wordmark-navy.png" alt="WEPLAY" />
           <span className={styles.wm}>모두의플레이</span>
-          <span className={styles.sub}>WEPLAY</span>
         </Link>
         <div className={styles.tenant}><span className={styles.tchip} /> 👑 대한줄넘기협회 <span className={styles.car}>▾</span></div>
         <nav className={styles.nav}>

@@ -23,18 +23,34 @@ export const VOD_GROUPS = [
 
 export const VOD_FILTERS = ['전체', '30초 스피드', '번갈아뛰기', '더블더치', '프리스타일'];
 
+// 대회 일정 — 테니스타운 구조(월 페이징 + 상태/종목 필터 + 주차 그룹 + 날짜블록 카드)
+export const SCHEDULE_MONTH = '7월';
+export const SCHEDULE_STATUS_TABS = ['전체', '메인', '관심', '모집중', '모집예정', 'My'];
+export const SCHEDULE_EVENT_TABS = ['전체', '스피드', '더블더치', '프리스타일', '단체전'];
+
+// status: 신청 | 접수중 | 임박 | 대기 | 대진오픈 | 모집예정 | 마감 | LIVE
 export const SCHEDULE = [
   {
-    id: 's1', status: '접수중', dday: 'D-31', dateShort: '3.8',
-    title: '경희대 라이언스컵 OPEN 전국대회',
-    date: '2026. 3. 8. (일)', place: '용인실내체육관', host: '대한민국줄넘기협회',
-    applyUrl: '#',
+    week: '1주',
+    items: [
+      { id: 'e1', day: '04', dow: '토', main: true, title: '2026 전국 한마당 줄넘기대회', sub: '전 종목 · 화성시', cap: '128/210', status: '접수중', event: '스피드', fav: true },
+      { id: 'e2', day: '05', dow: '일', title: '경기 어울림 줄넘기대회', sub: '개인 스피드 · 수원시', cap: '22/24', status: '임박', event: '스피드', fav: false },
+    ],
   },
   {
-    id: 's2', status: '접수예정', dday: 'D-65', dateShort: '4.11',
-    title: '2026 KBSN컵 전국 줄넘기 선수권',
-    date: '2026. 4. 11. (토)', place: '인천 남동체육관', host: '대한민국줄넘기협회',
-    applyUrl: '#',
+    week: '2주',
+    items: [
+      { id: 'e3', day: '11', dow: '토', title: '서울시 줄넘기 챔피언십', sub: '더블더치 · 서울 송파구', cap: '8/24', status: '접수중', event: '더블더치', fav: false },
+      { id: 'e4', day: '12', dow: '일', title: '유소년 줄넘기 페스티벌', sub: '단체전 · 고양시', cap: '24/24', status: '대기', event: '단체전', fav: true },
+      { id: 'e5', day: '14', dow: '화', title: '봄철 생활체육 줄넘기', sub: '프리스타일 · 성남시 수정구', cap: '—', status: '대진오픈', event: '프리스타일', fav: false },
+    ],
+  },
+  {
+    week: '3주',
+    items: [
+      { id: 'e6', day: '18', dow: '토', title: '더블더치 오픈 2026', sub: '더블더치 · 인천 남동구', cap: '0/32', status: '모집예정', event: '더블더치', fav: false },
+      { id: 'e7', day: '19', dow: '일', title: '전국 줄넘기 선수권', sub: '개인 스피드 · 대전', cap: '—', status: 'LIVE', event: '스피드', fav: false },
+    ],
   },
 ];
 
