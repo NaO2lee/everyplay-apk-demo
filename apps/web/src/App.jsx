@@ -33,6 +33,7 @@ import AdminSponsors from './pages/AdminSponsors';
 import ViewerApp from './features/viewer/ViewerApp';
 import AdminConsole from './features/admin/AdminConsole';
 import EventConsole from './features/admin/EventConsole';
+import BroadcastConsole from './features/admin/BroadcastConsole';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         {/* 신규 관리자 콘솔 (v3 디자인, 데모 데이터) — 승인 후 실제 페이지 이식 */}
         <Route path="/console" element={<AdminConsole />} />
         <Route path="/console/event" element={<EventConsole />} />
+        <Route path="/console/broadcast" element={<BroadcastConsole />} />
 
         {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
         <Route path="/judge" element={<JudgeHome />} />
