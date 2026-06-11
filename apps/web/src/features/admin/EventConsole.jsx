@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './AdminConsole.module.css';
 import { AdminLayout } from './AdminLayout';
 
@@ -29,7 +31,21 @@ const HEATS = [
 
 const pillClass = { live: styles.pillLive, upcoming: styles.pillUpcoming, draft: styles.pillDraft, done: styles.pillDone };
 
+const LOGS = [
+  { t: '14:32', dot: 'var(--red)', txt: '코트1 HIT 12 방송 시작 (30초 스피드 · 남9)' },
+  { t: '14:30', dot: 'var(--mint)', txt: '코트4 HIT 5 종료 · 클립 자동 저장' },
+  { t: '14:29', dot: 'var(--blue)', txt: '코트2 카메라 → 클로즈업 전환' },
+  { t: '14:27', dot: 'var(--butter)', txt: '코트3 대기 — 다음 HIT 편성 준비' },
+  { t: '14:25', dot: 'var(--red)', txt: '코트5 HIT 9 방송 시작 (더블더치)' },
+  { t: '14:22', dot: 'var(--mint)', txt: '코트1 HIT 11 종료 · 결과 집계 완료' },
+  { t: '14:20', dot: 'var(--cyan)', txt: '코트2 HIT 8 방송 시작 (프리스타일 · 여12)' },
+  { t: '14:18', dot: 'var(--butter)', txt: '전체 휴식 슬레이트 송출 해제' },
+  { t: '14:05', dot: 'var(--butter)', txt: '점심 휴식 — 휴식 이미지 일괄 송출' },
+];
+
 export function EventConsole() {
+  const navigate = useNavigate();
+  const [logOpen, setLogOpen] = useState(false);
   return (
     <AdminLayout active="events">
       <div className={styles.pageHead}>
@@ -38,9 +54,9 @@ export function EventConsole() {
           <p>📅 06.14 ~ 06.16 · 📍 잠실학생체육관 · 대한줄넘기협회</p>
         </div>
         <div className={styles.pageActs}>
-          <button className={`${styles.btn} ${styles.btnPrimary}`}>▶ 라이브 운영</button>
-          <button className={`${styles.btn} ${styles.btnGhost}`}>📺 전광판</button>
-          <button className={`${styles.btn} ${styles.btnGhost}`}>📊 집계</button>
+          <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/console/switcher')}>▶ 라이브 운영</button>
+          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => navigate('/console/broadcast')}>📺 중계 방송</button>
+          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => setLogOpen(true)}>📋 중계 로그</button>
         </div>
       </div>
 
@@ -104,6 +120,22 @@ export function EventConsole() {
           </table>
         </div>
       </section>
+
+      <div className={`${styles.logDim} ${logOpen ? styles.logDimOpen : ''}`} onClick={() => setLogOpen(false)} />
+      <aside className={`${styles.logPanel} ${logOpen ? styles.logPanelOpen : ''}`}>
+        <div className={styles.logHd}><span className={styles.dotpulse} /> 전체 히트 중계 진행 로그
+          <button className={styles.logX} onClick={() => setLogOpen(false)} aria-label="닫기">×</button>
+        </div>
+        <div className={styles.logList}>
+          {LOGS.map((l, i) => (
+            <div key={i} className={styles.logItem}>
+              <span className={styles.logDot} style={{ '--c': l.dot }} />
+              <span className={styles.logTime}>{l.t}</span>
+              <span className={styles.logText}>{l.txt}</span>
+            </div>
+          ))}
+        </div>
+      </aside>
     </AdminLayout>
   );
 }

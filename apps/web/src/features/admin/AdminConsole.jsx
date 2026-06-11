@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './AdminConsole.module.css';
 import { AdminLayout } from './AdminLayout';
 
@@ -30,6 +31,7 @@ const pillClass = { live: styles.pillLive, upcoming: styles.pillUpcoming, draft:
 
 export function AdminConsole() {
   const [selected, setSelected] = useState('knja');
+  const navigate = useNavigate();
 
   return (
     <AdminLayout active="dashboard">
@@ -86,7 +88,7 @@ export function AdminConsole() {
             </thead>
             <tbody>
               {COMPETITIONS.map((c) => (
-                <tr key={c.name}>
+                <tr key={c.name} onClick={() => navigate('/console/event')} style={{ cursor: 'pointer' }}>
                   <td><span className={styles.tname}>{c.name}</span></td>
                   <td><span className={`${styles.dt} ${styles.num}`}>{c.date}</span></td>
                   <td>{c.place}</td>

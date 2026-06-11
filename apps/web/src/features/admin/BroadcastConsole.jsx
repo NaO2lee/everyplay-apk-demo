@@ -1,11 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import styles from './AdminConsole.module.css';
 import { AdminLayout } from './AdminLayout';
 
-/* 중계(송출) 콘솔 (데모 데이터) — /console/broadcast.
-   코트별 OBS/유튜브 송출 상태 운영. 실제 OBS/SSE 데이터 연결 예정. */
+/* 중계(방송) 콘솔 (데모 데이터) — /console/broadcast.
+   코트별 OBS/유튜브 방송 상태 운영. 실제 OBS/SSE 데이터 연결 예정. */
 
 const KPIS = [
-  { ic: '📡', lab: '송출 중 코트', num: '4', unit: ' / 6', delta: '1 재연결 중', c: 'var(--red)' },
+  { ic: '📡', lab: '방송 중 코트', num: '4', unit: ' / 6', delta: '1 재연결 중', c: 'var(--red)' },
   { ic: '👁️', lab: '동시 시청자', num: '1,240', unit: ' 명', delta: '＋128 (10분)', c: 'var(--cyan)' },
   { ic: '⏱️', lab: '평균 지연', num: '4.2', unit: '초', delta: '안정', c: 'var(--mint)' },
   { ic: '⏺️', lab: '녹화', num: 'ON', unit: '', delta: '전 코트 저장 중', c: 'var(--butter)' },
@@ -28,17 +29,19 @@ const OBS = {
 };
 
 export function BroadcastConsole() {
+  const navigate = useNavigate();
   return (
     <AdminLayout active="broadcast">
       <div className={styles.pageHead}>
         <div className={styles.pageHeadMain}>
-          <h1>📺 중계 송출 <span className={`${styles.pill} ${styles.pillLive}`}>🔴 송출 중</span></h1>
-          <p>2026 전국줄넘기대회 · 코트별 OBS/유튜브 송출을 한 곳에서 운영하세요.</p>
+          <h1>📺 중계 방송 <span className={`${styles.pill} ${styles.pillLive}`}>🔴 방송 중</span></h1>
+          <p>2026 전국줄넘기대회 · 코트별 OBS/유튜브 방송을 한 곳에서 운영하세요.</p>
         </div>
         <div className={styles.pageActs}>
-          <button className={`${styles.btn} ${styles.btnPrimary}`}>▶ 전체 송출 시작</button>
+          <button className={`${styles.btn} ${styles.btnPrimary}`}>▶ 전체 방송 시작</button>
           <button className={`${styles.btn} ${styles.btnGhost}`}>⏹ 전체 중지</button>
-          <button className={`${styles.btn} ${styles.btnGhost}`}>📺 전광판 열기</button>
+          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => navigate('/console/switcher')}>🎚️ 컨트롤룸</button>
+          <button className={`${styles.btn} ${styles.btnGhost}`} onClick={() => navigate('/app/demo')}>📺 전광판 열기</button>
         </div>
       </div>
 
@@ -54,7 +57,7 @@ export function BroadcastConsole() {
 
       <section className={styles.block}>
         <div className={styles.bt} style={{ '--c': 'var(--red)' }}>
-          <span className={styles.btIco}>📡</span> 코트별 송출 현황 <span className={styles.btCnt}>6</span>
+          <span className={styles.btIco}>📡</span> 코트별 방송 현황 <span className={styles.btCnt}>6</span>
         </div>
         <div className={styles.courts}>
           {COURTS.map((c) => {
@@ -68,13 +71,13 @@ export function BroadcastConsole() {
                 </div>
                 <div className={styles.ccTop}>
                   <span className={styles.ccName}>코트 {c.n}</span>
-                  <span className={`${styles.pill} ${c.live ? styles.pillLive : styles.pillDraft}`}>{c.live ? '🔴 송출' : '⚪ 대기'}</span>
+                  <span className={`${styles.pill} ${c.live ? styles.pillLive : styles.pillDraft}`}>{c.live ? '🔴 방송' : '⚪ 대기'}</span>
                 </div>
                 <div className={styles.ccEvent}>{c.ev}</div>
                 <div className={styles.ccStat}><span className={`${styles.sdot} ${styles[obs.cls]}`} /> {obs.t} · {c.heat}</div>
                 <div className={styles.ccActions}>
-                  <button className={`${styles.btn} ${styles.btnSm} ${c.live ? styles.btnGhost : styles.btnPrimary}`}>{c.live ? '⏹ 중지' : '▶ 송출'}</button>
-                  <button className={`${styles.btn} ${styles.btnSm} ${styles.btnGhost}`}>🔍 미리보기</button>
+                  <button className={`${styles.btn} ${styles.btnSm} ${c.live ? styles.btnGhost : styles.btnPrimary}`}>{c.live ? '⏹ 중지' : '▶ 방송'}</button>
+                  <button className={`${styles.btn} ${styles.btnSm} ${styles.btnGhost}`} onClick={() => navigate('/console/switcher')}>🔍 미리보기</button>
                 </div>
               </div>
             );

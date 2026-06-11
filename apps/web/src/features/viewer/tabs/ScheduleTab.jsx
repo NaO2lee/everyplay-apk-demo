@@ -83,7 +83,6 @@ export function ScheduleTab() {
           <div className={styles.weekbar}>{w.week}</div>
           {w.items.map((it) => {
             const st = ST[it.status] || ST['신청'];
-            const capHot = ['임박', '대기'].includes(it.status);
             return (
               <div key={it.id} className={`${styles.schcard} ${it.main ? styles.schcardMain : ''}`}>
                 {it.main && <span className={styles.schRibbon} />}
@@ -98,6 +97,9 @@ export function ScheduleTab() {
                     {it.title}
                   </div>
                   <div className={styles.schSub}>{it.sub}</div>
+                  {it.days > 1 && (it.dayOf
+                    ? <span className={`${styles.schDays} ${styles.schDaysLive}`}>🔴 {it.dayOf}일차 진행중 · {it.period}</span>
+                    : <span className={styles.schDays}>📅 {it.period} · {it.days}일간</span>)}
                 </div>
                 <div className={styles.schRight}>
                   <button
@@ -107,7 +109,6 @@ export function ScheduleTab() {
                   >
                     {favs.has(it.id) ? '★' : '☆'}
                   </button>
-                  <span className={`${styles.schCap} ${capHot ? styles.schCapHot : ''}`}>{it.cap}</span>
                   <span className={`${styles.sbadge} ${styles[st.cls]}`}>{st.label}</span>
                 </div>
               </div>

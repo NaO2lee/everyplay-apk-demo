@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from '../ViewerApp.module.css';
 import { useStationHeat, extractYouTubeId } from '../hooks/useStationHeat';
+import { CHAT_SEED, CHEER_PRESETS } from '../data/mockData';
 
 // 경과 시간 타이머 (매초 강제 리렌더, 값은 렌더에서 계산 — 이펙트 내 setState 회피)
 function fmtElapsed(startedAt) {
@@ -24,6 +25,14 @@ export function CourtSheet({ station, open, onClose }) {
   const videoId = extractYouTubeId(station?.youtube_stream_url);
   const isLive = heat.status === 'live';
   const videoRef = useRef(null);
+  const [msgs, setMsgs] = useState(CHAT_SEED);
+  const [text, setText] = useState('');
+  const send = (t) => {
+    const v = (t ?? text).trim();
+    if (!v) return;
+    setMsgs((m) => [...m, { id: `me${m.length}`, name: '나', color: '#33D6D6', text: v }]);
+    setText('');
+  };
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -116,6 +125,31 @@ export function CourtSheet({ station, open, onClose }) {
                   </div>
                 </div>
               )}
+              <div className={styles.chatWrap}>
+                <div className={styles.chatHd}><span className={styles.live} /> 실시간 응원</div>
+                <div className={styles.cheerRow}>
+                  {CHEER_PRESETS.map((p) => (
+                    <button key={p} className={styles.cheerChip} onClick={() => send(p)}>{p}</button>
+                  ))}
+                </div>
+                <div className={styles.chat}>
+                  {msgs.map((m) => (
+                    <div key={m.id} className={styles.chatMsg}>
+                      <span className={styles.chatAv} style={{ background: m.color }}>{m.name.charAt(0)}</span>
+                      <div><span className={styles.chatName}>{m.name}</span><span className={styles.chatText}>{m.text}</span></div>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.chatInput}>
+                  <input
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+                    placeholder="응원 메시지 보내기…"
+                  />
+                  <button className={styles.chatSend} onClick={() => send()}>보내기</button>
+                </div>
+              </div>
             </div>
           </>
         )}

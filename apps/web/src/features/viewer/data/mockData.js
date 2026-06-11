@@ -8,20 +8,30 @@ export const VOD_GROUPS = [
   {
     date: '2026. 6. 7. (오늘)',
     clips: [
-      { id: 'v1', court: '코트 1 · HIT 12', who: '김서연 · 남자 9세부', type: '30초 스피드', dur: '2:14' },
+      { id: 'v1', court: '코트 1 · HIT 12', who: '김서연 · 남자 9세부', type: '30초 스피드', dur: '2:14', award: '🥇' },
       { id: 'v2', court: '코트 3 · HIT 15', who: '박지민 · 남자 15세부', type: '프리스타일', dur: '1:58' },
+      { id: 'v5', court: '코트 2 · HIT 9', who: '이나영 · 여자 고등부', type: '30초 스피드', dur: '0:33', award: '🥉' },
     ],
   },
   {
     date: '2026. 4. 11. KBSN컵',
     clips: [
-      { id: 'v3', court: '코트 2 · 결승', who: '이준호 · 남자 12세부', type: '더블더치 스피드', dur: '2:30' },
+      { id: 'v3', court: '코트 2 · 결승', who: '이준호 · 남자 12세부', type: '더블더치', dur: '2:30', award: '🥇' },
       { id: 'v4', court: '코트 4 · HIT 22', who: '최유나 · 여자 9세부', type: '번갈아뛰기', dur: '3:02' },
     ],
   },
 ];
 
-export const VOD_FILTERS = ['전체', '30초 스피드', '번갈아뛰기', '더블더치', '프리스타일'];
+export const VOD_FILTERS = ['전체', '🏅 수상', '30초 스피드', '번갈아뛰기', '더블더치', '프리스타일'];
+
+// 코트 시청 응원 채팅(데모) — TODO(backend): 실시간 채팅(SSE/WebSocket)로 교체
+export const CHEER_PRESETS = ['🔥 화이팅!', '👏 잘한다!', '💪 최고!', '🎉 축하해요', '😮 대박!'];
+export const CHAT_SEED = [
+  { id: 'c1', name: '응원단A', color: '#5BA8FF', text: '코트1 김서연 화이팅! 🔥' },
+  { id: 'c2', name: '점프맘', color: '#34D4A6', text: '와 속도 미쳤다 👏' },
+  { id: 'c3', name: '관전중', color: '#B49CFF', text: '이번 히트 신기록 가즈아 💪' },
+  { id: 'c4', name: '화성클럽', color: '#FFB648', text: '우리 선수 1등! 🎉' },
+];
 
 // 대회 일정 — 테니스타운 구조(월 페이징 + 상태/종목 필터 + 주차 그룹 + 날짜블록 카드)
 export const SCHEDULE_MONTH = '7월';
@@ -33,7 +43,7 @@ export const SCHEDULE = [
   {
     week: '1주차',
     items: [
-      { id: 'e1', date: '2026-07-04', day: '04', dow: '토', main: true, title: '2026 전국 한마당 줄넘기대회', sub: '전 종목 · 화성시', cap: '128/210', status: '접수중', event: '스피드', fav: true },
+      { id: 'e1', date: '2026-07-04', day: '04', dow: '토', main: true, days: 3, period: '7.4~6', title: '2026 전국 한마당 줄넘기대회', sub: '전 종목 · 화성시', status: '접수중', event: '스피드', fav: true },
       { id: 'e2', date: '2026-07-05', day: '05', dow: '일', title: '경기 어울림 줄넘기대회', sub: '개인 스피드 · 수원시', cap: '22/24', status: '임박', event: '스피드', fav: false },
     ],
   },
@@ -49,7 +59,7 @@ export const SCHEDULE = [
     week: '3주차',
     items: [
       { id: 'e6', date: '2026-07-18', day: '18', dow: '토', title: '더블더치 오픈 2026', sub: '더블더치 · 인천 남동구', cap: '0/32', status: '모집예정', event: '더블더치', fav: false },
-      { id: 'e7', date: '2026-07-19', day: '19', dow: '일', title: '전국 줄넘기 선수권', sub: '개인 스피드 · 대전', cap: '—', status: 'LIVE', event: '스피드', fav: false },
+      { id: 'e7', date: '2026-07-19', day: '19', dow: '일', days: 2, period: '7.19~20', dayOf: 2, title: '전국 줄넘기 선수권', sub: '개인 스피드 · 대전', status: 'LIVE', event: '스피드', fav: false },
     ],
   },
 ];

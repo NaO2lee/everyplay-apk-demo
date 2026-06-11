@@ -173,6 +173,67 @@
 .ccActions{display:flex;gap:7px;margin-top:12px}
 .ccActions .btn{flex:1;justify-content:center}
 
+/* 중계 컨트롤룸 (vMix식 멀티캠 스위처) */
+.swBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:16px;box-shadow:var(--card)}
+.swLbl{font-size:12px;color:var(--ink-3);font-weight:700;white-space:nowrap}
+.seg2{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+.seg2 button{border:0;background:transparent;color:var(--ink-2);font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:7px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.seg2 button.on{background:var(--grad);color:var(--on-accent)}
+.swSpacer{flex:1}
+.brkBtn{background:color-mix(in srgb,var(--butter) 16%,transparent);color:var(--butter);border:1px solid color-mix(in srgb,var(--butter) 40%,transparent);font-weight:800;font-size:13px;border-radius:10px;padding:9px 14px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.brkBtnOn{background:var(--butter);color:#1a1206;border-color:transparent}
+.swGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:1080px){.swGrid{grid-template-columns:1fr}}
+.swCard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--card)}
+.swCardOn{border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
+.swHead{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.swCourt{font-weight:800;font-size:15px;white-space:nowrap}
+.swEv{font-size:12px;color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.swView{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-weight:700;white-space:nowrap}
+.pgm{position:relative;border-radius:11px;overflow:hidden;height:150px;background:linear-gradient(135deg,#1d2c49,#0e1830);display:flex;align-items:center;justify-content:center;font-size:30px;border:2px solid transparent}
+.pgmLive{border-color:var(--red)}
+.pgmBrk{background:repeating-linear-gradient(45deg,#3a2f12,#3a2f12 12px,#2c2410 12px,#2c2410 24px)}
+.pgmTag{position:absolute;left:8px;top:8px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;background:var(--red);color:#fff}
+.pgmTagBrk{background:var(--butter);color:#1a1206}
+.pgmCap{position:absolute;right:8px;bottom:8px;font-size:11px;font-weight:700;background:rgba(0,0,0,.55);color:#fff;padding:2px 7px;border-radius:6px}
+.cams{display:flex;gap:8px;margin-top:10px}
+.cam{flex:1;border-radius:9px;cursor:pointer;border:2px solid var(--line);background:linear-gradient(135deg,#1a2740,#0d1526);height:52px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:11.5px;font-weight:700}
+.camOn{border-color:var(--red)}
+.camPvw{border-color:var(--mint)}
+.camBadge{position:absolute;left:4px;top:4px;font-size:8px;font-weight:800;padding:1px 5px;border-radius:4px}
+.camBadgeOn{background:var(--red);color:#fff}
+.camBadgePvw{background:var(--mint);color:#06241a}
+.swActs{display:flex;gap:8px;margin-top:11px}
+.swActs .btn{flex:1;justify-content:center}
+
+/* 중계 진행 로그 패널 (우측 슬라이드) */
+.logDim{position:fixed;inset:0;background:rgba(2,6,14,.4);z-index:34;opacity:0;pointer-events:none;transition:opacity .25s}
+.logDimOpen{opacity:1;pointer-events:auto}
+.logPanel{position:fixed;top:0;right:0;bottom:0;width:340px;max-width:88vw;background:var(--surface);border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(0,0,0,.35);transform:translateX(100%);transition:transform .26s cubic-bezier(.32,.72,0,1);z-index:35;display:flex;flex-direction:column}
+.logPanelOpen{transform:translateX(0)}
+.logHd{display:flex;align-items:center;gap:8px;padding:16px;border-bottom:1px solid var(--line);font-weight:800;font-size:14px}
+.logHd .dotpulse{width:8px;height:8px;border-radius:50%;background:var(--red)}
+.logX{margin-left:auto;cursor:pointer;color:var(--ink-3);background:none;border:0;font-size:20px;line-height:1}
+.logList{flex:1;overflow-y:auto;padding:6px 16px 16px}
+.logItem{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px;align-items:flex-start}
+.logItem:last-child{border-bottom:none}
+.logDot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:5px;background:var(--c)}
+.logTime{color:var(--ink-3);font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;width:38px}
+.logText{color:var(--ink);line-height:1.4}
+
+/* 휴식 모드 설정 (이미지 업로드 + 광고 오버레이 + 음악/반복) */
+.brkCfg{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:color-mix(in srgb,var(--butter) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--butter) 32%,var(--line));border-radius:14px;padding:12px 14px;margin-bottom:16px}
+.brkCfgT{font-size:12.5px;font-weight:800;color:var(--butter);white-space:nowrap}
+.brkThumb{width:66px;height:40px;border-radius:7px;object-fit:cover;border:1px solid var(--line-2);background:var(--surface-2);flex:none}
+.brkThumbEmpty{width:66px;height:40px;border-radius:7px;border:1px dashed var(--line-2);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.brkUp{background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;white-space:nowrap;user-select:none}
+.chkBox{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--line-2);display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:transparent}
+.chkOn .chkBox{background:var(--grad);border-color:transparent;color:var(--on-accent)}
+.pgmImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pgmOverlayTag{position:absolute;right:8px;top:8px;display:flex;gap:4px}
+.pgmOverlayTag span{font-size:9px;font-weight:800;background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:5px}
+
 /* 검색/필터 툴바 */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .search{flex:1;min-width:200px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--ink);font-size:14px;font-family:inherit}
