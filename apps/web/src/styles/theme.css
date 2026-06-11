@@ -1,0 +1,70 @@
+/* ============================================================
+   WEPLAY 전역 테마 — 다크/라이트 토큰 + 기존 Tailwind 관리자 화면 리스킨 호환 레이어
+   - data-theme 는 <html> 에 적용 (main.jsx 에서 초기화, ThemeToggle 로 전환)
+   - 기존 페이지들은 Tailwind 기본 회색/흰색 스케일을 쓰므로, 다크에서 그 스케일을
+     WEPLAY 토큰으로 치환해 한 번에 리스킨한다. (개별 페이지는 점진적으로 콘솔형으로 고도화)
+   ============================================================ */
+:root, [data-theme="dark"]{
+  --bg:#070D18; --surface:#13203A; --surface2:#1B2A47; --surface3:#22335A;
+  --line:#293B5E; --line2:#3A5180;
+  --ink:#E9EEF8; --ink2:#9FB0CC; --muted:#64748f;
+  --brand:#5BA8FF; --brand2:#33D6D6; --accentInk:#06121f;
+  --grad:linear-gradient(135deg,#33D6D6,#5BA8FF 55%,#B49CFF);
+  color-scheme:dark;
+}
+[data-theme="light"]{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#F1F5FA; --surface3:#E9F0F8;
+  --line:#E6EBF2; --line2:#D2DAE6;
+  --ink:#0F1E3D; --ink2:#55617A; --muted:#8A95AC;
+  --brand:#2E84E6; --brand2:#0FB5B5; --accentInk:#ffffff;
+  --grad:linear-gradient(135deg,#0FB5B5,#2E84E6 55%,#7C5CFF);
+  color-scheme:light;
+}
+html,body{background:var(--bg);color:var(--ink)}
+
+/* ===== 다크: 기존 Tailwind 회색/흰색 → WEPLAY 다크 치환 ===== */
+[data-theme="dark"] .bg-white{background-color:var(--surface)!important}
+[data-theme="dark"] .bg-gray-50{background-color:var(--surface2)!important}
+[data-theme="dark"] .bg-gray-100{background-color:var(--surface2)!important}
+[data-theme="dark"] .bg-gray-200{background-color:var(--surface3)!important}
+[data-theme="dark"] .bg-gray-300{background-color:var(--line2)!important}
+[data-theme="dark"] .bg-gray-600{background-color:var(--surface3)!important}
+[data-theme="dark"] .bg-gray-700{background-color:var(--surface2)!important}
+[data-theme="dark"] .bg-gray-800{background-color:var(--surface)!important}
+[data-theme="dark"] .bg-gray-900{background-color:var(--bg)!important}
+[data-theme="dark"] .text-gray-900,[data-theme="dark"] .text-gray-800,[data-theme="dark"] .text-gray-700{color:var(--ink)!important}
+[data-theme="dark"] .text-gray-600,[data-theme="dark"] .text-gray-500{color:var(--ink2)!important}
+[data-theme="dark"] .text-gray-400,[data-theme="dark"] .text-gray-300,[data-theme="dark"] .text-gray-200,[data-theme="dark"] .text-gray-100{color:var(--muted)!important}
+[data-theme="dark"] .border-gray-200,[data-theme="dark"] .border-gray-300{border-color:var(--line)!important}
+[data-theme="dark"] .border-gray-700,[data-theme="dark"] .border-gray-800{border-color:var(--line2)!important}
+
+/* 폼 컨트롤 (다크) */
+[data-theme="dark"] input,[data-theme="dark"] textarea,[data-theme="dark"] select{
+  background-color:var(--surface2)!important;color:var(--ink)!important;border-color:var(--line)!important}
+[data-theme="dark"] input::placeholder,[data-theme="dark"] textarea::placeholder{color:var(--muted)!important}
+
+/* 옅은 톤 배지(다크에서 가라앉히고 글자만 밝게) */
+[data-theme="dark"] .bg-blue-50{background-color:rgba(91,168,255,.12)!important}
+[data-theme="dark"] .bg-blue-100{background-color:rgba(91,168,255,.16)!important}
+[data-theme="dark"] .bg-red-50,[data-theme="dark"] .bg-red-100{background-color:rgba(255,94,108,.15)!important}
+[data-theme="dark"] .bg-green-50,[data-theme="dark"] .bg-green-100{background-color:rgba(52,212,166,.15)!important}
+[data-theme="dark"] .bg-yellow-50,[data-theme="dark"] .bg-yellow-100{background-color:rgba(255,182,72,.15)!important}
+[data-theme="dark"] .bg-purple-50,[data-theme="dark"] .bg-purple-100{background-color:rgba(180,156,255,.16)!important}
+[data-theme="dark"] .text-blue-700,[data-theme="dark"] .text-blue-600{color:#8FC2FF!important}
+[data-theme="dark"] .text-red-700{color:#FF8A93!important}
+[data-theme="dark"] .text-green-700,[data-theme="dark"] .text-green-600{color:#5FE0BC!important}
+[data-theme="dark"] .text-yellow-700{color:#FFC97A!important}
+[data-theme="dark"] .text-purple-700{color:#C9B6FF!important}
+
+/* 그림자 (다크에서 자연스럽게) */
+[data-theme="dark"] .shadow,[data-theme="dark"] .shadow-sm,[data-theme="dark"] .shadow-md,[data-theme="dark"] .shadow-lg{box-shadow:0 6px 20px rgba(0,0,0,.5)!important}
+
+/* ===== 라이트: 페이지 배경만 살짝 브랜드 톤 (카드는 흰색 유지) ===== */
+[data-theme="light"] .bg-gray-50{background-color:#F3F6FB!important}
+[data-theme="light"] .bg-gray-100{background-color:#EAF0F7!important}
+
+/* 전역 테마 토글 버튼 (관리자/PC 화면용 — 사용자 앱(/app)은 자체 토글 사용) */
+.themeToggle{position:fixed;right:14px;bottom:14px;z-index:60;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line2);background:var(--surface);color:var(--ink);font-size:18px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+.themeToggle:active{filter:brightness(.95)}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { ModalProvider } from './components/Modal';
+import ThemeToggle from './components/ThemeToggle';
 import AdminLogin from './pages/AdminLogin';
 import AdminRoute from './components/AdminRoute';
 import EventList from './pages/EventList';
@@ -35,6 +36,7 @@ function App() {
   return (
     <BrowserRouter>
       <ModalProvider>
+      <ThemeToggle />
       <Routes>
         {/* 공개 페이지 */}
         <Route path="/" element={<Home />} />
