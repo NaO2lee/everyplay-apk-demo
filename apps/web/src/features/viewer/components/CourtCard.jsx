@@ -10,26 +10,26 @@ export function CourtCard({ station, onOpen }) {
   const currentName = current?.name || current;
 
   return (
-    <div className={`${styles.court} ${isLive ? '' : styles.idle}`} onClick={() => onOpen(station)}>
-      <div className={styles.thumb}>
-        {videoId ? (
+    <div
+      className={`${styles.court} ${isLive ? '' : styles.idle} ${videoId ? '' : styles.courtCompact}`}
+      onClick={() => onOpen(station)}
+    >
+      {/* 실제 영상이 있을 때만 썸네일 표시. 없으면 빈 박스 대신 컴팩트 카드 + 보기 버튼 */}
+      {videoId && (
+        <div className={styles.thumb}>
           <iframe
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0`}
             title={`코트 ${station.station_number}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           />
-        ) : (
-          <div className={styles.novid}>
-            <span className={styles.novidIc}>📹</span>
-            <span className={styles.novidB}>영상 준비 중 · 알림받기</span>
-          </div>
-        )}
-        {isLive && <span className={styles.badge}><span className={styles.dot} />LIVE</span>}
-      </div>
+          {isLive && <span className={styles.badge}><span className={styles.dot} />LIVE</span>}
+        </div>
+      )}
       <div className={styles.info}>
         <div className={styles.ct}>
           <span className={styles.ctName}>코트 {station.station_number}</span>
           {isLive && heat.heat_number != null && <span className={styles.hit}>HIT {heat.heat_number}</span>}
+          {!videoId && isLive && <span className={styles.badgeInline}><span className={styles.dot} />LIVE</span>}
         </div>
         <div className={styles.ev}>{heat.event_type || (isLive ? '경기 중' : '대기 중')}</div>
         {isLive && currentName && (
@@ -37,6 +37,14 @@ export function CourtCard({ station, onOpen }) {
             <span className={styles.whoAv}>{String(currentName).charAt(0)}</span>
             <span className={styles.whoName}>{currentName}</span>
           </div>
+        )}
+        {!videoId && (
+          <button
+            className={styles.courtWatch}
+            onClick={(e) => { e.stopPropagation(); onOpen(station); }}
+          >
+            ▶ {isLive ? '라이브 보기' : '영상 보기'}
+          </button>
         )}
       </div>
     </div>

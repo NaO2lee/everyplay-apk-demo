@@ -2,8 +2,8 @@
 /* 디자인 토큰은 .app 에 정의 → 모든 탭/컴포넌트가 이 변수만 바라봄. data-theme="light" 로 라이트 전환. */
 .app{
   /* ===== DARK (기본) ===== */
-  --bg:#0A1220; --surface:#111B30; --surface2:#172339; --surface3:#1F2D49;
-  --line:#22304c; --line2:#324266;
+  --bg:#070D18; --surface:#13203A; --surface2:#1B2A47; --surface3:#22335A;
+  --line:#293B5E; --line2:#3A5180;
   --ink:#E9EEF8; --ink2:#9FB0CC; --gray:#64748f;
   --cyan:#33D6D6; --blue:#5BA8FF; --purple:#B49CFF; --mint:#34D4A6; --butter:#FFB648;
   --accent:#5BA8FF; --accentInk:#06121f; --live:#FF5E6C;
@@ -89,6 +89,12 @@
 .whoAv{width:18px;height:18px;border-radius:50%;background:var(--chipBg);color:var(--accent);font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .whoName{font-weight:700;color:var(--ink2)}
 .idle .ev{color:var(--gray);opacity:.8}
+/* 영상 없을 때: 빈 썸네일 대신 컴팩트 카드 + 보기 버튼 */
+.court{border-color:var(--line2)}
+.courtCompact .info{padding:13px 12px}
+.courtWatch{margin-top:11px;width:100%;border:1px solid var(--line2);background:var(--chipBg);color:var(--chipInk);font-weight:800;font-size:12.5px;padding:9px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.courtWatch:active{filter:brightness(.95)}
+.badgeInline{display:inline-flex;align-items:center;gap:4px;background:var(--live);color:#fff;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:auto}
 
 /* VOD */
 .datehd{font-size:14px;font-weight:800;color:var(--ink);margin:16px 2px 10px;display:flex;align-items:center;gap:7px}
