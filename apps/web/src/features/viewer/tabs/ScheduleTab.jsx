@@ -15,6 +15,17 @@ const ST = {
   'LIVE': { cls: 'sbLive', label: '● LIVE' },
 };
 
+// 오늘 기준 D-day 라벨
+function ddayText(it, today) {
+  if (it.status === 'LIVE') return 'LIVE';
+  if (!it.date) return '';
+  const d = new Date(`${it.date}T00:00:00`);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff > 0) return `D-${diff}`;
+  if (diff === 0) return 'D-DAY';
+  return '종료';
+}
+
 export function ScheduleTab() {
   const [status, setStatus] = useState('전체');
   const [event, setEvent] = useState('전체');
@@ -40,6 +51,9 @@ export function ScheduleTab() {
   const groups = SCHEDULE
     .map((w) => ({ week: w.week, items: w.items.filter((it) => matchStatus(it) && matchEvent(it)) }))
     .filter((w) => w.items.length > 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
     <div className={styles.pageFade}>
@@ -79,7 +93,10 @@ export function ScheduleTab() {
                 </div>
                 <div className={styles.schDivV} />
                 <div className={styles.schBody}>
-                  <div className={styles.schTitle}>{it.main ? '⭐ ' : ''}{it.title}</div>
+                  <div className={styles.schTitle}>
+                    <span className={`${styles.dday} ${it.status === 'LIVE' ? styles.ddayLive : ''}`}>{ddayText(it, today)}</span>
+                    {it.title}
+                  </div>
                   <div className={styles.schSub}>{it.sub}</div>
                 </div>
                 <div className={styles.schRight}>
@@ -88,7 +105,7 @@ export function ScheduleTab() {
                     onClick={() => toggleFav(it.id)}
                     aria-label="관심 대회"
                   >
-                    {favs.has(it.id) ? '♥' : '♡'}
+                    {favs.has(it.id) ? '★' : '☆'}
                   </button>
                   <span className={`${styles.schCap} ${capHot ? styles.schCapHot : ''}`}>{it.cap}</span>
                   <span className={`${styles.sbadge} ${styles[st.cls]}`}>{st.label}</span>
