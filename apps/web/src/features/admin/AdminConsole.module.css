@@ -137,6 +137,25 @@
 
 .foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
 
+/* 상태 헤더 (대회 상세) */
+.pageHead{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.pageHeadMain{flex:1;min-width:0}
+.pageHeadMain h1{font-size:24px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pageHeadMain p{font-size:13.5px;color:var(--ink-2);margin-top:7px}
+.pageActs{display:flex;gap:8px;flex-wrap:wrap}
+
+/* 코트 현황(운영) 카드 */
+.courts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.cc{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:14px;border-left:4px solid var(--line-2)}
+.ccLive{border-left-color:var(--red)}
+.ccTop{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
+.ccName{font-weight:800;font-size:15px;white-space:nowrap}
+.ccEvent{font-size:13px;color:var(--ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccMeta{font-size:12px;color:var(--ink-3);margin-top:5px;display:flex;gap:14px;white-space:nowrap}
+.ccMeta b{color:var(--ink-2);font-weight:700}
+@media(max-width:1080px){.courts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.courts{grid-template-columns:1fr}}
+
 /* 라벨 줄바꿈 방지(단어 잘림 X) + 가독성 */
 .btn,.nav a,.pill,.tag,.step,.kpiLab,.kpiDelta,.bt,.btCnt,.tname,.dt,.tenant,.cap,.wm,.sub,.nm,.meta{white-space:nowrap}
 .kpiLab{font-weight:700}
