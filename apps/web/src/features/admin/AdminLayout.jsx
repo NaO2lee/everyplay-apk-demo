@@ -13,6 +13,7 @@ const SIDE_NAV = [
   { key: 'events', ic: '🏆', label: '대회 관리', to: '/admin/events' },
   { key: 'broadcast', ic: '📺', label: '중계 송출', to: '/console/broadcast' },
   { key: 'switcher', ic: '🎚️', label: '중계 컨트롤룸', to: '/console/switcher' },
+  { key: 'overlay', ic: '📢', label: '광고·오버레이', to: '/console/overlay' },
   { key: 'participants', ic: '🤸', label: '참가자' },
   { key: 'brackets', ic: '🗓️', label: '대진 · 일정' },
   { key: 'judge', ic: '⚖️', label: '심판', to: '/judge' },

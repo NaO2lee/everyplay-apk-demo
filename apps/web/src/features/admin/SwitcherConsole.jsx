@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminConsole.module.css';
 import { AdminLayout } from './AdminLayout';
@@ -35,8 +35,27 @@ export function SwitcherConsole() {
     r.readAsDataURL(f);
   };
 
+  const [focus, setFocus] = useState(1);
+
   const take = (n) => setPgm((p) => ({ ...p, [n]: pvw[n] }));
   const takeAll = () => setPgm((p) => { const np = { ...p }; COURTS.forEach((c) => { np[c.n] = pvw[c.n]; }); return np; });
+
+  // 키보드 단축키 (프론트엔드) — ←→ 코트, 1/2/3 카메라, Enter 전환, T 전체, B 휴식
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+      const idx = COURTS.findIndex((c) => c.n === focus);
+      const k = e.key.toLowerCase();
+      if (e.key === 'ArrowRight' || e.key === ']') { e.preventDefault(); setFocus(COURTS[(idx + 1) % COURTS.length].n); }
+      else if (e.key === 'ArrowLeft' || e.key === '[') { e.preventDefault(); setFocus(COURTS[(idx - 1 + COURTS.length) % COURTS.length].n); }
+      else if (['1', '2', '3', '4'].includes(e.key)) { const c = COURTS.find((x) => x.n === focus); const ci = +e.key - 1; if (c && ci < c.cams.length) setPvw((p) => ({ ...p, [focus]: ci })); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); take(focus); }
+      else if (k === 't') { takeAll(); }
+      else if (k === 'b') { setBrk((b) => !b); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [focus, pvw]);
 
   return (
     <AdminLayout active="switcher">
@@ -81,11 +100,15 @@ export function SwitcherConsole() {
         <span className={`${styles.chk} ${loop ? styles.chkOn : ''}`} onClick={() => setLoop((v) => !v)}><span className={styles.chkBox}>✓</span> 🔁 반복재생</span>
       </div>
 
+      <div className={styles.kbdHint}>
+        ⌨️ <b>← →</b> 코트 선택 <b>1·2·3</b> 카메라 <b>Enter</b> 전환 <b>T</b> 전체전환 <b>B</b> 휴식 · 선택됨: <b>코트 {focus}</b>
+      </div>
+
       <div className={styles.swGrid}>
         {COURTS.map((c) => {
           const onAir = pgm[c.n];
           return (
-            <div key={c.n} className={`${styles.swCard} ${c.live ? styles.swCardOn : ''}`}>
+            <div key={c.n} className={`${styles.swCard} ${c.live ? styles.swCardOn : ''} ${focus === c.n ? styles.swCardFocus : ''}`} onClick={() => setFocus(c.n)}>
               <div className={styles.swHead}>
                 <span className={styles.swCourt}>코트 {c.n}</span>
                 <span className={styles.swEv}>· {c.ev}</span>

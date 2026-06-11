@@ -35,6 +35,7 @@ import AdminConsole from './features/admin/AdminConsole';
 import EventConsole from './features/admin/EventConsole';
 import BroadcastConsole from './features/admin/BroadcastConsole';
 import SwitcherConsole from './features/admin/SwitcherConsole';
+import OverlayManager from './features/admin/OverlayManager';
 import SponsorScreen from './features/ads/SponsorScreen';
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
         <Route path="/console/event" element={<EventConsole />} />
         <Route path="/console/broadcast" element={<BroadcastConsole />} />
         <Route path="/console/switcher" element={<SwitcherConsole />} />
+        <Route path="/console/overlay" element={<OverlayManager />} />
         {/* 관객용 광고/후원사 화면 (데모) */}
         <Route path="/sponsors" element={<SponsorScreen />} />
 

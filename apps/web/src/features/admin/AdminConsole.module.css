@@ -184,8 +184,11 @@
 .brkBtnOn{background:var(--butter);color:#1a1206;border-color:transparent}
 .swGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 @media(max-width:1080px){.swGrid{grid-template-columns:1fr}}
-.swCard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--card)}
+.swCard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--card);cursor:pointer}
 .swCardOn{border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
+.swCardFocus{outline:2px solid var(--cyan);outline-offset:2px}
+.kbdHint{font-size:11.5px;color:var(--ink-3);margin:-4px 0 14px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.kbdHint b{color:var(--ink);background:var(--surface-2);border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800}
 .swHead{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .swCourt{font-weight:800;font-size:15px;white-space:nowrap}
 .swEv{font-size:12px;color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -233,6 +236,32 @@
 .pgmImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .pgmOverlayTag{position:absolute;right:8px;top:8px;display:flex;gap:4px}
 .pgmOverlayTag span{font-size:9px;font-weight:800;background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:5px}
+
+/* 광고/오버레이 관리 */
+.ovTop{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:980px){.ovTop{grid-template-columns:1fr}}
+.ovStage{background:#05080f;border:1px solid var(--line-2);border-radius:14px;position:relative;aspect-ratio:16/9;overflow:hidden;background-image:linear-gradient(135deg,#101a2e,#070d18)}
+.ovStageHint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#54647f;font-size:13px;font-weight:700}
+.ovItem{position:absolute;background:rgba(8,16,30,.74);border:1px solid rgba(120,160,220,.4);color:#fff;font-size:11px;font-weight:700;padding:5px 9px;border-radius:7px;max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovItemSel{outline:2px solid var(--cyan);outline-offset:1px}
+.ovTicker{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:700;padding:7px 0;white-space:nowrap;overflow:hidden}
+.ovTickerInner{display:inline-block;padding-left:100%;animation:tick 14s linear infinite}
+@keyframes tick{to{transform:translateX(-100%)}}
+.ovFull{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;gap:8px}
+.ovList{display:flex;flex-direction:column;gap:9px}
+.ovRow{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;cursor:pointer}
+.ovRowSel{border-color:var(--cyan)}
+.ovIcon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--surface-3);font-size:15px;flex:none}
+.ovName{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovMeta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.ovDel{margin-left:auto;background:none;border:0;color:var(--ink-3);font-size:16px;cursor:pointer;flex:none}
+.posGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.posCell{aspect-ratio:16/8;border:1px solid var(--line-2);border-radius:7px;background:var(--surface-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:var(--ink-3)}
+.posCellOn{background:var(--grad);color:var(--on-accent);border-color:transparent;font-weight:800}
+.fld{margin-top:11px}
+.fldL{font-size:11.5px;font-weight:700;color:var(--ink-2);margin-bottom:5px;display:block}
+.fldIn{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--ink);font-size:13px;font-family:inherit}
+.fldIn::placeholder{color:var(--ink-3)}
 
 /* 검색/필터 툴바 */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
