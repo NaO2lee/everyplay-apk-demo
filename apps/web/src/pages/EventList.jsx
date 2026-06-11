@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Calendar, ChevronRight, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { api } from '../services/api';
+import { AdminLayout } from '../features/admin/AdminLayout';
+import styles from '../features/admin/AdminConsole.module.css';
 
-const STATUS_BADGE = {
-  draft: { color: 'bg-gray-100 text-gray-600', text: '준비중' },
-  active: { color: 'bg-green-100 text-green-600', text: '진행중' },
-  completed: { color: 'bg-blue-100 text-blue-600', text: '완료' },
-  cancelled: { color: 'bg-red-100 text-red-600', text: '취소' },
+// 대회 관리 — 관리자 콘솔 셸(AdminLayout) 안에서 실제 대회 목록(api.getEvents) 렌더
+const PILL = {
+  draft: { cls: 'pillDraft', t: '⚪ 준비중' },
+  active: { cls: 'pillLive', t: '🔴 진행중' },
+  completed: { cls: 'pillDone', t: '🟢 완료' },
+  cancelled: { cls: 'pillDraft', t: '⚪ 취소' },
 };
 
 export function EventList() {
@@ -29,75 +31,60 @@ export function EventList() {
     }
   };
 
-  useEffect(() => {
-    loadEvents();
-  }, []);
+  useEffect(() => { loadEvents(); }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
-      </div>
-    );
-  }
+  const muted = { color: 'var(--ink-3)', padding: '34px 0', textAlign: 'center', fontSize: 14 };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">대회 목록</h1>
-        <Link
-          to="/admin/events/new"
-          className="flex items-center gap-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-        >
-          <Plus className="w-5 h-5" />
-          새 대회
-        </Link>
+    <AdminLayout active="events">
+      <div className={styles.ttlRow}>
+        <div className={styles.ph} style={{ marginBottom: 0 }}>
+          <h1>🏆 대회 관리</h1>
+          <p>등록된 대회를 운영·집계·시상까지 한 곳에서 관리하세요.</p>
+        </div>
+        <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => navigate('/admin/events/new')}>➕ 새 대회</button>
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4">
-          {error}
-        </div>
+        <div className={styles.block} style={{ color: 'var(--red)' }}>⚠️ {error}</div>
       )}
 
-      {/* Event list */}
-      <div className="space-y-3">
-        {events.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            등록된 대회가 없습니다
-          </div>
+      <section className={styles.block}>
+        {loading ? (
+          <div style={muted}>불러오는 중…</div>
+        ) : events.length === 0 ? (
+          <div style={muted}>등록된 대회가 없습니다</div>
         ) : (
-          events.map((event) => {
-            const badge = STATUS_BADGE[event.status] || STATUS_BADGE.draft;
-            return (
-              <button
-                key={event.id}
-                onClick={() => navigate(`/admin/events/${event.id}`)}
-                className="w-full bg-white rounded-lg border px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                    <Calendar className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <div className="text-left">
-                    <h2 className="font-semibold text-sm">{event.name}</h2>
-                    <p className="text-xs text-gray-500">{event.date} · 스테이션 {event.station_count}개</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-2 py-1 rounded text-sm ${badge.color}`}>
-                    {badge.text}
-                  </span>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                </div>
-              </button>
-            );
-          })
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>대회명</th><th>일정</th><th>스테이션</th><th>상태</th><th style={{ textAlign: 'right' }}>관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((ev) => {
+                  const p = PILL[ev.status] || PILL.draft;
+                  return (
+                    <tr key={ev.id} onClick={() => navigate(`/admin/events/${ev.id}`)} style={{ cursor: 'pointer' }}>
+                      <td><span className={styles.tname}>{ev.name}</span></td>
+                      <td><span className={`${styles.dt} ${styles.num}`}>{ev.date}</span></td>
+                      <td className={styles.num}>{ev.station_count}개</td>
+                      <td><span className={`${styles.pill} ${styles[p.cls]}`}>{p.t}</span></td>
+                      <td>
+                        <div className={styles.acts}>
+                          <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`}>상세 →</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
-    </div>
+      </section>
+    </AdminLayout>
   );
 }
 

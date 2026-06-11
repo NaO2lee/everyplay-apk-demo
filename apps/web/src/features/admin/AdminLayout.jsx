@@ -1,0 +1,74 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import styles from './AdminConsole.module.css';
+
+/* 관리자 콘솔 공용 셸 (헤더 + 사이드바 + 본문 슬롯).
+   실제 관리자 페이지들이 이 안에 children 으로 들어온다.
+   active = 현재 사이드바 메뉴 key. */
+
+const TOP_NAV = ['🏠 운영자', '📊 통계', '⚖️ 심판', '🤸 참가자', '📺 시청자'];
+
+const SIDE_NAV = [
+  { key: 'dashboard', ic: '📊', label: '대시보드', to: '/console' },
+  { key: 'events', ic: '🏆', label: '대회 관리', to: '/admin/events' },
+  { key: 'participants', ic: '🤸', label: '참가자' },
+  { key: 'brackets', ic: '🗓️', label: '대진 · 일정' },
+  { key: 'judge', ic: '⚖️', label: '심판', to: '/judge' },
+  { key: 'stats', ic: '📈', label: '통계' },
+  { key: 'settings', ic: '⚙️', label: '설정' },
+];
+
+export function AdminLayout({ active = 'dashboard', children }) {
+  const [railHide, setRailHide] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const onHamburger = () => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width:760px)').matches) {
+      setDrawerOpen((v) => !v);
+    } else {
+      setRailHide((v) => !v);
+    }
+  };
+
+  const renderStep = (it) => {
+    const cls = `${styles.step} ${active === it.key ? styles.stepOn : ''}`;
+    const inner = (<><span className={styles.stepN}>{it.ic}</span> {it.label}</>);
+    return it.to
+      ? <Link key={it.key} to={it.to} className={cls}>{inner}</Link>
+      : <button key={it.key} className={cls}>{inner}</button>;
+  };
+
+  return (
+    <div className={styles.console}>
+      <header className={styles.hdr}>
+        <button className={styles.ham} onClick={onHamburger} title="메뉴 접기/펴기">☰</button>
+        <Link className={styles.brand} to="/console">
+          <span className={styles.mark}>W</span>
+          <span className={styles.wm}>모두의플레이</span>
+          <span className={styles.sub}>WEPLAY</span>
+        </Link>
+        <div className={styles.tenant}><span className={styles.tchip} /> 👑 대한줄넘기협회 <span className={styles.car}>▾</span></div>
+        <nav className={styles.nav}>
+          {TOP_NAV.map((n, i) => (<a key={n} className={i === 0 ? styles.on : undefined}>{n}</a>))}
+          <span className={styles.avatar}>나</span>
+        </nav>
+      </header>
+
+      <div className={`${styles.body} ${railHide ? styles.bodyRailHide : ''}`}>
+        <aside className={styles.rail}>
+          <div className={styles.cap}>⚙️ 관리 메뉴</div>
+          {SIDE_NAV.map(renderStep)}
+        </aside>
+        <main className={styles.main}>{children}</main>
+      </div>
+
+      {drawerOpen && (
+        <div className={styles.drawerOpen}>
+          {SIDE_NAV.map(renderStep)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default AdminLayout;

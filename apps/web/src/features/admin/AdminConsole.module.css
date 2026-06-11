@@ -58,8 +58,8 @@
   font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:var(--glow)}
 
 /* 레이아웃 */
-.body{display:grid;grid-template-columns:240px 1fr;max-width:1480px;margin:0 auto;transition:grid-template-columns .2s}
-.bodyRailHide{grid-template-columns:0 1fr}
+.body{display:grid;grid-template-columns:240px minmax(0,1fr);max-width:1480px;margin:0 auto;transition:grid-template-columns .2s}
+.bodyRailHide{grid-template-columns:0 minmax(0,1fr)}
 .bodyRailHide .rail{transform:translateX(-100%);opacity:0;pointer-events:none}
 .rail{background:var(--sidebar);border-right:1px solid var(--line);padding:22px 14px;min-height:calc(100vh - 60px);transition:.2s}
 .cap{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--ink-3);margin:2px 8px 14px}
@@ -136,6 +136,22 @@
 .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 
 .foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+
+/* 라벨 줄바꿈 방지(단어 잘림 X) + 가독성 */
+.btn,.nav a,.pill,.tag,.step,.kpiLab,.kpiDelta,.bt,.btCnt,.tname,.dt,.tenant,.cap,.wm,.sub,.nm,.meta{white-space:nowrap}
+.kpiLab{font-weight:700}
+.ph h1{white-space:nowrap}
+.table thead th,.table tbody td{white-space:nowrap}
+.table tbody td{font-weight:500}
+.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tableWrap::-webkit-scrollbar{height:8px}
+.tableWrap::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:8px}
+
+/* 중간 너비: KPI/협회 카드가 줄바꿈(nowrap) 때문에 잘리지 않게 열 수 줄임 */
+@media (max-width:1080px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .tcards{grid-template-columns:repeat(2,1fr)}
+}
 
 /* 모바일 드로어 */
 .drawer{display:none}
