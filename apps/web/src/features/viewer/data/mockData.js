@@ -60,6 +60,21 @@ export const MY_DASHBOARD = {
   ],
 };
 
+// 디자인 미리보기/공유용 데모 대회 (백엔드 없이 /app/demo 로 렌더). 실제 운영엔 사용 안 함.
+export const DEMO_EVENT = {
+  id: 'demo',
+  code: 'demo',
+  name: '2026 전국 한마당 줄넘기대회',
+  date: '2026-07-17',
+  status: 'active',
+  stations: [
+    { id: 'demo-1', station_number: 1, youtube_stream_url: null },
+    { id: 'demo-2', station_number: 2, youtube_stream_url: null },
+    { id: 'demo-3', station_number: 3, youtube_stream_url: null },
+    { id: 'demo-4', station_number: 4, youtube_stream_url: null },
+  ],
+};
+
 export const DRAWER_MENU = [
   {
     section: '내 활동',

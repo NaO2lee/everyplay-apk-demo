@@ -16,6 +16,8 @@ export function useStationHeat(stationId) {
 
   useEffect(() => {
     if (!stationId) return undefined;
+    // 데모(미리보기) 코트는 백엔드 SSE 없이 대기 상태로 렌더
+    if (String(stationId).startsWith('demo')) return undefined;
     const baseUrl = import.meta.env.VITE_API_URL || '/api/v1';
     const url = `${baseUrl}/overlay/sse?station=${stationId}`;
 
