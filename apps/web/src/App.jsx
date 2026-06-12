@@ -36,7 +36,14 @@ import EventConsole from './features/admin/EventConsole';
 import BroadcastConsole from './features/admin/BroadcastConsole';
 import SwitcherConsole from './features/admin/SwitcherConsole';
 import OverlayManager from './features/admin/OverlayManager';
+import RunnerConsole from './features/admin/RunnerConsole';
+import BracketConsole from './features/admin/BracketConsole';
+import ParticipantsConsole from './features/admin/ParticipantsConsole';
+import StatsConsole from './features/admin/StatsConsole';
+import SettingsConsole from './features/admin/SettingsConsole';
 import SponsorScreen from './features/ads/SponsorScreen';
+import CompetitionDetail from './features/competition/CompetitionDetail';
+import ApplyFlow from './features/competition/ApplyFlow';
 
 function App() {
   return (
@@ -55,8 +62,16 @@ function App() {
         <Route path="/console/broadcast" element={<BroadcastConsole />} />
         <Route path="/console/switcher" element={<SwitcherConsole />} />
         <Route path="/console/overlay" element={<OverlayManager />} />
+        <Route path="/console/runner" element={<RunnerConsole />} />
+        <Route path="/console/brackets" element={<BracketConsole />} />
+        <Route path="/console/participants" element={<ParticipantsConsole />} />
+        <Route path="/console/stats" element={<StatsConsole />} />
+        <Route path="/console/settings" element={<SettingsConsole />} />
         {/* 관객용 광고/후원사 화면 (데모) */}
         <Route path="/sponsors" element={<SponsorScreen />} />
+        {/* 대회 상세 + 접수 신청 (데모) */}
+        <Route path="/competition/demo" element={<CompetitionDetail />} />
+        <Route path="/apply/demo" element={<ApplyFlow />} />
 
         {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
         <Route path="/judge" element={<JudgeHome />} />

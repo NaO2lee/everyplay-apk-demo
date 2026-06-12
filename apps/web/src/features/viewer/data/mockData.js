@@ -68,7 +68,22 @@ export const MY_DASHBOARD = {
   name: '김서연 선수',
   initial: '김',
   meta: '서울 줄넘기클럽 · 🇰🇷 한국 · 남자 9세부',
+  level: 'Lv.7',
+  compEntries: 8,
   stats: { entries: 12, awards: 3, best: 85 },
+  // 주식차트식 기록 그래프 — 주 단위 (min=최저, max=최고, avgLo/avgHi=평균대)
+  records: {
+    event: '30초 스피드',
+    weeks: [
+      { label: '5월3주', min: 58, max: 70, avgLo: 61, avgHi: 67 },
+      { label: '5월4주', min: 60, max: 73, avgLo: 63, avgHi: 70 },
+      { label: '6월1주', min: 63, max: 76, avgLo: 66, avgHi: 72 },
+      { label: '6월2주', min: 66, max: 79, avgLo: 69, avgHi: 75 },
+      { label: '6월3주', min: 64, max: 77, avgLo: 68, avgHi: 73, down: true },
+      { label: '6월4주', min: 70, max: 85, avgLo: 74, avgHi: 80, sel: true },
+      { label: '7월1주', min: 72, max: 84, avgLo: 75, avgHi: 81 },
+    ],
+  },
   nextHeat: { court: '코트 1 · HIT 12 · 30초 스피드', note: '곧 시작 · 코트로 이동해 주세요' },
   practice: [
     { id: 'p1', type: '30초 스피드', date: '2026. 6. 6. 연습', score: '82회' },

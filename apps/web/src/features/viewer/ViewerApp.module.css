@@ -226,6 +226,23 @@
 .info2S{font-size:12px;color:var(--gray);margin-top:2px}
 .score{font-size:15px;font-weight:800;color:var(--ink);flex-shrink:0}
 
+/* MY 기록 그래프 (주식차트식) */
+.myLv{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line2);color:var(--cyan);margin-left:6px}
+.myStars{margin-top:7px;font-size:12px;letter-spacing:1px}
+.myStars b{color:var(--gray);font-weight:600;font-size:11px;letter-spacing:0}
+.chartCard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:4px}
+.chartRow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.chartSel{font-size:13px;font-weight:700;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:6px 11px;color:var(--ink);font-family:inherit;cursor:pointer}
+.periods{display:inline-flex;margin-left:auto;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:2px}
+.periods button{font-size:11.5px;font-weight:700;color:var(--gray);padding:5px 11px;border-radius:7px;border:0;background:none;cursor:pointer;font-family:inherit}
+.periods .on{background:var(--grad);color:var(--accentInk)}
+.bigRec{font-size:13px;color:var(--ink2);margin:8px 0 4px}
+.bigRec b{font-size:24px;font-weight:800;color:var(--ink)}
+.bigRec .up{color:var(--mint);font-size:12px;font-weight:700}
+.chartTip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;background:var(--surface3);border:1px solid var(--line2);border-radius:9px;padding:6px 10px;margin-bottom:6px}
+.chartTip i{width:7px;height:7px;border-radius:50%;background:var(--cyan)}
+.chartHint{font-size:11px;color:var(--gray);margin-top:8px;text-align:center}
+
 /* shared cards */
 .dcard{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;box-shadow:var(--shadow)}
 .lbl{font-size:11.5px;color:var(--gray);font-weight:800;margin-bottom:9px}

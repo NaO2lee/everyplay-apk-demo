@@ -61,7 +61,14 @@ apps/web/public/brand/           # 실제 로고 자산(WEPLAY 워드마크 whit
 | 중계 방송(데모) | `/console/broadcast` | 코트별 송출/OBS 상태 | 목업 |
 | 중계 컨트롤룸(데모) | `/console/switcher` | 멀티캠 전환·휴식 송출 (키보드 지원) | 목업 |
 | 광고/오버레이(데모) | `/console/overlay` | 오버레이 위치·다중광고·휴식 플레이리스트 | 목업 |
+| 경기 진행(데모) | `/console/runner` | 히트 준비/시작/종료/다음자동 + R·S·E·N 단축키 | 목업 |
+| 대진표·일정(데모) | `/console/brackets` | 종목별 시작 HIT 번호 편집 + 범위 자동계산 | 목업 |
+| 참가자(데모) | `/console/participants` | 검색·체크인 토글·KPI | 목업 |
+| 통계(데모) | `/console/stats` | KPI + 종목/요일 막대차트 | 목업 |
+| 설정(데모) | `/console/settings` | 대회 정보·테마·알림·로고 | 목업 |
 | 광고/후원사(데모) | `/sponsors` | 관객용 배너·후원사·KRSA | 목업 |
+| 대회 상세(데모) | `/competition/demo` | 요강·종목·계좌복사 + 접수 CTA | 목업 |
+| 접수 신청(데모) | `/apply/demo` | 토스식 단계형 + 완료/상태 타임라인 | 목업 |
 | 대회 관리(실제) | `/admin/events` | 실제 대회 목록 (로그인 필요) | **API** `getEvents` |
 
 > `/console/*`·`/sponsors`·`/app/demo` 는 **디자인 데모**(목업)라 백엔드 없이 열립니다. 버튼은 화면 이동 위주로 연결돼 있고, 실제 기능(저장·제어)은 백엔드 연결 시 활성화됩니다.

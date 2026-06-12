@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../ViewerApp.module.css';
 import { SCHEDULE, SCHEDULE_MONTH, SCHEDULE_STATUS_TABS, SCHEDULE_EVENT_TABS } from '../data/mockData';
 
@@ -27,6 +28,7 @@ function ddayText(it, today) {
 }
 
 export function ScheduleTab() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState('전체');
   const [event, setEvent] = useState('전체');
   const [favs, setFavs] = useState(() => new Set(SCHEDULE.flatMap((w) => w.items.filter((i) => i.fav).map((i) => i.id))));
@@ -84,7 +86,7 @@ export function ScheduleTab() {
           {w.items.map((it) => {
             const st = ST[it.status] || ST['신청'];
             return (
-              <div key={it.id} className={`${styles.schcard} ${it.main ? styles.schcardMain : ''}`}>
+              <div key={it.id} className={`${styles.schcard} ${it.main ? styles.schcardMain : ''}`} onClick={() => navigate('/competition/demo')}>
                 {it.main && <span className={styles.schRibbon} />}
                 <div className={styles.schDate}>
                   <span className={`${styles.schDay} ${it.main ? styles.schDayMain : ''}`}>{it.day}</span>
@@ -104,7 +106,7 @@ export function ScheduleTab() {
                 <div className={styles.schRight}>
                   <button
                     className={`${styles.fav} ${favs.has(it.id) ? styles.favOn : ''}`}
-                    onClick={() => toggleFav(it.id)}
+                    onClick={(e) => { e.stopPropagation(); toggleFav(it.id); }}
                     aria-label="관심 대회"
                   >
                     {favs.has(it.id) ? '★' : '☆'}
