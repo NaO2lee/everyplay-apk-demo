@@ -68,3 +68,50 @@ html,body{background:var(--bg);color:var(--ink)}
   border:1px solid var(--line2);background:var(--surface);color:var(--ink);font-size:18px;cursor:pointer;
   box-shadow:0 6px 18px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
 .themeToggle:active{filter:brightness(.95)}
+
+/* ============================================================
+   콘솔 디자인 시스템 레이어 — Tailwind 프리미티브를 WEPLAY 콘솔 톤으로 (양 테마)
+   기존 페이지 마크업/로직은 그대로 두고 "색만"이 아니라 "질감"까지 콘솔화.
+   ============================================================ */
+:root{ --wp-radius:13px; --wp-glow:0 0 0 1px rgba(91,168,255,.15), 0 8px 24px rgba(51,214,214,.08); }
+[data-theme="light"]{ --wp-glow:0 1px 2px rgba(15,30,61,.05), 0 6px 18px rgba(15,30,61,.07); }
+
+/* 카드 — 흰/회색 배경 + 라운드 컨테이너에 콘솔 표면/보더/글로우 */
+.bg-white.rounded-lg, .bg-white.rounded-xl, .bg-white.rounded-2xl,
+.bg-white.shadow, .bg-white.shadow-sm, .bg-white.shadow-md, .bg-white.shadow-lg{
+  background-color:var(--surface)!important; border:1px solid var(--line);
+  box-shadow:var(--wp-glow)!important; }
+[data-theme="dark"] .bg-gray-50.rounded-lg,[data-theme="dark"] .bg-gray-50.rounded-xl,
+[data-theme="dark"] .bg-gray-100.rounded-lg,[data-theme="dark"] .bg-gray-100.rounded-xl{
+  border:1px solid var(--line); }
+
+/* 1차 액션 버튼 — 파랑/인디고 솔리드를 WEPLAY 그라데이션으로 */
+.bg-blue-500, .bg-blue-600, .bg-indigo-500, .bg-indigo-600,
+button.bg-blue-500, button.bg-blue-600{
+  background-image:var(--grad)!important; background-color:transparent!important;
+  color:var(--accentInk)!important; border-color:transparent!important;
+  box-shadow:0 4px 14px rgba(51,214,214,.18); }
+.hover\:bg-blue-600:hover, .hover\:bg-blue-700:hover, .hover\:bg-indigo-600:hover{ filter:brightness(1.06); background-image:var(--grad)!important; }
+/* 옅은 파랑 배경(칩/아바타)은 가독 위해 글자색만 보정 (그라데이션 제외) */
+.bg-blue-50, .bg-blue-100{ background-image:none!important; }
+
+/* 상태 솔리드 버튼(시작=초록 / 정지=빨강 / 주의=주황)은 의미색 유지 + 살짝 또렷하게 */
+.bg-green-500,.bg-green-600{ box-shadow:0 4px 14px rgba(52,212,166,.2); }
+.bg-red-500,.bg-red-600{ box-shadow:0 4px 14px rgba(255,94,108,.2); }
+.bg-orange-500,.bg-orange-600{ box-shadow:0 4px 14px rgba(255,160,72,.2); }
+
+/* 입력/셀렉트 — 라운드 + 브랜드 포커스 (양 테마) */
+input, textarea, select{ border-radius:10px!important; }
+input:focus, textarea:focus, select:focus{ outline:none!important;
+  border-color:var(--brand)!important; box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent)!important; }
+
+/* 라운드 버튼 기본 트랜지션 */
+button{ transition:filter .14s ease, box-shadow .14s ease, background-color .14s ease; }
+
+/* 링크 브랜드색 */
+[data-theme="dark"] a:not([class]){ color:var(--brand); }
+
+/* 스크롤바 (콘솔 느낌) */
+[data-theme="dark"] ::-webkit-scrollbar{width:10px;height:10px}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px;border:2px solid var(--bg)}
+[data-theme="dark"] ::-webkit-scrollbar-track{background:transparent}

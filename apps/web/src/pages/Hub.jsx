@@ -63,7 +63,7 @@ export default function Hub() {
                       <span style={{ fontWeight: 700, fontSize: 14 }}>{it.label}</span>
                       <span style={{ background: dev.bg, color: dev.color, fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap' }}>{dev.label}</span>
                     </div>
-                    <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{it.desc}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink2)', marginTop: 2 }}>{it.desc}</div>
                     <code style={{ fontSize: 10, color: g.color, marginTop: 4, display: 'block' }}>{it.url}</code>
                   </Link>
                 );
@@ -80,15 +80,15 @@ export default function Hub() {
   );
 }
 
-const page = { background: '#f8fafc', minHeight: '100vh', padding: 20, fontFamily: 'system-ui, sans-serif' };
+const page = { background: 'var(--bg)', minHeight: '100vh', padding: 20, fontFamily: '-apple-system, Pretendard, sans-serif', color: 'var(--ink)' };
 const hdr = { textAlign: 'center', marginBottom: 24 };
-const h1 = { fontSize: 28, fontWeight: 800, marginBottom: 4 };
-const sub = { color: '#94a3b8', fontSize: 13 };
+const h1 = { fontSize: 28, fontWeight: 800, marginBottom: 4, color: 'var(--ink)' };
+const sub = { color: 'var(--ink2)', fontSize: 13 };
 const grid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14, maxWidth: 1100, margin: '0 auto' };
-const card = { background: 'white', borderRadius: 12, padding: 18, border: '1px solid #e2e8f0' };
+const card = { background: 'var(--surface)', borderRadius: 12, padding: 18, border: '1px solid var(--line)', boxShadow: 'var(--wp-glow)' };
 const h2 = { fontSize: 14, fontWeight: 800, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' };
 const item = (color) => ({
-  display: 'block', padding: 12, background: '#f8fafc', borderRadius: 8,
-  border: '1px solid #e2e8f0', borderLeft: `3px solid ${color}`, textDecoration: 'none', color: '#0f172a',
+  display: 'block', padding: 12, background: 'var(--surface2)', borderRadius: 8,
+  border: '1px solid var(--line)', borderLeft: `3px solid ${color}`, textDecoration: 'none', color: 'var(--ink)',
 });
-const ft = { textAlign: 'center', padding: 24, color: '#94a3b8', fontSize: 11 };
+const ft = { textAlign: 'center', padding: 24, color: 'var(--muted)', fontSize: 11 };

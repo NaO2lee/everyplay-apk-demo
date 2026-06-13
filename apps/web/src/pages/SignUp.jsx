@@ -231,13 +231,13 @@ function RoleCard({ checked, onClick, title, desc }) {
   return (
     <button type="button" onClick={onClick} style={{
       textAlign: 'left', padding: '10px 14px',
-      border: `2px solid ${checked ? '#ea580c' : '#e2e8f0'}`,
-      background: checked ? '#fff7ed' : 'white',
-      color: '#0f172a',
+      border: `2px solid ${checked ? 'var(--brand)' : 'var(--line)'}`,
+      background: checked ? 'color-mix(in srgb, var(--brand) 12%, transparent)' : 'var(--surface2)',
+      color: 'var(--ink)',
       borderRadius: 10, cursor: 'pointer',
     }}>
       <div style={{ fontWeight: 700, fontSize: 14 }}>{title}</div>
-      <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{desc}</div>
+      <div style={{ fontSize: 12, color: 'var(--ink2)', marginTop: 2 }}>{desc}</div>
     </button>
   );
 }
@@ -255,29 +255,30 @@ function SocialBtn({ bg, color, label, icon, border, onClick }) {
   );
 }
 
-const page = { minHeight: '100vh', background: '#fff7ed', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, fontFamily: 'system-ui, sans-serif' };
-const card = { background: 'white', borderRadius: 16, padding: 28, maxWidth: 440, width: '100%', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' };
-const h1 = { fontSize: 22, fontWeight: 800, margin: 0 };
-const intro = { color: '#475569', fontSize: 13.5, lineHeight: 1.55, marginTop: 8, whiteSpace: 'pre-line' };
-const muted = { color: '#94a3b8' };
-const langWrap = { display: 'flex', gap: 4, background: '#f1f5f9', borderRadius: 8, padding: 2 };
+const page = { minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, fontFamily: '-apple-system, Pretendard, sans-serif' };
+const card = { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 16, padding: 28, maxWidth: 440, width: '100%', boxShadow: 'var(--wp-glow)' };
+const h1 = { fontSize: 22, fontWeight: 800, margin: 0, color: 'var(--ink)' };
+const intro = { color: 'var(--ink2)', fontSize: 13.5, lineHeight: 1.55, marginTop: 8, whiteSpace: 'pre-line' };
+const muted = { color: 'var(--muted)' };
+const langWrap = { display: 'flex', gap: 4, background: 'var(--surface2)', borderRadius: 8, padding: 2 };
 const langBtn = (on) => ({
   padding: '4px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-  background: on ? 'white' : 'transparent', color: on ? '#0f172a' : '#64748b',
-  border: 'none', borderRadius: 6, boxShadow: on ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+  background: on ? 'var(--surface)' : 'transparent', color: on ? 'var(--ink)' : 'var(--ink2)',
+  border: on ? '1px solid var(--line)' : 'none', borderRadius: 6,
 });
 const tabBtn = (active) => ({
   flex: 1, padding: '10px 14px',
-  background: active ? '#ea580c' : '#f1f5f9',
-  color: active ? 'white' : '#475569',
+  backgroundImage: active ? 'var(--grad)' : 'none',
+  background: active ? undefined : 'var(--surface2)',
+  color: active ? 'var(--accentInk)' : 'var(--ink2)',
   border: 0, borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 14,
 });
-const divider = { position: 'relative', textAlign: 'center', margin: '4px 0 14px', borderTop: '1px solid #e2e8f0' };
-const dividerLabel = { background: 'white', padding: '0 10px', position: 'relative', top: -10, color: '#94a3b8', fontSize: 11 };
+const divider = { position: 'relative', textAlign: 'center', margin: '4px 0 14px', borderTop: '1px solid var(--line)' };
+const dividerLabel = { background: 'var(--surface)', padding: '0 10px', position: 'relative', top: -10, color: 'var(--muted)', fontSize: 11 };
 const fieldWrap = { display: 'block', marginBottom: 12 };
-const lbl = { display: 'block', fontSize: 12, color: '#64748b', marginBottom: 4, fontWeight: 700 };
-const inp = { width: '100%', padding: 10, border: '1px solid #cbd5e1', borderRadius: 8, fontSize: 14, fontFamily: 'inherit' };
-const errBox = { background: '#fee2e2', color: '#991b1b', padding: 10, borderRadius: 6, fontSize: 13, marginBottom: 8 };
-const okBox = { background: '#dcfce7', color: '#166534', padding: 10, borderRadius: 6, fontSize: 13, marginBottom: 8 };
-const primaryBtn = { width: '100%', marginTop: 8, padding: '13px 20px', background: '#ea580c', color: 'white', border: 0, borderRadius: 10, cursor: 'pointer', fontWeight: 800, fontSize: 15 };
+const lbl = { display: 'block', fontSize: 12, color: 'var(--ink2)', marginBottom: 4, fontWeight: 700 };
+const inp = { width: '100%', padding: 10, background: 'var(--surface2)', color: 'var(--ink)', border: '1px solid var(--line)', borderRadius: 8, fontSize: 14, fontFamily: 'inherit' };
+const errBox = { background: 'rgba(255,94,108,.15)', color: '#FF8A93', padding: 10, borderRadius: 6, fontSize: 13, marginBottom: 8 };
+const okBox = { background: 'rgba(52,212,166,.15)', color: '#5FE0BC', padding: 10, borderRadius: 6, fontSize: 13, marginBottom: 8 };
+const primaryBtn = { width: '100%', marginTop: 8, padding: '13px 20px', backgroundImage: 'var(--grad)', color: 'var(--accentInk)', border: 0, borderRadius: 10, cursor: 'pointer', fontWeight: 800, fontSize: 15 };
 const fineprint = { color: '#94a3b8', fontSize: 11, lineHeight: 1.5, margin: '4px 0' };
