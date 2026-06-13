@@ -224,6 +224,12 @@
 .logTime{color:var(--ink-3);font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;width:38px}
 .logText{color:var(--ink);line-height:1.4}
 
+/* 중앙 모달 (대진 보기 등) */
+.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:46;width:560px;max-width:92vw;max-height:84vh;background:var(--surface);border:1px solid var(--line-2);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden}
+.modalHd{display:flex;align-items:flex-start;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modalT{font-size:15px;font-weight:800}
+.modalBody{padding:8px 18px 18px;overflow-y:auto}
+
 /* 휴식 모드 설정 (이미지 업로드 + 광고 오버레이 + 음악/반복) */
 .brkCfg{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:color-mix(in srgb,var(--butter) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--butter) 32%,var(--line));border-radius:14px;padding:12px 14px;margin-bottom:16px}
 .brkCfgT{font-size:12.5px;font-weight:800;color:var(--butter);white-space:nowrap}
@@ -283,8 +289,8 @@
 .barChart{display:flex;flex-direction:column;gap:12px}
 .barRow{display:flex;align-items:center;gap:12px}
 .barLabel{width:96px;font-size:12.5px;color:var(--ink-2);font-weight:700;white-space:nowrap;flex:none;overflow:hidden;text-overflow:ellipsis}
-.barTrack{flex:1;height:12px;background:var(--surface-2);border-radius:999px;overflow:hidden}
-.barFill{height:100%;background:var(--grad);border-radius:999px}
+.barTrack{display:block;flex:1;height:12px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.barFill{display:block;height:100%;background:var(--grad);border-radius:999px}
 .barVal{width:54px;text-align:right;font-size:12.5px;font-weight:800;flex:none}
 .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:880px){.twoCol{grid-template-columns:1fr}}

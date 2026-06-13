@@ -24,6 +24,17 @@ export const VOD_GROUPS = [
 
 export const VOD_FILTERS = ['전체', '🏅 수상', '30초 스피드', '번갈아뛰기', '더블더치', '프리스타일'];
 
+// 코트 시청 데모 경기 정보 — TODO(backend): SSE heat 데이터(일차/종목/HIT/선수/국가)로 교체
+export const DEMO_MATCH = {
+  dayOf: 2,
+  event: '30초 스피드 · 남자 9세부',
+  hit: 12,
+  players: [
+    { name: '김서연', flag: '🇰🇷' }, { name: '박도윤', flag: '🇰🇷' }, { name: 'TANAKA', flag: '🇯🇵' },
+    { name: '이준', flag: '🇰🇷' }, { name: 'WANG', flag: '🇨🇳' }, { name: '오시우', flag: '🇰🇷' },
+  ],
+};
+
 // 코트 시청 응원 채팅(데모) — TODO(backend): 실시간 채팅(SSE/WebSocket)로 교체
 export const CHEER_PRESETS = ['🔥 화이팅!', '👏 잘한다!', '💪 최고!', '🎉 축하해요', '😮 대박!'];
 export const CHAT_SEED = [

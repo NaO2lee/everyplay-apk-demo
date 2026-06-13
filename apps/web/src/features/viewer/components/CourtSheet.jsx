@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from '../ViewerApp.module.css';
 import { useStationHeat, extractYouTubeId } from '../hooks/useStationHeat';
-import { CHAT_SEED, CHEER_PRESETS } from '../data/mockData';
+import { CHAT_SEED, CHEER_PRESETS, DEMO_MATCH } from '../data/mockData';
 
 // 경과 시간 타이머 (매초 강제 리렌더, 값은 렌더에서 계산 — 이펙트 내 setState 회피)
 function fmtElapsed(startedAt) {
@@ -25,6 +25,7 @@ export function CourtSheet({ station, open, onClose }) {
   const videoId = extractYouTubeId(station?.youtube_stream_url);
   const isLive = heat.status === 'live';
   const videoRef = useRef(null);
+  const chatRef = useRef(null);
   const [msgs, setMsgs] = useState(CHAT_SEED);
   const [text, setText] = useState('');
   const send = (t) => {
@@ -33,6 +34,11 @@ export function CourtSheet({ station, open, onClose }) {
     setMsgs((m) => [...m, { id: `me${m.length}`, name: '나', color: '#33D6D6', text: v }]);
     setText('');
   };
+
+  // 새 메시지 → 채팅 내부 스크롤만 맨 아래로 (화면 전체는 안 밀림)
+  useEffect(() => {
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [msgs]);
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -77,6 +83,19 @@ export function CourtSheet({ station, open, onClose }) {
             </div>
 
             <div className={styles.scont}>
+              {/* 경기 정보: 일차·종목·HIT·출전 선수(+국기). 데모는 DEMO_MATCH, 실데이터는 heat */}
+              <div className={styles.matchBar}>
+                <span className={`${styles.matchTag} ${styles.matchTagHot}`}>🔴 {DEMO_MATCH.dayOf}일차</span>
+                <span className={`${styles.matchTag} ${styles.matchTagCyan}`}>HIT {heat.heat_number ?? DEMO_MATCH.hit}</span>
+                <span className={styles.matchTag}>{heat.event_type || DEMO_MATCH.event}</span>
+              </div>
+              <div className={styles.chips} style={{ marginBottom: 14 }}>
+                {(heat.participants?.length ? heat.participants.map((p) => ({ name: nameOf(p), flag: '🇰🇷' })) : DEMO_MATCH.players).map((p, i) => (
+                  <span key={i} className={styles.chip}>
+                    <span className={styles.chipAv}>{String(p.name).charAt(0)}</span>{p.flag} {p.name}
+                  </span>
+                ))}
+              </div>
               {isLive ? (
                 <>
                   <div className={styles.statrow}>
@@ -132,7 +151,7 @@ export function CourtSheet({ station, open, onClose }) {
                     <button key={p} className={styles.cheerChip} onClick={() => send(p)}>{p}</button>
                   ))}
                 </div>
-                <div className={styles.chat}>
+                <div className={styles.chat} ref={chatRef}>
                   {msgs.map((m) => (
                     <div key={m.id} className={styles.chatMsg}>
                       <span className={styles.chatAv} style={{ background: m.color }}>{m.name.charAt(0)}</span>

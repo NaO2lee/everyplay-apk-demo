@@ -49,7 +49,8 @@ export function SettingsConsole() {
           </div>
           <div className={styles.fld}><label className={styles.fldL}>로고</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <img src="/brand/weplay-wordmark-white.png" alt="WEPLAY" style={{ height: 22 }} />
+              <img className={styles.brandLogo} src="/brand/weplay-wordmark-white.png" alt="WEPLAY" />
+              <img className={styles.brandLogoLight} src="/brand/weplay-wordmark-navy.png" alt="WEPLAY" />
               <button className={styles.brkUp}>로고 변경</button>
             </div>
           </div>

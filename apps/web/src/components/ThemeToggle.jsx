@@ -18,7 +18,9 @@ export function ThemeToggle() {
     try { localStorage.setItem('mp_theme', theme); } catch { /* ignore */ }
   }, [theme]);
 
-  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/app')) return null;
+  // 모바일(풀스크린 CTA) 화면들은 하단 버튼과 겹치므로 토글 숨김 — ?theme= 또는 앱 내 토글 사용
+  const HIDE_ON = ['/app', '/competition', '/apply', '/sponsors'];
+  if (typeof window !== 'undefined' && HIDE_ON.some((p) => window.location.pathname.startsWith(p))) return null;
 
   return (
     <button

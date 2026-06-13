@@ -25,19 +25,26 @@ const POS_STYLE = {
 };
 
 const INITIAL = [
-  { id: 'o1', type: 'logo', label: 'KRSA 로고', pos: 'tl', content: '/brand/krsa-logo.jpg', enabled: true },
+  { id: 'o1', type: 'logo', label: 'KRSA 로고', pos: 'tl', content: '/brand/krsa-logo.jpg', size: 'S', enabled: true },
   { id: 'o2', type: 'ticker', label: '스폰서 문구', pos: 'bc', content: '🎉 NARIA 줄넘기 20% 할인 · 대한민국줄넘기협회(KRSA) 공식 후원 · 다음 경기 잠시 후 시작합니다 🎉', enabled: true },
-  { id: 'o3', type: 'image', label: 'NARIA 배너', pos: 'br', content: null, enabled: true },
+  { id: 'o3', type: 'image', label: 'NARIA 배너', pos: 'br', content: null, size: 'M', enabled: true },
   { id: 'o4', type: 'video', label: '휴식 광고 영상', pos: 'full', content: '', enabled: false },
 ];
+const SIZE_PX = { S: 26, M: 40, L: 64 };
 
 export function OverlayManager() {
   const [overlays, setOverlays] = useState(INITIAL);
   const [selId, setSelId] = useState('o2');
   const [bgm, setBgm] = useState('차분한 BGM');
+  const [bgmFile, setBgmFile] = useState(null);
   const [loop, setLoop] = useState(true);
   const [saved, setSaved] = useState(false);
   const fileRef = useRef(null);
+  const bgmRef = useRef(null);
+  const onPickBgm = (e) => {
+    const f = e.target.files?.[0]; if (!f) return;
+    setBgmFile(f.name); setBgm('직접 업로드'); setSaved(false);
+  };
 
   const sel = overlays.find((o) => o.id === selId);
   const patch = (id, p) => { setOverlays((os) => os.map((o) => (o.id === id ? { ...o, ...p } : o))); setSaved(false); };
@@ -79,7 +86,7 @@ export function OverlayManager() {
             return (
               <div key={o.id} className={`${styles.ovItem} ${o.id === selId ? styles.ovItemSel : ''}`} style={POS_STYLE[o.pos]} onClick={() => setSelId(o.id)}>
                 {o.content && (o.type === 'logo' || o.type === 'image')
-                  ? <img src={o.content} alt={o.label} style={{ height: 22, display: 'block' }} />
+                  ? <img src={o.content} alt={o.label} style={{ height: SIZE_PX[o.size] || 40, display: 'block' }} />
                   : <>{TYPE_META[o.type].ic} {o.label}</>}
               </div>
             );
@@ -147,6 +154,17 @@ export function OverlayManager() {
             </div>
           )}
 
+          {(sel.type === 'image' || sel.type === 'logo') && (
+            <div className={styles.fld}>
+              <label className={styles.fldL}>크기</label>
+              <span className={styles.seg2}>
+                {['S', 'M', 'L'].map((s) => (
+                  <button key={s} className={sel.size === s ? styles.on : ''} onClick={() => patch(sel.id, { size: s })}>{s === 'S' ? '작게' : s === 'M' ? '보통' : '크게'}</button>
+                ))}
+              </span>
+            </div>
+          )}
+
           {sel.type !== 'ticker' && sel.type !== 'video' && (
             <div className={styles.fld}>
               <label className={styles.fldL}>위치</label>
@@ -168,9 +186,11 @@ export function OverlayManager() {
           <span className={styles.swLbl}>배경음악</span>
           <span className={styles.seg2}>
             {['차분한 BGM', '경쾌한 BGM', '없음'].map((m) => (
-              <button key={m} className={bgm === m ? styles.on : ''} onClick={() => setBgm(m)}>{m}</button>
+              <button key={m} className={bgm === m ? styles.on : ''} onClick={() => { setBgm(m); setBgmFile(null); }}>{m}</button>
             ))}
           </span>
+          <button className={`${styles.brkUp} ${bgm === '직접 업로드' ? styles.posCellOn : ''}`} onClick={() => bgmRef.current?.click()}>🎵 {bgmFile ? bgmFile : 'BGM 업로드'}</button>
+          <input ref={bgmRef} type="file" accept="audio/*" hidden onChange={onPickBgm} />
           <span className={`${styles.chk} ${loop ? styles.chkOn : ''}`} style={{ marginLeft: 8 }} onClick={() => setLoop((v) => !v)}><span className={styles.chkBox}>✓</span> 🔁 반복재생</span>
           <span className={styles.swSpacer} />
           <span className={styles.swLbl}>송출 광고 {overlays.filter((o) => o.enabled).length}개</span>

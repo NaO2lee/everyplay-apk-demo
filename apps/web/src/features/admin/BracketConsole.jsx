@@ -14,11 +14,23 @@ const INITIAL = [
   { id: 'p5', name: '단체전', div: '전체', teams: 30, perHeat: 1, court: 4, startHit: 1 },
 ];
 
+const FLAG = { KOR: '🇰🇷', JPN: '🇯🇵', CHN: '🇨🇳', USA: '🇺🇸', TPE: '🇹🇼', HKG: '🇭🇰', THA: '🇹🇭', VNM: '🇻🇳', SGP: '🇸🇬', MAS: '🇲🇾' };
+// 대진 보기용 데모 선수(소속·국가). TODO(backend): heat별 배정 선수 API로 교체
+const DEMO_ROSTER = [
+  { lane: 1, name: '김서연', club: '화성 점프클럽', country: 'KOR' },
+  { lane: 2, name: '박도윤', club: '수원 줄넘기', country: 'KOR' },
+  { lane: 3, name: 'TANAKA Yuki', club: 'Tokyo Rope', country: 'JPN' },
+  { lane: 4, name: '이준', club: '성남 줄사랑', country: 'KOR' },
+  { lane: 5, name: 'WANG Lei', club: 'Beijing JR', country: 'CHN' },
+  { lane: 6, name: '오시우', club: '인천 더블', country: 'KOR' },
+];
+
 const heatCount = (e) => Math.max(1, Math.ceil(e.teams / e.perHeat));
 
 export function BracketConsole() {
   const [events, setEvents] = useState(INITIAL);
   const [saved, setSaved] = useState(false);
+  const [viewing, setViewing] = useState(null); // 대진 보기 모달 대상 종목
 
   const setStart = (id, v) => {
     const n = Math.max(1, parseInt(v, 10) || 1);
@@ -71,7 +83,7 @@ export function BracketConsole() {
                     <td className={styles.num}><b>HIT {e.startHit}~{endHit}</b> <span className={styles.dt}>({cnt}개)</span></td>
                     <td>
                       <div className={styles.acts}>
-                        <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`}>대진 보기</button>
+                        <button className={`${styles.btn} ${styles.btnGhost} ${styles.btnSm}`} onClick={() => setViewing(e)}>대진 보기</button>
                       </div>
                     </td>
                   </tr>
@@ -81,6 +93,38 @@ export function BracketConsole() {
           </table>
         </div>
       </section>
+
+      {viewing && (
+        <>
+          <div className={`${styles.logDim} ${styles.logDimOpen}`} onClick={() => setViewing(null)} />
+          <div className={styles.modal}>
+            <div className={styles.modalHd}>
+              <div>
+                <div className={styles.modalT}>🗂️ {viewing.name} · {viewing.div}</div>
+                <div className={styles.ovMeta}>HIT {viewing.startHit} · 코트 {viewing.court} · {viewing.teams}팀</div>
+              </div>
+              <button className={styles.logX} onClick={() => setViewing(null)} aria-label="닫기">×</button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead><tr><th>레인</th><th>선수</th><th>소속</th><th>국가</th></tr></thead>
+                  <tbody>
+                    {DEMO_ROSTER.map((r) => (
+                      <tr key={r.lane}>
+                        <td className={styles.num}>{r.lane}</td>
+                        <td><span className={styles.tname}>{r.name}</span></td>
+                        <td className={styles.dt}>{r.club}</td>
+                        <td style={{ whiteSpace: 'nowrap' }}>{FLAG[r.country] || '🏳️'} {r.country}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </AdminLayout>
   );
 }

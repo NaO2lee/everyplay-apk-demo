@@ -32,13 +32,11 @@ export function CompetitionDetail() {
 
       <div className={styles.scr}>
         <div className={styles.poster}>
+          <img className={styles.posterImg} src="/brand/comp-poster.png" alt="2026 전국 한마당 줄넘기대회 요강" />
           <span className={styles.posterBadge}>접수중</span>
           <span className={styles.posterD}>D-7</span>
-          <div className={styles.posterInner}>
-            <div className={styles.posterT}>2026 전국 한마당 줄넘기대회</div>
-            <div className={styles.posterS}>7.17(금)~19(일) · 화성종합경기타운 · KRSA 주최</div>
-          </div>
         </div>
+        <a className={styles.pdfLink} href="/brand/comp-guide.pdf" target="_blank" rel="noreferrer">📄 대회요강 PDF 전체 보기 (17p)</a>
 
         <div className={styles.sec}>📋 대회 요강</div>
         <div className={styles.infoCard}>

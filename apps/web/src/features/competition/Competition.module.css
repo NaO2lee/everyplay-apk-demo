@@ -24,10 +24,9 @@
 .scr{padding:6px 18px 0}
 
 /* ===== 대회 상세 ===== */
-.poster{border-radius:18px;overflow:hidden;border:1px solid var(--line2);box-shadow:var(--glow);position:relative;height:210px;background:var(--grad);display:flex;align-items:center;justify-content:center}
-.posterInner{text-align:center;color:var(--onAccent);padding:0 20px}
-.posterT{font-size:21px;font-weight:900;letter-spacing:-.02em;word-break:keep-all}
-.posterS{font-size:12.5px;font-weight:700;opacity:.85;margin-top:7px}
+.poster{border-radius:18px;overflow:hidden;border:1px solid var(--line2);box-shadow:var(--glow);position:relative;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.posterImg{width:100%;display:block}
+.pdfLink{display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:var(--blue);text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px}
 .posterBadge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);color:#0f1e3d;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px}
 .posterD{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.45);color:#fff;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px}
 .sec{font-size:14px;font-weight:800;margin:22px 2px 12px;display:flex;align-items:center;gap:8px}
