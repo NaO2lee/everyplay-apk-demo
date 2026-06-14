@@ -17,7 +17,10 @@ const SIDE_NAV = [
   { key: 'broadcast', ic: '📺', label: '중계 송출', to: '/console/broadcast' },
   { key: 'switcher', ic: '🎚️', label: '중계 컨트롤룸', to: '/console/switcher' },
   { key: 'overlay', ic: '📢', label: '광고·오버레이', to: '/console/overlay' },
-  { key: 'judge', ic: '⚖️', label: '심판', to: '/judge' },
+  { key: 'judge', ic: '⚖️', label: '심판 채점', to: '/judge-app' },
+  { key: 'awards', ic: '🏅', label: '시상', to: '/console/awards' },
+  { key: 'scoreboard', ic: '🖥️', label: '전광판', to: '/scoreboard-demo' },
+  { key: 'stations', ic: '🎛️', label: 'OBS 설정', to: '/console/stations' },
   { key: 'stats', ic: '📈', label: '통계', to: '/console/stats' },
   { key: 'settings', ic: '⚙️', label: '설정', to: '/console/settings' },
 ];

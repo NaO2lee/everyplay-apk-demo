@@ -1,0 +1,49 @@
+/* 전광판 (TV 표시, 앱 디자인) — WEPLAY 다크 고정(전광판은 항상 다크).
+   5월 Scoreboard SSE(useAllStationHeats) 패턴 재사용 가능. 데모는 mock. */
+.tv{
+  --bg:#05080f; --panel:#0E1830; --panel2:#15223C; --line:#27375A; --line2:#3A5180;
+  --ink:#EAF1FF; --ink2:#9FB0CC; --ink3:#6B7A99;
+  --cyan:#33D6D6; --blue:#5BA8FF; --purple:#B49CFF; --mint:#34D4A6; --butter:#FFB648; --live:#FF4A5C;
+  --grad:linear-gradient(135deg,#33D6D6,#5BA8FF 55%,#B49CFF);
+  min-height:100vh;background:
+    radial-gradient(1200px 500px at 78% -10%, rgba(91,168,255,.10), transparent 60%),
+    radial-gradient(900px 420px at 6% 0%, rgba(180,156,255,.08), transparent 55%), var(--bg);
+  color:var(--ink);font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;
+}
+.tv *{box-sizing:border-box}
+.topbar{display:flex;align-items:center;gap:16px;padding:16px 26px;border-bottom:1px solid var(--line)}
+.wm{height:24px;width:auto}
+.evName{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.evMeta{font-size:13px;color:var(--ink2);margin-top:2px}
+.livePill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;background:var(--live);color:#fff;font-weight:800;font-size:14px;padding:7px 15px;border-radius:999px}
+.liveDot{width:9px;height:9px;border-radius:50%;background:#fff;animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.clock{font-size:15px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+.grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px 26px}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+.court{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.courtLive{border-color:color-mix(in srgb,var(--live) 55%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--live) 40%,transparent),0 10px 34px rgba(0,0,0,.5)}
+.screen{position:relative;aspect-ratio:16/9;background:linear-gradient(150deg,#15223c,#0a1326);display:flex;align-items:center;justify-content:center;font-size:46px;color:var(--ink3)}
+.badge{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:6px;background:var(--live);color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px}
+.hitTag{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:8px}
+.cinfo{padding:13px 15px}
+.crow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cname{font-size:19px;font-weight:900;letter-spacing:-.01em}
+.ctimer{font-size:17px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums}
+.cev{font-size:13.5px;color:var(--ink2);margin-top:4px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.players{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.player{display:inline-flex;align-items:center;gap:5px;background:color-mix(in srgb,var(--blue) 16%,transparent);color:#CFE2FF;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px}
+.idle{color:var(--ink3);font-size:13px;margin-top:8px}
+
+/* 하단 메인 정보바 (featured 코트) */
+.infobar{border-top:1px solid var(--line2);background:linear-gradient(180deg,transparent,rgba(11,20,36,.6));padding:18px 26px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.bigCourt{font-size:46px;font-weight:900;line-height:1}
+.sep{width:1px;height:48px;background:var(--line2)}
+.ibLab{font-size:12px;color:var(--ink3);font-weight:700}
+.ibEv{font-size:26px;font-weight:800;margin-top:2px}
+.ibHit{font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.ibTimer{font-size:40px;font-weight:900;color:var(--cyan);font-variant-numeric:tabular-nums;line-height:1}
+.ibPlayers{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.ibPlayer{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--blue) 18%,transparent);color:#DCEAFF;font-size:18px;font-weight:700;padding:6px 14px;border-radius:999px}

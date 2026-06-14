@@ -46,6 +46,9 @@ import CompetitionDetail from './features/competition/CompetitionDetail';
 import ApplyFlow from './features/competition/ApplyFlow';
 import JudgeScore from './features/judge/JudgeScore';
 import AnnounceConsole from './features/operator/AnnounceConsole';
+import ScoreboardScreen from './features/scoreboard/ScoreboardScreen';
+import AwardsConsole from './features/admin/AwardsConsole';
+import StationConsole from './features/admin/StationConsole';
 
 function App() {
   return (
@@ -78,6 +81,11 @@ function App() {
         <Route path="/judge-app" element={<JudgeScore />} />
         {/* AI 음성 호명 (앱 디자인) — 5월 /operate 로직 재사용 */}
         <Route path="/operate-app" element={<AnnounceConsole />} />
+        {/* 전광판 (TV, 앱 디자인 데모) — 5월 Scoreboard SSE 패턴 재사용 예정 */}
+        <Route path="/scoreboard-demo" element={<ScoreboardScreen />} />
+        {/* 시상 · OBS 스테이션 설정 (앱 디자인 콘솔, 데모) */}
+        <Route path="/console/awards" element={<AwardsConsole />} />
+        <Route path="/console/stations" element={<StationConsole />} />
 
         {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
         <Route path="/judge" element={<JudgeHome />} />
