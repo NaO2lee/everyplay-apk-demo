@@ -45,6 +45,7 @@ import SponsorScreen from './features/ads/SponsorScreen';
 import CompetitionDetail from './features/competition/CompetitionDetail';
 import ApplyFlow from './features/competition/ApplyFlow';
 import JudgeScore from './features/judge/JudgeScore';
+import AnnounceConsole from './features/operator/AnnounceConsole';
 
 function App() {
   return (
@@ -75,6 +76,8 @@ function App() {
         <Route path="/apply/demo" element={<ApplyFlow />} />
         {/* 심판 채점 (앱 디자인) — 5월 /judge-grid 로직 재사용 */}
         <Route path="/judge-app" element={<JudgeScore />} />
+        {/* AI 음성 호명 (앱 디자인) — 5월 /operate 로직 재사용 */}
+        <Route path="/operate-app" element={<AnnounceConsole />} />
 
         {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
         <Route path="/judge" element={<JudgeHome />} />

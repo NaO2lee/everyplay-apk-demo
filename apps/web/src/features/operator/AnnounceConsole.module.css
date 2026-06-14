@@ -1,0 +1,43 @@
+/* AI 음성 호명 (앱 디자인) — 운영위원/중계 데스크. WEPLAY 다크 기본 + 라이트.
+   5월 OperatorPanel 로직(/api/v1/operator/no-shows + tts speakBoth) 재사용. */
+.screen{
+  --bg:#070D18; --surface:#13203A; --surface2:#1B2A47; --surface3:#22335A; --line:#293B5E; --line2:#3A5180;
+  --ink:#E9EEF8; --ink2:#9FB0CC; --ink3:#64748f;
+  --cyan:#33D6D6; --blue:#5BA8FF; --purple:#B49CFF; --mint:#34D4A6; --butter:#FFB648; --live:#FF5E6C;
+  --grad:linear-gradient(135deg,#33D6D6,#5BA8FF 55%,#B49CFF); --onAccent:#06121f;
+  --glow:0 0 0 1px rgba(91,168,255,.18),0 8px 24px rgba(51,214,214,.08);
+  min-height:100vh;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;-webkit-font-smoothing:antialiased;
+}
+:global([data-theme="light"]) .screen{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#F1F5FA; --surface3:#E9F0F8; --line:#E6EBF2; --line2:#D2DAE6;
+  --ink:#0F1E3D; --ink2:#55617A; --ink3:#8A95AC; --cyan:#0FB5B5; --blue:#2E84E6; --purple:#7C5CFF; --mint:#11A37A; --butter:#C97E0A; --live:#E8443F;
+  --grad:linear-gradient(135deg,#0FB5B5,#2E84E6 55%,#7C5CFF); --onAccent:#fff; --glow:0 4px 16px rgba(46,132,230,.14);
+}
+.screen *{box-sizing:border-box}
+.wrap{max-width:760px;margin:0 auto;padding:22px 18px 40px}
+.hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.title{font-size:21px;font-weight:800;display:flex;align-items:center;gap:9px}
+.refresh{margin-left:auto;font-size:12px;color:var(--ink3);font-weight:700}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--glow)}
+.blockLive{border-left:4px solid var(--live)}
+.bt{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.btLive{color:var(--live)}
+.call{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.call:last-child{border-bottom:none}
+.callMain{flex:1;min-width:0}
+.callT{font-weight:700;font-size:14px}
+.callT code{background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12px;color:var(--cyan)}
+.callMeta{font-size:12px;color:var(--ink3);margin-top:3px}
+.callActs{display:flex;flex-direction:column;gap:6px;flex:none}
+.btn{border:0;border-radius:9px;font-weight:800;font-size:12.5px;padding:8px 13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btnAnnounce{background:var(--grad);color:var(--onAccent);box-shadow:var(--glow)}
+.btnDone{background:var(--surface2);border:1px solid var(--line2);color:var(--ink)}
+.btnBig{display:block;width:100%;margin-top:4px;background:var(--grad);color:var(--onAccent);border:0;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:var(--glow)}
+.empty{color:var(--ink3);font-size:13px;padding:8px 0}
+.errBox{background:color-mix(in srgb,var(--live) 14%,transparent);color:var(--live);padding:10px 13px;border-radius:10px;font-size:13px;margin-bottom:12px}
+.devBtn{background:var(--grad);color:var(--onAccent);border:0;border-radius:12px;padding:13px 20px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:var(--glow);margin-top:12px}
+.handled{opacity:.55}
+.ttsHint{font-size:11px;color:var(--ink3);margin-top:5px}
+.tplRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.tpl{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:12.5px;font-weight:700;color:var(--ink2);cursor:pointer;font-family:inherit}
