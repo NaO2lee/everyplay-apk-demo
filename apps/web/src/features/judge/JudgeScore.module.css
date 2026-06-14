@@ -1,0 +1,61 @@
+/* 심판 채점 (앱 디자인) — 모바일, WEPLAY 다크 기본 + 전역 [data-theme=light] 연동.
+   5월 JudgeGrid 로직(/api/v1/judge/scores + 오프라인 큐) 재사용, 디자인만 앱 시안 기준. */
+.screen{
+  --bg:#070D18; --surface:#13203A; --surface2:#1B2A47; --surface3:#22335A; --line:#293B5E; --line2:#3A5180;
+  --ink:#E9EEF8; --ink2:#9FB0CC; --ink3:#64748f;
+  --cyan:#33D6D6; --blue:#5BA8FF; --purple:#B49CFF; --mint:#34D4A6; --butter:#FFB648; --live:#FF5E6C;
+  --grad:linear-gradient(135deg,#33D6D6,#5BA8FF 55%,#B49CFF); --onAccent:#06121f;
+  --glow:0 0 0 1px rgba(91,168,255,.18),0 8px 24px rgba(51,214,214,.08);
+  max-width:520px;margin:0 auto;background:var(--bg);min-height:100vh;color:var(--ink);
+  font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:24px;
+}
+:global([data-theme="light"]) .screen{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#F1F5FA; --surface3:#E9F0F8; --line:#E6EBF2; --line2:#D2DAE6;
+  --ink:#0F1E3D; --ink2:#55617A; --ink3:#8A95AC; --cyan:#0FB5B5; --blue:#2E84E6; --purple:#7C5CFF; --mint:#11A37A; --butter:#C97E0A; --live:#E8443F;
+  --grad:linear-gradient(135deg,#0FB5B5,#2E84E6 55%,#7C5CFF); --onAccent:#fff; --glow:0 4px 16px rgba(46,132,230,.14);
+}
+.screen *{box-sizing:border-box}
+.hd{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);padding:14px 18px 10px;border-bottom:1px solid var(--line)}
+.hdTop{display:flex;align-items:center;gap:8px}
+.hdTitle{font-size:17px;font-weight:800;display:flex;align-items:center;gap:7px}
+.netDot{margin-left:auto;font-size:11px;font-weight:700}
+.queue{font-size:11px;font-weight:700;color:var(--butter);margin-left:6px}
+.sel{width:100%;margin-top:9px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);font-size:13.5px;font-family:inherit}
+.prog{margin-top:9px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.prog b.ok{color:var(--mint)} .prog b.rem{color:var(--live)}
+.progBar{height:5px;background:var(--surface3);border-radius:999px;overflow:hidden;margin-top:8px}
+.progFill{height:100%;background:var(--grad);border-radius:999px}
+.scr{padding:14px 18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.card{padding:11px;background:var(--surface);border:2px solid var(--line);border-radius:13px;cursor:pointer;text-align:left;position:relative;transition:transform .1s,border-color .1s;font-family:inherit}
+.card:active{transform:scale(.97)}
+.cardDone{background:color-mix(in srgb,var(--mint) 14%,var(--surface));border-color:color-mix(in srgb,var(--mint) 55%,var(--line))}
+.cardTop{display:flex;justify-content:space-between;align-items:flex-start}
+.cardIdx{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.cardName{font-weight:700;font-size:13.5px;margin-top:4px;color:var(--ink)}
+.cardTeam{font-size:10.5px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cardScore{margin-top:7px;padding:4px 6px;border-radius:6px;font-size:11.5px;font-weight:800;text-align:center;font-family:'JetBrains Mono',monospace}
+.cardScoreOk{background:color-mix(in srgb,var(--mint) 18%,transparent);color:var(--mint)}
+.cardScoreNo{background:var(--surface2);color:var(--ink3)}
+.empty{text-align:center;color:var(--ink3);font-size:13px;padding:30px 0}
+.errBox{background:color-mix(in srgb,var(--live) 14%,transparent);color:var(--live);padding:10px 13px;border-radius:10px;font-size:13px;margin-bottom:10px}
+.devWrap{padding:40px 22px;text-align:center}
+.devBtn{background:var(--grad);color:var(--onAccent);border:0;border-radius:12px;padding:13px 20px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:var(--glow);margin-top:14px}
+
+/* 모달 */
+.dim{position:fixed;inset:0;background:rgba(2,6,14,.62);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);border-top:1px solid var(--line2);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:18px;max-height:92vh;overflow:auto}
+.sheetHd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.sheetK{font-size:11px;color:var(--ink3)}
+.sheetNm{font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px;margin-top:2px}
+.sheetTeam{font-size:12px;color:var(--ink3);margin-top:2px}
+.x{background:var(--surface2);border:1px solid var(--line);border-radius:50%;width:36px;height:36px;font-size:18px;color:var(--ink2);cursor:pointer}
+.bignum{background:#05080f;color:var(--butter);border-radius:14px;padding:26px;text-align:center;font-size:72px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:12px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.padBtn{padding:18px 8px;border:0;border-radius:11px;color:#fff;font-weight:800;font-size:18px;cursor:pointer;font-family:inherit}
+.numIn{width:100%;margin-top:8px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:9px;color:var(--ink);font-size:15px;text-align:center;font-family:'JetBrains Mono',monospace}
+.fsRow{display:grid;gap:10px}
+.fsLab{font-size:12px;color:var(--ink2);margin-bottom:4px;display:block;text-transform:capitalize}
+.fsIn{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:12px;color:var(--ink);font-size:18px;font-weight:700;text-align:center;font-family:inherit}
+.submit{width:100%;margin-top:16px;padding:16px;border:0;border-radius:12px;color:var(--onAccent);font-weight:800;font-size:16px;cursor:pointer;font-family:inherit;background:var(--grad);box-shadow:var(--glow)}
+.submitEdit{background:none;background-color:var(--butter);color:#1a1206}
