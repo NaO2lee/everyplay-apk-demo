@@ -186,8 +186,12 @@
 
 /* 코트 시청 응원 채팅 (유튜브식: 영상 위 / 채팅 아래) */
 .chatWrap{display:flex;flex-direction:column}
-.chatHd{font-size:12.5px;font-weight:800;color:var(--ink2);padding:10px 2px 8px;display:flex;align-items:center;gap:7px}
-.chatHd .live{width:7px;height:7px;border-radius:50%;background:var(--live)}
+.chatHd{font-size:12.5px;font-weight:800;color:var(--ink2);padding:10px 2px 8px;display:flex;align-items:center;justify-content:space-between}
+.chatHdT{display:flex;align-items:center;gap:7px}
+.chatHd .live{width:7px;height:7px;border-radius:50%;background:var(--mint)}
+.chatRefresh{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;font-family:inherit}
+.chatRefresh:active{filter:brightness(.92)}
+.chatTime{font-size:10.5px;color:var(--gray);font-weight:600;margin-left:7px}
 .cheerRow{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
 .cheerChip{background:var(--surface2);border:1px solid var(--line2);border-radius:999px;padding:6px 11px;font-size:14px;cursor:pointer}
 .cheerChip:active{filter:brightness(.95)}

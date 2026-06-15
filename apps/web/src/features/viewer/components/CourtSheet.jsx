@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import styles from '../ViewerApp.module.css';
 import { useStationHeat, extractYouTubeId } from '../hooks/useStationHeat';
-import { CHAT_SEED, CHEER_PRESETS, DEMO_MATCH } from '../data/mockData';
+import { CHAT_SEED, CHAT_MORE, CHEER_PRESETS, DEMO_MATCH } from '../data/mockData';
 
 // 경과 시간 타이머 (매초 강제 리렌더, 값은 렌더에서 계산 — 이펙트 내 setState 회피)
 function fmtElapsed(startedAt) {
@@ -28,11 +29,24 @@ export function CourtSheet({ station, open, onClose }) {
   const chatRef = useRef(null);
   const [msgs, setMsgs] = useState(CHAT_SEED);
   const [text, setText] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const moreRef = useRef(0);
+  const hm = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
   const send = (t) => {
     const v = (t ?? text).trim();
     if (!v) return;
-    setMsgs((m) => [...m, { id: `me${m.length}`, name: '나', color: '#33D6D6', text: v }]);
+    setMsgs((m) => [...m, { id: `me${m.length}`, name: '나', color: '#33D6D6', text: v, time: hm() }]);
     setText('');
+  };
+  // 실시간 푸시 대신 새로고침(요청 시에만 로드) — 서버 부하↓ (백엔드 권고)
+  const refresh = () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    setTimeout(() => {
+      const next = CHAT_MORE[moreRef.current];
+      if (next) { setMsgs((m) => [...m, next]); moreRef.current += 1; }
+      setRefreshing(false);
+    }, 500);
   };
 
   // 새 메시지 → 채팅 내부 스크롤만 맨 아래로 (화면 전체는 안 밀림)
@@ -145,7 +159,12 @@ export function CourtSheet({ station, open, onClose }) {
                 </div>
               )}
               <div className={styles.chatWrap}>
-                <div className={styles.chatHd}><span className={styles.live} /> 실시간 응원</div>
+                <div className={styles.chatHd}>
+                  <span className={styles.chatHdT}>💬 응원 댓글 <span style={{ color: 'var(--gray)', fontWeight: 600 }}>· {msgs.length}</span></span>
+                  <button className={styles.chatRefresh} onClick={refresh} disabled={refreshing}>
+                    <RefreshCw size={13} /> {refreshing ? '불러오는 중' : '새로고침'}
+                  </button>
+                </div>
                 <div className={styles.cheerRow}>
                   {CHEER_PRESETS.map((p) => (
                     <button key={p} className={styles.cheerChip} onClick={() => send(p)}>{p}</button>
@@ -155,7 +174,10 @@ export function CourtSheet({ station, open, onClose }) {
                   {msgs.map((m) => (
                     <div key={m.id} className={styles.chatMsg}>
                       <span className={styles.chatAv} style={{ background: m.color }}>{m.name.charAt(0)}</span>
-                      <div><span className={styles.chatName}>{m.name}</span><span className={styles.chatText}>{m.text}</span></div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div><span className={styles.chatName}>{m.name}</span><span className={styles.chatTime}>{m.time || '방금'}</span></div>
+                        <div className={styles.chatText}>{m.text}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -164,9 +186,9 @@ export function CourtSheet({ station, open, onClose }) {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
-                    placeholder="응원 메시지 보내기…"
+                    placeholder="댓글 남기기…"
                   />
-                  <button className={styles.chatSend} onClick={() => send()}>보내기</button>
+                  <button className={styles.chatSend} onClick={() => send()}>등록</button>
                 </div>
               </div>
             </div>

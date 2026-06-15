@@ -35,13 +35,20 @@ export const DEMO_MATCH = {
   ],
 };
 
-// 코트 시청 응원 채팅(데모) — TODO(backend): 실시간 채팅(SSE/WebSocket)로 교체
+// 코트 시청 응원 "댓글" — 실시간 푸시 대신 새로고침(폴링). 서버 부하↓ (백엔드 권고).
+// TODO(backend): GET /events/{code}/courts/{id}/comments?after= (목록·새로고침), POST .../comments (등록)
 export const CHEER_PRESETS = ['🔥 화이팅!', '👏 잘한다!', '💪 최고!', '🎉 축하해요', '😮 대박!'];
 export const CHAT_SEED = [
-  { id: 'c1', name: '응원단A', color: '#5BA8FF', text: '코트1 김서연 화이팅! 🔥' },
-  { id: 'c2', name: '점프맘', color: '#34D4A6', text: '와 속도 미쳤다 👏' },
-  { id: 'c3', name: '관전중', color: '#B49CFF', text: '이번 히트 신기록 가즈아 💪' },
-  { id: 'c4', name: '화성클럽', color: '#FFB648', text: '우리 선수 1등! 🎉' },
+  { id: 'c1', name: '응원단A', color: '#5BA8FF', text: '코트1 김서연 화이팅! 🔥', time: '14:21' },
+  { id: 'c2', name: '점프맘', color: '#34D4A6', text: '와 속도 미쳤다 👏', time: '14:23' },
+  { id: 'c3', name: '관전중', color: '#B49CFF', text: '이번 히트 신기록 가즈아 💪', time: '14:25' },
+  { id: 'c4', name: '화성클럽', color: '#FFB648', text: '우리 선수 1등! 🎉', time: '14:27' },
+];
+// 새로고침 누를 때마다 서버에서 새로 불러온 것처럼 추가되는 댓글 (폴링 시뮬)
+export const CHAT_MORE = [
+  { id: 'n1', name: '줄넘기팬', color: '#FF7A66', text: '방금 그 더블언더 진짜 대박 😮', time: '14:29' },
+  { id: 'n2', name: '서울점프', color: '#5BA8FF', text: '다음 코트도 기대돼요!', time: '14:30' },
+  { id: 'n3', name: '코치맘', color: '#34D4A6', text: '우리 애 차례 곧이에요 두근두근', time: '14:31' },
 ];
 
 // 대회 일정 — 테니스타운 구조(월 페이징 + 상태/종목 필터 + 주차 그룹 + 날짜블록 카드)
