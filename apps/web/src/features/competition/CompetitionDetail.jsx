@@ -17,6 +17,23 @@ const INFO = [
 
 const EVENTS = ['⚡ 30초 스피드', '⚡ 2인 릴레이', '⚡ 4인 릴레이', '⚡ 더블더치 릴레이', '🤸 개인 프리스타일', '🤸 팀쇼'];
 
+// 핵심 정보 요약 (자세한 건 서류 파일에)
+const KEY = [
+  { k: '출전 자격', v: '협회 등록 선수 / 동호인' },
+  { k: '연령', v: '유치부~일반부 (출생연도 기준)' },
+  { k: '참여 종목 수', v: '개인 최대 4종목' },
+  { k: '단체 구성', v: '팀당 4~8명' },
+];
+// 요강에 다 못 담는 상세 규정·양식 — PDF/한글 파일.
+// TODO(backend): 주최측이 관리자에서 업로드한 파일 목록으로 교체.
+const DOCS = [
+  { name: '대회 요강 전문 (17p)', type: 'PDF', size: '2.4MB', file: '/brand/comp-guide.pdf', ic: '📄' },
+  { name: '경기 규정 · 심판 채점 기준', type: 'PDF', size: '1.1MB', file: '/brand/comp-guide.pdf', ic: '📄' },
+  { name: '종목별 세부 규정 · 참여 가능 종목 수', type: '한글 HWP', size: '480KB', file: '#', ic: '📑' },
+  { name: '출전 자격 · 연령 기준표', type: '한글 HWP', size: '320KB', file: '#', ic: '📑' },
+  { name: '단체 참가 신청서 양식', type: '한글 HWP', size: '210KB', file: '#', ic: '📝' },
+];
+
 export function CompetitionDetail() {
   const navigate = useNavigate();
   const copyAccount = () => {
@@ -36,8 +53,6 @@ export function CompetitionDetail() {
           <span className={styles.posterBadge}>접수중</span>
           <span className={styles.posterD}>D-7</span>
         </div>
-        <a className={styles.pdfLink} href="/brand/comp-guide.pdf" target="_blank" rel="noreferrer">📄 대회요강 PDF 전체 보기 (17p)</a>
-
         <div className={styles.sec}>📋 대회 요강</div>
         <div className={styles.infoCard}>
           {INFO.map((r) => (
@@ -52,9 +67,30 @@ export function CompetitionDetail() {
           ))}
         </div>
 
+        <div className={styles.sec}>🪪 핵심 정보 <span className={styles.secHint}>자세한 건 아래 서류에</span></div>
+        <div className={styles.keyGrid}>
+          {KEY.map((x) => (
+            <div key={x.k} className={styles.keyCell}><div className={styles.keyK}>{x.k}</div><div className={styles.keyV}>{x.v}</div></div>
+          ))}
+        </div>
+
         <div className={styles.sec}>🏷️ 종목</div>
         <div className={styles.evChips}>
           {EVENTS.map((e) => <span key={e} className={styles.evChip}>{e}</span>)}
+        </div>
+
+        <div className={styles.sec}>📎 대회 규정·서류 <span className={styles.secHint}>요강에 다 못 담은 규정·양식</span></div>
+        <div className={styles.docList}>
+          {DOCS.map((d) => (
+            <a key={d.name} className={styles.docRow} href={d.file} target="_blank" rel="noreferrer">
+              <span className={styles.docIc}>{d.ic}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className={styles.docNm}>{d.name}</div>
+                <div className={styles.docMeta}>{d.type} · {d.size}</div>
+              </div>
+              <span className={styles.docDl}>⬇</span>
+            </a>
+          ))}
         </div>
 
         <div className={styles.sec}>📢 안내</div>
