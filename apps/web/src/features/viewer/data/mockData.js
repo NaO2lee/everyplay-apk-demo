@@ -94,6 +94,13 @@ export const MY_DASHBOARD = {
       { label: '6월4주', min: 70, max: 85, avgLo: 74, avgHi: 80, sel: true },
       { label: '7월1주', min: 72, max: 84, avgLo: 75, avgHi: 81 },
     ],
+    // 대회(실전) 기록 — 연습 그래프 위에 겹쳐 표시. wi=주 인덱스. 보통 연습보다 낮게 나옴.
+    // TODO(backend): GET /me/heats (출전 대회별 결과)
+    comps: [
+      { wi: 1, name: '봄철 생활체육 줄넘기', date: '5/16', val: 62 },
+      { wi: 3, name: '2026 KBSN컵 선수권', date: '6/8', val: 68 },
+      { wi: 5, name: '경기 어울림 줄넘기', date: '6/27', val: 73 },
+    ],
   },
   nextHeat: { court: '코트 1 · HIT 12 · 30초 스피드', note: '곧 시작 · 코트로 이동해 주세요' },
   practice: [
