@@ -22,7 +22,8 @@ const GROUPS = [
       { to: '/competition/demo', emoji: '🏆', label: '대회 상세 / 게시판', desc: '요강·계좌·조편성·시상' },
       { to: '/apply/demo', emoji: '📝', label: '접수 신청 (개인·토스식)', desc: '단계형 신청 + 상태 추적' },
       { to: '/apply/group/demo', emoji: '👥', label: '단체·코치 일괄 신청', desc: '명단 추가(직접/엑셀/저장명단)' },
-      { to: '/signup', emoji: '🔑', label: '로그인 / 회원가입', desc: '소셜 로그인 화면' },
+      { to: '/signup', emoji: '🔑', label: '로그인 / 회원가입', desc: '소셜 로그인(구글·네이버·카카오)' },
+      { to: '/settings/demo', emoji: '🔔', label: '알림 · 설정', desc: '알림 종류·방해금지 시간·권한' },
     ],
   },
   {

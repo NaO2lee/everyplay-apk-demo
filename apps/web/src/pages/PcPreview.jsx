@@ -15,6 +15,7 @@ const SCREENS = [
   { label: '접수신청', path: '/apply/demo' },
   { label: '단체신청', path: '/apply/group/demo' },
   { label: '로그인', path: '/signup' },
+  { label: '알림설정', path: '/settings/demo' },
 ];
 
 export default function PcPreview() {

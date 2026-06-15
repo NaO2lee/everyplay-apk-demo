@@ -47,6 +47,7 @@ import SponsorScreen from './features/ads/SponsorScreen';
 import CompetitionDetail from './features/competition/CompetitionDetail';
 import ApplyFlow from './features/competition/ApplyFlow';
 import GroupApply from './features/competition/GroupApply';
+import Settings from './pages/Settings';
 import JudgeScore from './features/judge/JudgeScore';
 import AnnounceConsole from './features/operator/AnnounceConsole';
 import ScoreboardScreen from './features/scoreboard/ScoreboardScreen';
@@ -83,6 +84,7 @@ function App() {
         <Route path="/competition/demo" element={<CompetitionDetail />} />
         <Route path="/apply/demo" element={<ApplyFlow />} />
         <Route path="/apply/group/demo" element={<GroupApply />} />
+        <Route path="/settings/demo" element={<Settings />} />
         {/* 심판 채점 (앱 디자인) — 5월 /judge-grid 로직 재사용 */}
         <Route path="/judge-app" element={<JudgeScore />} />
         {/* AI 음성 호명 (앱 디자인) — 5월 /operate 로직 재사용 */}
