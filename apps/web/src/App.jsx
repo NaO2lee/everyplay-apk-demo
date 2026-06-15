@@ -13,6 +13,7 @@ import TimestampVerify from './pages/TimestampVerify';
 import Scoreboard from './pages/Scoreboard';
 import OperatorGuide from './pages/OperatorGuide';
 import Home from './pages/Home';
+import DemoLauncher from './pages/DemoLauncher';
 import ViewerEvent from './pages/ViewerEvent';
 import JudgeHome from './pages/JudgeHome';
 import PlayerMe from './pages/PlayerMe';
@@ -56,8 +57,9 @@ function App() {
       <ModalProvider>
       <ThemeToggle />
       <Routes>
-        {/* 공개 페이지 */}
-        <Route path="/" element={<Home />} />
+        {/* 데모 빌드 진입점 — 우리가 만든 화면 런처 (실제 앱은 /home = Home) */}
+        <Route path="/" element={<DemoLauncher />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/events/:eventCode" element={<ViewerEvent />} />
         {/* 신규 사용자 앱 (모듈화 v2 — 위플레이 브랜드, 4탭). 기존 ViewerEvent와 비교용 */}
         <Route path="/app/:eventCode" element={<ViewerApp />} />
