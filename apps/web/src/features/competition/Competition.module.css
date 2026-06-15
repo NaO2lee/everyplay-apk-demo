@@ -72,6 +72,42 @@
 .next{display:block;width:100%;text-align:center;background:var(--grad);color:var(--onAccent);border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:800;box-shadow:var(--glow);cursor:pointer;font-family:inherit}
 .nextDim{opacity:.45;pointer-events:none}
 
+/* ===== 단체/코치 일괄 신청 ===== */
+.applyType{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.typeCard{display:flex;align-items:center;gap:14px;text-align:left;background:var(--surface);border:1.5px solid var(--line2);border-radius:16px;padding:18px;cursor:pointer;font-family:inherit;color:var(--ink)}
+.typeIc{width:46px;height:46px;border-radius:13px;background:var(--surface2);display:grid;place-items:center;font-size:22px;flex:none}
+.typeT{font-size:16px;font-weight:800}
+.typeS{font-size:12.5px;color:var(--ink3);margin-top:3px;word-break:keep-all}
+.field{margin-top:18px}
+.flabel{font-size:12.5px;font-weight:800;color:var(--ink3);margin-bottom:8px}
+.fin{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:13px 14px;font-size:15px;font-weight:700;color:var(--ink);font-family:inherit;outline:none}
+.fin::placeholder{color:var(--ink3);font-weight:600}
+.mBtns{display:flex;gap:8px;margin:6px 0 16px}
+.mBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;background:var(--surface);border:1.5px solid var(--line2);border-radius:13px;padding:14px 6px;cursor:pointer;font-family:inherit;color:var(--ink2)}
+.mBtnIc{font-size:21px}
+.mBtnL{font-size:11px;font-weight:800;text-align:center;line-height:1.3}
+.addForm{background:var(--surface);border:1px solid var(--line2);border-radius:14px;padding:15px;margin-bottom:14px}
+.addLbl{font-size:11.5px;font-weight:800;color:var(--ink3);margin:13px 0 8px}
+.miniChips{display:flex;flex-wrap:wrap;gap:7px}
+.miniChip{font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:10px;border:1.5px solid var(--line2);color:var(--ink2);background:var(--surface2);cursor:pointer;font-family:inherit}
+.miniChipOn{background:var(--grad);color:var(--onAccent);border-color:transparent}
+.addBtn{width:100%;margin-top:15px;background:var(--blue);color:#fff;border:0;border-radius:11px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+.addBtnDim{opacity:.4;pointer-events:none}
+.aList{display:flex;flex-direction:column;gap:9px}
+.aRow{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.aNo{width:25px;height:25px;border-radius:7px;background:var(--surface2);color:var(--blue);font-size:12px;font-weight:800;display:grid;place-items:center;flex:none}
+.aName{font-size:14.5px;font-weight:800}
+.aMeta{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.aDiv{font-size:11px;font-weight:700;color:var(--ink3)}
+.aTag{background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:10.5px;font-weight:700;color:var(--ink2)}
+.aDel{background:none;border:0;color:var(--ink3);font-size:20px;cursor:pointer;flex:none;line-height:1}
+.rosterSum{display:flex;justify-content:space-between;align-items:center;margin:16px 0 2px;font-size:13px;color:var(--ink2)}
+.rosterSum b{color:var(--ink);font-size:15px}
+.emptyR{text-align:center;color:var(--ink3);font-size:13px;padding:26px 12px;border:1px dashed var(--line2);border-radius:13px;line-height:1.6;word-break:keep-all}
+.toast{background:color-mix(in srgb,var(--mint) 12%,transparent);border:1px solid color-mix(in srgb,var(--mint) 30%,transparent);color:var(--mint);font-size:12.5px;font-weight:700;border-radius:10px;padding:10px 13px;margin-bottom:13px}
+.dlLink{display:inline-block;font-size:12px;font-weight:700;color:var(--blue);background:none;border:0;cursor:pointer;text-decoration:underline;font-family:inherit}
+.guardian{background:color-mix(in srgb,var(--butter) 9%,transparent);border:1px solid color-mix(in srgb,var(--butter) 32%,transparent);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--ink2);line-height:1.55;margin-top:12px;word-break:keep-all}
+
 /* 완료/상태 */
 .doneWrap{text-align:center;padding:46px 18px 0}
 .doneIc{width:74px;height:74px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;box-shadow:var(--glow)}

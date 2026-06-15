@@ -13,6 +13,7 @@ const SCREENS = [
   { label: 'MY(기록)', path: '/app/demo?tab=my' },
   { label: '대회상세', path: '/competition/demo' },
   { label: '접수신청', path: '/apply/demo' },
+  { label: '단체신청', path: '/apply/group/demo' },
   { label: '로그인', path: '/signup' },
 ];
 

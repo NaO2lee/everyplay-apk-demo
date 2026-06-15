@@ -94,6 +94,7 @@ export function ApplyFlow() {
                 <button key={e} className={`${styles.chip} ${evs.includes(e) ? styles.chipOn : ''}`} onClick={() => toggleEv(e)}>{e}</button>
               ))}
             </div>
+            <button className={styles.dlLink} style={{ marginTop: 22 }} onClick={() => navigate('/apply/group/demo')}>👥 여러 명·단체(코치)로 신청하시나요? — 단체 신청 →</button>
           </div>
         )}
         {cur === 'name' && (

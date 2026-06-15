@@ -14,6 +14,7 @@ import Scoreboard from './pages/Scoreboard';
 import OperatorGuide from './pages/OperatorGuide';
 import Home from './pages/Home';
 import DemoLauncher from './pages/DemoLauncher';
+import PcPreview from './pages/PcPreview';
 import ViewerEvent from './pages/ViewerEvent';
 import JudgeHome from './pages/JudgeHome';
 import PlayerMe from './pages/PlayerMe';
@@ -45,6 +46,7 @@ import SettingsConsole from './features/admin/SettingsConsole';
 import SponsorScreen from './features/ads/SponsorScreen';
 import CompetitionDetail from './features/competition/CompetitionDetail';
 import ApplyFlow from './features/competition/ApplyFlow';
+import GroupApply from './features/competition/GroupApply';
 import JudgeScore from './features/judge/JudgeScore';
 import AnnounceConsole from './features/operator/AnnounceConsole';
 import ScoreboardScreen from './features/scoreboard/ScoreboardScreen';
@@ -59,6 +61,7 @@ function App() {
       <Routes>
         {/* 데모 빌드 진입점 — 우리가 만든 화면 런처 (실제 앱은 /home = Home) */}
         <Route path="/" element={<DemoLauncher />} />
+        <Route path="/preview" element={<PcPreview />} />
         <Route path="/home" element={<Home />} />
         <Route path="/events/:eventCode" element={<ViewerEvent />} />
         {/* 신규 사용자 앱 (모듈화 v2 — 위플레이 브랜드, 4탭). 기존 ViewerEvent와 비교용 */}
@@ -79,6 +82,7 @@ function App() {
         {/* 대회 상세 + 접수 신청 (데모) */}
         <Route path="/competition/demo" element={<CompetitionDetail />} />
         <Route path="/apply/demo" element={<ApplyFlow />} />
+        <Route path="/apply/group/demo" element={<GroupApply />} />
         {/* 심판 채점 (앱 디자인) — 5월 /judge-grid 로직 재사용 */}
         <Route path="/judge-app" element={<JudgeScore />} />
         {/* AI 음성 호명 (앱 디자인) — 5월 /operate 로직 재사용 */}
