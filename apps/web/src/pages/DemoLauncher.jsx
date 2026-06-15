@@ -14,7 +14,8 @@ const GROUPS = [
   {
     title: '사용자 앱', desc: '관람객이 쓰는 모바일 앱',
     items: [
-      { to: '/app/demo', emoji: '📺', label: '중계 (라이브)', desc: '코트별 라이브 + 4탭 메인' },
+      { to: '/app/demo', emoji: '🏠', label: '홈 (첫 화면)', desc: '진행/예정 대회 + 명장면 + 광고' },
+      { to: '/app/demo?tab=live', emoji: '📺', label: '중계 (라이브)', desc: '코트별 라이브 그리드' },
       { to: '/app/demo?tab=cal', emoji: '📅', label: '대회 일정', desc: '월별·상태별 대회 캘린더' },
       { to: '/app/demo?tab=vod', emoji: '🎞️', label: '기록 영상 (VOD)', desc: '지난 경기 다시보기' },
       { to: '/app/demo?tab=my', emoji: '👤', label: 'MY (개인 화면)', desc: '내 기록 주식차트·프로필' },

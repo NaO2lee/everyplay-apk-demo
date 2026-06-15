@@ -1,8 +1,9 @@
-import { Tv, Film, CalendarDays, User } from 'lucide-react';
+import { Home, Tv, Film, CalendarDays, User } from 'lucide-react';
 import styles from '../ViewerApp.module.css';
 
-// 하단 4탭 — 고정 푸터. 모노크롬 아이콘(선택만 색 + 글로우 포인트).
+// 하단 5탭 — 고정 푸터. 모노크롬 아이콘(선택만 색 + 글로우 포인트).
 const TABS = [
+  { key: 'home', Icon: Home, label: '홈' },
   { key: 'live', Icon: Tv, label: '중계' },
   { key: 'vod', Icon: Film, label: '기록영상' },
   { key: 'cal', Icon: CalendarDays, label: '대회일정' },

@@ -7,6 +7,7 @@ import { AppHeader } from './components/AppHeader';
 import { BottomNav } from './components/BottomNav';
 import { Drawer } from './components/Drawer';
 import { CourtSheet } from './components/CourtSheet';
+import { HomeTab } from './tabs/HomeTab';
 import { LiveTab } from './tabs/LiveTab';
 import { VodTab } from './tabs/VodTab';
 import { ScheduleTab } from './tabs/ScheduleTab';
@@ -29,7 +30,7 @@ export function ViewerApp() {
   // 초기 탭/테마: URL 파라미터(?tab=, ?theme=)로 딥링크 가능 (미리보기·공유용)
   const [tab, setTab] = useState(() => {
     const q = new URLSearchParams(window.location.search).get('tab');
-    return ['live', 'vod', 'cal', 'my'].includes(q) ? q : 'live';
+    return ['home', 'live', 'vod', 'cal', 'my'].includes(q) ? q : 'home';
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openCourt, setOpenCourt] = useState(null);
@@ -89,6 +90,7 @@ export function ViewerApp() {
   }
 
   const HEAD = {
+    home: { title: '모두의플레이', subtitle: '줄넘기 대회 · 실시간 중계', live: event.status === 'active' },
     live: { title: event.name, subtitle: `${formatDate(event.date)} · 코트 ${courts.length}개`, live: event.status === 'active' },
     vod: { title: '기록 영상', subtitle: '지난 대회 다시보기', live: false },
     cal: { title: '대회 일정', subtitle: '국내 대회 한눈에', live: false },
@@ -108,6 +110,7 @@ export function ViewerApp() {
       />
 
       <div className={styles.scroll}>
+        {tab === 'home' && <HomeTab event={event} onGo={setTab} />}
         {tab === 'live' && <LiveTab courts={courts} onOpenCourt={setOpenCourt} />}
         {tab === 'vod' && <VodTab />}
         {tab === 'cal' && <ScheduleTab />}
