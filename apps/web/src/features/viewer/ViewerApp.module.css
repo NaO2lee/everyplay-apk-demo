@@ -255,11 +255,12 @@
 .dcard{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;box-shadow:var(--shadow)}
 .lbl{font-size:11.5px;color:var(--gray);font-weight:800;margin-bottom:9px}
 
-/* bottom tabs */
-.tabbar{flex-shrink:0;display:flex;background:var(--surface);border-top:1px solid var(--line);padding:8px 0 12px}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--gray);cursor:pointer;background:none;border:0;transition:color .15s}
-.tabIc{font-size:20px}
+/* bottom tabs — 고정 푸터, 선택만 색 + 글로우 포인트 (이모지 컬러 → 모노크롬 아이콘) */
+.tabbar{flex-shrink:0;display:flex;background:var(--surface);border-top:1px solid var(--line);padding:7px 0 calc(7px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 18px rgba(0,0,0,.18);z-index:5}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--gray);cursor:pointer;background:none;border:0;transition:color .15s;padding:0;font-family:inherit}
+.tabIcWrap{display:flex;align-items:center;justify-content:center;width:52px;height:30px;border-radius:999px;transition:background .18s,box-shadow .18s,transform .18s}
 .tabOn{color:var(--blue)}
+.tabOn .tabIcWrap{background:var(--chipBg);box-shadow:0 5px 14px color-mix(in srgb,var(--blue) 34%,transparent);transform:translateY(-1px)}
 
 /* search FAB */
 .fab{position:fixed;right:18px;bottom:78px;z-index:20;background:var(--grad);color:var(--accentInk);border:0;width:54px;height:54px;border-radius:50%;font-size:22px;box-shadow:0 8px 22px rgba(51,214,214,.35);cursor:pointer;display:flex;align-items:center;justify-content:center}
