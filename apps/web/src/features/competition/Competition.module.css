@@ -54,6 +54,38 @@
 .keyCell{background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
 .keyK{font-size:11px;color:var(--ink3);font-weight:700}
 .keyV{font-size:13px;color:var(--ink);font-weight:700;margin-top:3px;word-break:keep-all}
+/* 대회 상세 탭 (요강·참가자·대진표·공지문의) */
+.ctabs{display:flex;gap:2px;padding:2px 12px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:3}
+.ctab{flex:1;background:none;border:0;padding:13px 2px;font-size:13.5px;font-weight:700;color:var(--ink3);cursor:pointer;position:relative;font-family:inherit;white-space:nowrap}
+.ctabOn{color:var(--ink);font-weight:800}
+.ctabOn::after{content:'';position:absolute;left:6px;right:6px;bottom:-1px;height:2.5px;border-radius:3px;background:var(--grad)}
+/* 참가자 명단 (+응원 ♥) */
+.prow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.pav{width:37px;height:37px;border-radius:11px;background:var(--surface2);color:var(--blue);font-weight:800;font-size:14px;display:grid;place-items:center;flex:none}
+.pnm{font-size:14px;font-weight:800}
+.pnm small{font-size:11.5px;color:var(--ink3);font-weight:600;margin-left:5px}
+.pmeta{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.cheer{background:none;border:0;font-size:19px;cursor:pointer;color:var(--ink3);flex:none;display:flex;align-items:center;gap:4px}
+.cheerN{font-size:12px;font-weight:700;color:var(--ink3)}
+.cheerOn{color:#FF5E6C}
+.cheerOn .cheerN{color:#FF5E6C}
+/* 대진표 */
+.bracketNote{display:flex;gap:9px;align-items:flex-start;background:color-mix(in srgb,var(--blue) 9%,transparent);border:1px solid color-mix(in srgb,var(--blue) 25%,transparent);border-radius:12px;padding:13px 14px;font-size:13px;color:var(--ink);margin:16px 0;font-weight:600;line-height:1.55}
+.grp{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px}
+.grpHd{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:800;margin-bottom:10px}
+.grpCourt{font-size:11.5px;font-weight:700;color:var(--cyan);background:color-mix(in srgb,var(--cyan) 14%,transparent);padding:3px 9px;border-radius:999px}
+.grpP{display:flex;flex-wrap:wrap;gap:6px}
+.grpChip{font-size:12.5px;font-weight:600;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+/* 공지·문의 */
+.notiRow{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.notiT{font-size:13.5px;font-weight:700;line-height:1.45;word-break:keep-all}
+.notiD{font-size:11px;color:var(--ink3);margin-top:3px}
+.qna{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:9px}
+.qnaQ{font-size:13.5px;font-weight:800}
+.qnaA{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.55;word-break:keep-all}
+.askBar{display:flex;gap:8px;margin-top:14px}
+.askIn{flex:1;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:12px 13px;color:var(--ink);font-size:13.5px;font-family:inherit;outline:none}
+.askBtn{background:var(--grad);color:var(--onAccent);border:0;border-radius:11px;padding:0 17px;font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit}
 .cta{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:460px;background:linear-gradient(transparent,var(--bg) 30%);padding:18px;display:flex;gap:10px}
 .ctaFav{width:52px;height:52px;flex:none;border-radius:14px;background:var(--surface);border:1px solid var(--line2);font-size:20px;cursor:pointer;color:#FFC83D}
 .ctaBtn{flex:1;background:var(--grad);color:var(--onAccent);border:0;border-radius:14px;font-size:16px;font-weight:800;box-shadow:var(--glow);cursor:pointer;font-family:inherit}
