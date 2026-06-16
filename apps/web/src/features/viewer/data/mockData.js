@@ -141,6 +141,25 @@ export const DEMO_EVENT = {
   ],
 };
 
+// 알림함 (🔔) — TODO(backend): GET /me/notifications
+export const NOTIFICATIONS = [
+  { id: 'nt1', ic: '⏱', title: '곧 출전이에요 — 코트 1 · HIT 12 · 30초 스피드', time: '2분 전', unread: true },
+  { id: 'nt2', ic: '🥇', title: '경기 결과: 30초 스피드 85회 — 1위 축하해요!', time: '1시간 전', unread: true },
+  { id: 'nt3', ic: '🏆', title: '시상식 안내 — 잠시 후 시상대로 와주세요', time: '1시간 전', unread: true },
+  { id: 'nt4', ic: '📢', title: '전국 한마당 줄넘기대회 접수 마감 D-3', time: '어제', unread: false },
+  { id: 'nt5', ic: '💬', title: '내 응원 댓글에 답글이 달렸어요', time: '2일 전', unread: false },
+];
+
+// 선수/영상 검색 (🔍) — TODO(backend): GET /public/events/{code}/participants?q=
+export const SEARCH_PLAYERS = [
+  { id: 'sp1', name: '김서연', club: '서울 줄넘기클럽', div: '남자 9세부', best: '30초 스피드 85회', clips: 3 },
+  { id: 'sp2', name: '박지민', club: '화성 점프', div: '남자 15세부', best: '프리스타일 92점', clips: 2 },
+  { id: 'sp3', name: '이나영', club: '광주 줄넘기', div: '여자 고등부', best: '30초 스피드 78회', clips: 1 },
+  { id: 'sp4', name: '이준호', club: '대전 로프', div: '남자 12세부', best: '더블더치 결승', clips: 2 },
+  { id: 'sp5', name: '최유나', club: '인천 점프', div: '여자 9세부', best: '번갈아뛰기 3:02', clips: 1 },
+  { id: 'sp6', name: '강민재', club: '제주 점프', div: '중등부', best: '더블언더 62회', clips: 1 },
+];
+
 export const DRAWER_MENU = [
   {
     section: '내 활동',

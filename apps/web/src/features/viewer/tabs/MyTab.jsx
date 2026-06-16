@@ -7,6 +7,7 @@ import { MY_DASHBOARD as M } from '../data/mockData';
                   AI 분석 = 광고 시청 후 Claude API 호출, 광고 = AdMob 보상형 */
 
 const PERIODS = ['일', '주', '월'];
+const PRACTICE_EVENTS = ['30초 스피드', '더블언더', '번갈아뛰기', '개인 프리스타일'];
 
 // 연습(캔들) + 대회(실선·점) 겹쳐 보는 차트. 데이터 구동 SVG.
 function RecordChart({ weeks, comps = [] }) {
@@ -72,9 +73,19 @@ function RecordChart({ weeks, comps = [] }) {
   );
 }
 
-export function MyTab({ onAddPractice }) {
+export function MyTab() {
   const [period, setPeriod] = useState('주');
   const [ai, setAi] = useState('locked'); // locked | playing | unlocked
+  const [practice, setPractice] = useState(M.practice);
+  const [adding, setAdding] = useState(false);
+  const [pf, setPf] = useState({ type: '30초 스피드', score: '' });
+  const addPractice = () => {
+    if (!String(pf.score).trim()) return;
+    const unit = pf.type.includes('프리') ? '점' : '회';
+    setPractice((xs) => [{ id: `p${Date.now()}`, type: pf.type, date: '오늘 연습', score: `${pf.score}${unit}` }, ...xs]);
+    setPf({ type: pf.type, score: '' });
+    setAdding(false);
+  };
   const weeks = M.records.weeks;
   const comps = M.records.comps || [];
   const best = Math.max(...weeks.map((w) => w.max));
@@ -189,14 +200,25 @@ export function MyTab({ onAddPractice }) {
         <h2 className={styles.secTitle}>✏️ 직접 기록 (연습일지)</h2>
       </div>
       <div className={styles.dcard}>
-        {M.practice.map((p) => (
+        {adding && (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
+            <select value={pf.type} onChange={(e) => setPf({ ...pf, type: e.target.value })} className={styles.chartSel} style={{ flex: '0 0 auto' }}>
+              {PRACTICE_EVENTS.map((e) => <option key={e} value={e}>{e}</option>)}
+            </select>
+            <input value={pf.score} onChange={(e) => setPf({ ...pf, score: e.target.value })} placeholder="기록 (회/점)" inputMode="numeric"
+              onKeyDown={(e) => { if (e.key === 'Enter') addPractice(); }}
+              style={{ flex: 1, minWidth: 0, background: 'var(--surface2)', border: '1px solid var(--line)', borderRadius: 9, padding: '9px 11px', color: 'var(--ink)', fontFamily: 'inherit', fontSize: 14 }} />
+            <button onClick={addPractice} style={{ background: 'var(--blue)', color: '#fff', border: 0, borderRadius: 9, padding: '9px 15px', fontWeight: 800, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>추가</button>
+          </div>
+        )}
+        {practice.map((p) => (
           <div key={p.id} className={styles.histrow}>
             <div className={styles.rk}>🏃</div>
             <div className={styles.info2}><div className={styles.info2T}>{p.type}</div><div className={styles.info2S}>{p.date}</div></div>
             <div className={styles.score}>{p.score}</div>
           </div>
         ))}
-        <button className={styles.recbtn} onClick={onAddPractice}>＋ 오늘 연습 기록 추가</button>
+        <button className={styles.recbtn} onClick={() => setAdding((v) => !v)}>{adding ? '닫기' : '＋ 오늘 연습 기록 추가'}</button>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { AppHeader } from './components/AppHeader';
 import { BottomNav } from './components/BottomNav';
 import { Drawer } from './components/Drawer';
 import { CourtSheet } from './components/CourtSheet';
+import { NotifSheet, SearchSheet } from './components/AppSheets';
 import { HomeTab } from './tabs/HomeTab';
 import { LiveTab } from './tabs/LiveTab';
 import { VodTab } from './tabs/VodTab';
@@ -34,6 +35,20 @@ export function ViewerApp() {
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openCourt, setOpenCourt] = useState(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // 드로어 메뉴 → 화면 이동 (탭 전환 또는 라우트)
+  const onDrawerItem = (it) => {
+    setDrawerOpen(false);
+    const L = it.label || '';
+    if (L.includes('로그인')) navigate('/signup');
+    else if (L.includes('알림') || L.includes('설정')) navigate('/settings/demo');
+    else if (L.includes('대회 일정') || L.includes('즐겨찾기')) setTab('cal');
+    else if (L.includes('영상')) setTab('vod');
+    else if (L.includes('대회 선택') || L.includes('전체 대회')) setTab('home');
+    else if (L.includes('공유')) { try { navigator.share?.({ title: '모두의플레이', url: window.location.href }); } catch { /* ignore */ } }
+  };
 
   // 다크/라이트 테마 (기본 다크) — 선택 유지
   const [theme, setThemeState] = useState(() => {
@@ -106,7 +121,7 @@ export function ViewerApp() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onMenu={() => setDrawerOpen(true)}
-        onBell={() => alert('알림 (준비 중)')}
+        onBell={() => setNotifOpen(true)}
       />
 
       <div className={styles.scroll}>
@@ -114,18 +129,20 @@ export function ViewerApp() {
         {tab === 'live' && <LiveTab courts={courts} onOpenCourt={setOpenCourt} />}
         {tab === 'vod' && <VodTab />}
         {tab === 'cal' && <ScheduleTab />}
-        {tab === 'my' && <MyTab onAddPractice={() => alert('연습 기록 추가 (준비 중)')} />}
+        {tab === 'my' && <MyTab />}
       </div>
 
       {tab === 'live' && (
-        <button className={styles.fab} onClick={() => alert('선수 영상 검색 (준비 중)')} aria-label="검색">🔍</button>
+        <button className={styles.fab} onClick={() => setSearchOpen(true)} aria-label="검색">🔍</button>
       )}
 
       <BottomNav active={tab} onChange={setTab} />
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} onItem={() => setDrawerOpen(false)} />
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} onItem={onDrawerItem} />
 
       <CourtSheet station={openCourt} open={!!openCourt} onClose={() => setOpenCourt(null)} />
+      <NotifSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
+      <SearchSheet open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }
