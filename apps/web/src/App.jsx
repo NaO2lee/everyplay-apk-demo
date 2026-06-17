@@ -53,6 +53,7 @@ import AnnounceConsole from './features/operator/AnnounceConsole';
 import ScoreboardScreen from './features/scoreboard/ScoreboardScreen';
 import AwardsConsole from './features/admin/AwardsConsole';
 import StationConsole from './features/admin/StationConsole';
+import SponsorConsole from './features/admin/SponsorConsole';
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
         {/* 시상 · OBS 스테이션 설정 (앱 디자인 콘솔, 데모) */}
         <Route path="/console/awards" element={<AwardsConsole />} />
         <Route path="/console/stations" element={<StationConsole />} />
+        <Route path="/console/sponsors" element={<SponsorConsole />} />
 
         {/* v3.3 — 역할별 페이지 (인증은 페이지 안에서 처리) */}
         <Route path="/judge" element={<JudgeHome />} />

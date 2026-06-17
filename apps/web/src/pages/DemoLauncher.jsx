@@ -37,7 +37,8 @@ const GROUPS = [
       { to: '/operate-app', emoji: '📣', label: 'AI 음성 호명', desc: '선수 호명 방송' },
       { to: '/scoreboard-demo', emoji: '🖥️', label: '전광판', desc: 'TV 표시 화면' },
       { to: '/console/awards', emoji: '🥇', label: '시상', desc: '포디움 1·2·3위' },
-      { to: '/sponsors', emoji: '📢', label: '광고 · 후원사', desc: '관객용 광고 화면' },
+      { to: '/sponsors', emoji: '📢', label: '광고 · 후원사 (관객용)', desc: '관객이 보는 광고 화면' },
+      { to: '/console/sponsors', emoji: '🤝', label: '후원사·광고 관리', desc: '홈 노출 후원사·광고 관리(운영)' },
     ],
   },
 ];
