@@ -1,0 +1,45 @@
+/* 앱 시작 인트로 — WEPLAY 로고 리빌 + 줄넘기 줄이 위/아래로 교차하며 지나감.
+   위 줄: 오른쪽→왼쪽 / 아래 줄: 왼쪽→오른쪽. 손잡이+줄은 은은히 빛나는 반투명 실루엣.
+   CSS 키프레임(헤드리스 캡처/저사양에서도 안정적). 다크 기본 + [data-theme=light] 대응. */
+.screen{
+  --cyan:#33D6D6; --blue:#5BA8FF; --purple:#B49CFF; --ink2:#9FB0CC; --ink3:#64748f;
+  position:relative;width:100%;min-height:100dvh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(720px 420px at 50% 40%, rgba(91,168,255,.20), transparent 70%),
+             linear-gradient(160deg,#0B1530,#070D18 58%,#0A1428);
+  font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+:global([data-theme="light"]) .screen{
+  --ink2:#55617A; --ink3:#8A95AC;
+  background:radial-gradient(720px 420px at 50% 40%, rgba(46,132,230,.16), transparent 70%),
+             linear-gradient(160deg,#EAF1FB,#F3F6FB 58%,#E7EEF8);
+}
+.screen *{box-sizing:border-box}
+
+/* 중앙 로고 */
+.center{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 24px;text-align:center}
+.glow{position:absolute;width:min(70vw,300px);height:min(70vw,300px);border-radius:50%;
+  background:radial-gradient(circle, rgba(51,214,214,.30), rgba(91,168,255,.15) 45%, transparent 68%);
+  filter:blur(18px);z-index:-1;opacity:0;animation:glowIn .9s ease .55s both}
+.logo{width:min(64vw,262px);max-width:80%;height:auto;display:block;opacity:0;
+  filter:drop-shadow(0 10px 34px rgba(51,214,214,.28));animation:logoIn .85s cubic-bezier(.22,.61,.36,1) .55s both}
+:global([data-theme="light"]) .logo{filter:drop-shadow(0 10px 28px rgba(46,132,230,.22))}
+.tagline{font-size:12.5px;letter-spacing:.26em;font-weight:800;color:var(--ink2);text-transform:uppercase;opacity:0;animation:fadeUp .6s ease 1.15s both}
+.sub{font-size:12px;color:var(--ink3);font-weight:600;letter-spacing:.02em;margin-top:-6px;opacity:0;animation:fadeUp .6s ease 1.45s both}
+
+/* 하단 힌트 / 컨트롤 */
+.skip{position:absolute;left:0;right:0;bottom:46px;z-index:4;text-align:center;font-size:12px;font-weight:600;color:var(--ink3);opacity:0;animation:fadeUp .8s ease 1.8s both}
+.replay{position:absolute;top:16px;right:16px;z-index:5;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:var(--ink2);
+  font-size:11.5px;font-weight:700;border-radius:999px;padding:7px 13px;cursor:pointer;font-family:inherit;backdrop-filter:blur(6px)}
+:global([data-theme="light"]) .replay{background:rgba(15,30,61,.05);border-color:rgba(15,30,61,.12)}
+.tapArea{position:absolute;inset:0;z-index:4;cursor:pointer}
+
+@keyframes logoIn{0%{opacity:0;transform:scale(.92) translateY(8px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes glowIn{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+
+@media (prefers-reduced-motion: reduce){
+  .logo,.glow,.tagline,.sub,.skip{animation-duration:.01ms!important;animation-delay:0ms!important}
+}

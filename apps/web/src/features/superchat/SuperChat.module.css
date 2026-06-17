@@ -1,0 +1,68 @@
+/* 슈퍼챗 / 후원 (데모) — 유튜브식 금액별 컬러 응원. WEPLAY 다크 기본 + [data-theme=light] */
+.screen{
+  --bg:#070D18; --surface:#13203A; --surface2:#1B2A47; --line:#293B5E; --line2:#3A5180;
+  --ink:#E9EEF8; --ink2:#9FB0CC; --ink3:#64748f;
+  --cyan:#33D6D6; --blue:#5BA8FF; --purple:#B49CFF; --mint:#34D4A6; --butter:#FFB648; --coral:#FF7A66;
+  --grad:linear-gradient(135deg,#33D6D6,#5BA8FF 55%,#B49CFF); --onAccent:#06121f;
+  --glow:0 0 0 1px rgba(91,168,255,.18),0 8px 24px rgba(51,214,214,.08);
+  --thumb:linear-gradient(135deg,#1d2c49,#0e1830);
+  max-width:460px;margin:0 auto;background:var(--bg);min-height:100dvh;color:var(--ink);
+  font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100dvh;
+}
+:global([data-theme="light"]) .screen{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#F1F5FA; --line:#E6EBF2; --line2:#D2DAE6;
+  --ink:#0F1E3D; --ink2:#55617A; --ink3:#8A95AC;
+  --cyan:#0FB5B5; --blue:#2E84E6; --purple:#7C5CFF; --mint:#11A37A; --butter:#C97E0A; --coral:#E8553C;
+  --grad:linear-gradient(135deg,#0FB5B5,#2E84E6 55%,#7C5CFF); --onAccent:#fff;
+  --glow:0 4px 16px rgba(46,132,230,.14); --thumb:linear-gradient(135deg,#cfd9ea,#e7eef8);
+}
+.screen *{box-sizing:border-box}
+.bar{display:flex;align-items:center;gap:12px;padding:16px 18px 8px;flex:none}
+.back{font-size:20px;color:var(--ink2);background:none;border:0;cursor:pointer;line-height:1}
+.barT{font-size:17px;font-weight:800}
+.barT b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* 대상 경기 컨텍스트 */
+.ctx{display:flex;align-items:center;gap:12px;margin:2px 18px 10px;background:var(--surface2);border:1px solid var(--line2);border-radius:15px;padding:11px 13px;flex:none}
+.ctxThumb{width:64px;height:40px;border-radius:9px;background:var(--thumb);display:grid;place-items:center;font-size:15px;color:var(--ink2);flex:none;position:relative;overflow:hidden}
+.ctxLive{position:absolute;top:3px;left:3px;font-size:8px;font-weight:800;color:#fff;background:var(--coral);padding:1px 4px;border-radius:4px}
+.ctxT{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctxS{font-size:11px;color:var(--ink3);margin-top:2px;font-weight:600}
+
+/* 피드 */
+.feedHd{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--ink2);padding:4px 20px 8px;flex:none}
+.feedHd i{width:7px;height:7px;border-radius:50%;background:var(--mint);display:inline-block}
+.feed{flex:1;overflow-y:auto;padding:2px 18px 10px;display:flex;flex-direction:column;gap:9px}
+.feed::-webkit-scrollbar{width:5px}
+.feed::-webkit-scrollbar-thumb{background:var(--line2);border-radius:5px}
+.sc{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.scTop{display:flex;align-items:center;gap:9px;padding:9px 13px;color:#06121f}
+.scAv{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.32);color:#06121f;font-size:11px;font-weight:800;display:grid;place-items:center;flex:none}
+.scNm{font-size:12.5px;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scAmt{font-size:13px;font-weight:900;font-variant-numeric:tabular-nums;flex:none}
+.scText{padding:10px 13px;font-size:13.5px;line-height:1.5;color:var(--ink);word-break:keep-all}
+.scPlain{padding:0}
+.scPlain .scTop{background:var(--surface2)!important;color:var(--ink)!important}
+.scPlain .scAv{background:var(--surface3,#22335A);color:var(--blue)}
+.scPlain .scNm{color:var(--ink)}
+.scPlain .scAmt{color:var(--mint)}
+
+/* 핀(고액) */
+.pinned{box-shadow:var(--glow)}
+.pinTag{font-size:9px;font-weight:800;padding:1px 6px;border-radius:5px;background:rgba(0,0,0,.18);color:#06121f;flex:none}
+
+/* 입력 영역 */
+.composer{flex:none;border-top:1px solid var(--line);background:var(--bg);padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px))}
+.tiers{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px}
+.tiers::-webkit-scrollbar{display:none}
+.tier{flex:none;min-width:62px;border:1.5px solid var(--line2);background:var(--surface);border-radius:12px;padding:9px 6px;cursor:pointer;font-family:inherit;text-align:center;color:var(--ink2)}
+.tierOn{border-color:transparent;color:#06121f;box-shadow:var(--glow)}
+.tierAmt{font-size:13px;font-weight:900;font-variant-numeric:tabular-nums}
+.tierK{font-size:9.5px;font-weight:700;margin-top:2px;opacity:.85}
+.inRow{display:flex;gap:8px;align-items:center}
+.in{flex:1;background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:12px 16px;color:var(--ink);font-size:13.5px;font-family:inherit;outline:none}
+.in::placeholder{color:var(--ink3)}
+.send{border:0;border-radius:999px;padding:0 16px;height:44px;font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit;color:#06121f;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.note{font-size:10.5px;color:var(--ink3);text-align:center;margin-top:10px;line-height:1.5;word-break:keep-all}
+.note b{color:var(--mint)}

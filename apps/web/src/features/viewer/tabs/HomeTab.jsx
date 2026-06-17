@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Play, Film, Trophy } from 'lucide-react';
 import { SCHEDULE, VOD_GROUPS } from '../data/mockData';
 
@@ -17,6 +18,7 @@ const SPONSORS = [
 ];
 
 export function HomeTab({ event, onGo }) {
+  const navigate = useNavigate();
   const live = event?.status === 'active';
   const courts = (event?.stations || []).length;
   const upcoming = SCHEDULE.flatMap((w) => w.items).filter((i) => i.status !== '마감').slice(0, 3);
@@ -92,20 +94,23 @@ export function HomeTab({ event, onGo }) {
         </div>
       </section>
 
-      {/* 6. 이 주의 기록 */}
+      {/* 6. 이 주의 기록 → 전체 랭킹 보드 */}
       <section>
-        <Head title="이 주의 기록" icon={<Trophy size={15} style={{ color: 'var(--butter)' }} />} />
+        <Head title="이 주의 기록" icon={<Trophy size={15} style={{ color: 'var(--butter)' }} />} onMore={() => navigate('/ranking/demo')} />
         <div style={rankCard}>
           {RANKING.map((r) => (
-            <div key={r.rank} style={rankRow}>
+            <button key={r.rank} onClick={() => navigate('/player/demo')} style={{ ...rankRow, width: '100%', background: 'none', border: 0, borderBottom: '1px solid var(--line)', cursor: 'pointer', textAlign: 'left', padding: '11px 0' }}>
               <span style={{ ...rankNo, ...(r.rank === 1 ? { background: 'var(--grad)', color: 'var(--accentInk)' } : {}) }}>{r.rank}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink)' }}>{r.name}</div>
                 <div style={{ fontSize: 11.5, color: 'var(--gray)' }}>{r.club} · {r.ev}</div>
               </div>
               <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{r.rec}</span>
-            </div>
+            </button>
           ))}
+          <button onClick={() => navigate('/ranking/demo')} style={{ width: '100%', background: 'none', border: 0, color: 'var(--blue)', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '12px 0 4px', fontFamily: 'inherit' }}>
+            전체 랭킹 보기 →
+          </button>
         </div>
       </section>
     </div>

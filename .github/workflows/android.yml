@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -46,9 +49,20 @@ jobs:
           chmod +x ./gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Rename APK
+        run: cp apps/web/android/app/build/outputs/apk/debug/app-debug.apk moduplay-app-demo-v6.apk
+
+      - name: Publish GitHub Release (public, no-login download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: demo-v6
+          name: "데모 v6 — 인트로 + 랭킹·프로필·커뮤니티·슈퍼챗"
+          body: "WEPLAY 모두의플레이 데모 v6. 인트로(로고 리빌) + P3 화면. 폰에선 PC/관리자 화면 숨김. 이전 버전 위에 덮어 설치 OK."
+          files: moduplay-app-demo-v6.apk
+
+      - name: Upload artifact (backup)
         uses: actions/upload-artifact@v4
         with:
           name: everyplay-demo-apk
-          path: apps/web/android/app/build/outputs/apk/debug/app-debug.apk
+          path: moduplay-app-demo-v6.apk
           if-no-files-found: error

@@ -6,11 +6,16 @@ import { useState } from 'react';
 const C = { bg: '#070D18', card: '#111B30', line: '#243152', ink: '#E8EDF7', ink2: '#A4AEC8', ink3: '#6C7796', cyan: '#33D6D6', blue: '#5BA8FF' };
 
 const SCREENS = [
+  { label: '인트로', path: '/intro/demo' },
   { label: '홈', path: '/app/demo' },
   { label: '중계', path: '/app/demo?tab=live' },
   { label: '대회일정', path: '/app/demo?tab=cal' },
   { label: '기록영상', path: '/app/demo?tab=vod' },
   { label: 'MY(기록)', path: '/app/demo?tab=my' },
+  { label: '랭킹', path: '/ranking/demo' },
+  { label: '선수프로필', path: '/player/demo' },
+  { label: '커뮤니티', path: '/community/demo' },
+  { label: '슈퍼챗', path: '/superchat/demo' },
   { label: '대회상세', path: '/competition/demo' },
   { label: '접수신청', path: '/apply/demo' },
   { label: '단체신청', path: '/apply/group/demo' },

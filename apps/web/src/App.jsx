@@ -54,6 +54,11 @@ import ScoreboardScreen from './features/scoreboard/ScoreboardScreen';
 import AwardsConsole from './features/admin/AwardsConsole';
 import StationConsole from './features/admin/StationConsole';
 import SponsorConsole from './features/admin/SponsorConsole';
+import RankingBoard from './features/ranking/RankingBoard';
+import PlayerProfile from './features/player/PlayerProfile';
+import CommunityBoard from './features/community/CommunityBoard';
+import SuperChat from './features/superchat/SuperChat';
+import IntroScreen from './features/intro/IntroScreen';
 
 function App() {
   return (
@@ -86,6 +91,12 @@ function App() {
         <Route path="/apply/group/demo" element={<GroupApply />} />
         <Route path="/settings/demo" element={<Settings />} />
         <Route path="/alarm/demo" element={<AlarmSettings />} />
+        {/* P3 신규 — 인트로·랭킹·선수 프로필·커뮤니티·슈퍼챗 (데모) */}
+        <Route path="/intro/demo" element={<IntroScreen />} />
+        <Route path="/ranking/demo" element={<RankingBoard />} />
+        <Route path="/player/demo" element={<PlayerProfile />} />
+        <Route path="/community/demo" element={<CommunityBoard />} />
+        <Route path="/superchat/demo" element={<SuperChat />} />
         {/* 심판 채점 (앱 디자인) — 5월 /judge-grid 로직 재사용 */}
         <Route path="/judge-app" element={<JudgeScore />} />
         {/* AI 음성 호명 (앱 디자인) — 5월 /operate 로직 재사용 */}

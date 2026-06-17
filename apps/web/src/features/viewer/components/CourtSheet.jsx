@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import styles from '../ViewerApp.module.css';
 import { useStationHeat, extractYouTubeId } from '../hooks/useStationHeat';
@@ -22,6 +23,7 @@ function LiveTimer({ startedAt }) {
 
 // 코트 상세 — 아래에서 올라오는 바텀시트 (뒤로가기 버튼 없음, ↓밀기/바깥탭 닫기)
 export function CourtSheet({ station, open, onClose }) {
+  const navigate = useNavigate();
   const heat = useStationHeat(station?.id);
   const videoId = extractYouTubeId(station?.youtube_stream_url);
   const isLive = heat.status === 'live';
@@ -158,6 +160,18 @@ export function CourtSheet({ station, open, onClose }) {
                   </div>
                 </div>
               )}
+              <button
+                onClick={() => navigate('/superchat/demo')}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', marginTop: 12, padding: '12px 14px', border: 0, borderRadius: 14, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'var(--grad)', color: 'var(--accentInk)', boxShadow: 'var(--glow)' }}
+              >
+                <span style={{ fontSize: 20 }}>💎</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'block', fontSize: 14, fontWeight: 800 }}>슈퍼챗으로 응원·후원하기</span>
+                  <span style={{ display: 'block', fontSize: 11.5, fontWeight: 600, opacity: 0.85 }}>금액별 컬러 메시지로 선수에게 힘을 — 후원금은 선수·대회 지원에</span>
+                </span>
+                <span style={{ fontSize: 18, fontWeight: 800 }}>›</span>
+              </button>
+
               <div className={styles.chatWrap}>
                 <div className={styles.chatHd}>
                   <span className={styles.chatHdT}>💬 응원 댓글 <span style={{ color: 'var(--gray)', fontWeight: 600 }}>· {msgs.length}</span></span>
