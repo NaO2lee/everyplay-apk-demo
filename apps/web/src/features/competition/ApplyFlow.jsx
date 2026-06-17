@@ -100,7 +100,7 @@ export function ApplyFlow() {
         {cur === 'name' && (
           <div className={styles.q}>
             <div className={styles.qBig}>선수 이름을<br />알려주세요</div>
-            <input className={styles.bigIn} value={name} onChange={(e) => setName(e.target.value)} placeholder="이름 입력" autoFocus />
+            <input className={styles.bigIn} value={name} onChange={(e) => setName(e.target.value)} placeholder="이름 입력" />
           </div>
         )}
         {cur === 'div' && (
@@ -117,14 +117,14 @@ export function ApplyFlow() {
           <div className={styles.q}>
             <div className={styles.qBig}>어디 소속이세요?</div>
             <div className={styles.qSub}>클럽 또는 학교 이름을 적어주세요</div>
-            <input className={styles.bigIn} value={club} onChange={(e) => setClub(e.target.value)} placeholder="예: 화성 점프클럽" autoFocus />
+            <input className={styles.bigIn} value={club} onChange={(e) => setClub(e.target.value)} placeholder="예: 화성 점프클럽" />
           </div>
         )}
         {cur === 'phone' && (
           <div className={styles.q}>
             <div className={styles.qBig}>연락처를<br />알려주세요</div>
             <div className={styles.qSub}>접수 확인·대회 안내를 보내드려요</div>
-            <input className={styles.bigIn} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="010-0000-0000" autoFocus />
+            <input className={styles.bigIn} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="010-0000-0000" />
           </div>
         )}
         {cur === 'confirm' && (

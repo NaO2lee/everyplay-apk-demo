@@ -1,4 +1,4 @@
-import { Radio, Cpu, CalendarDays, ChevronRight, Play, Film, Trophy } from 'lucide-react';
+import { ChevronRight, Play, Film, Trophy } from 'lucide-react';
 import { SCHEDULE, VOD_GROUPS } from '../data/mockData';
 
 // 홈 (앱 첫 진입) — 잡지책 느낌. 차별점 = 실시간 코트 중계 + AI 자동 기록을 전면에.
@@ -8,6 +8,12 @@ const RANKING = [
   { rank: 1, name: '김서연', club: '서울 줄넘기클럽', rec: '85회', ev: '30초 스피드' },
   { rank: 2, name: '박도윤', club: '화성 점프', rec: '83회', ev: '30초 스피드' },
   { rank: 3, name: 'Y. TANAKA', club: 'Tokyo RJ', rec: '82회', ev: '30초 스피드' },
+];
+// 후원사·협찬 (홈 노출) — TODO(backend): 관리자 후원사/광고 관리에서 설정한 목록
+const SPONSORS = [
+  { name: '대한민국줄넘기협회', tag: '주관', logo: '/brand/krsa-logo-white.png' },
+  { name: 'WEPLAY', tag: '주최', logo: '/brand/weplay-wordmark-white.png' },
+  { name: 'NARIA 스탠와이어', tag: '공식 줄넘기', logo: null },
 ];
 
 export function HomeTab({ event, onGo }) {
@@ -30,12 +36,20 @@ export function HomeTab({ event, onGo }) {
         </div>
       </button>
 
-      {/* 2. 차별점 — 라이브 + AI (테니스타운과 다른 점) */}
-      <div style={featRow}>
-        <Feature icon={<Radio size={18} />} label="실시간 코트 중계" />
-        <Feature icon={<Cpu size={18} />} label="AI 자동 기록" />
-        <Feature icon={<CalendarDays size={18} />} label="대회 한눈에" />
-      </div>
+      {/* 2. 후원사 / 협찬 */}
+      <section>
+        <Head title="공식 후원·협찬" />
+        <div style={spGrid}>
+          {SPONSORS.map((s) => (
+            <div key={s.name} style={spCell}>
+              {s.logo
+                ? <img src={s.logo} alt={s.name} style={spLogo} />
+                : <span style={{ fontSize: 12.5, fontWeight: 800, textAlign: 'center', color: 'var(--ink)', lineHeight: 1.3 }}>{s.name}</span>}
+              <span style={spTag}>{s.tag}</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* 3. 광고 블럭 */}
       <div style={adBlock}>
@@ -98,14 +112,6 @@ export function HomeTab({ event, onGo }) {
   );
 }
 
-function Feature({ icon, label }) {
-  return (
-    <div style={feat}>
-      <span style={featIc}>{icon}</span>
-      <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--ink2)', textAlign: 'center', lineHeight: 1.3 }}>{label}</span>
-    </div>
-  );
-}
 function Head({ title, onMore, icon }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '2px 2px 12px' }}>
@@ -131,9 +137,10 @@ const heroTitle = { fontSize: 25, fontWeight: 800, marginTop: 12, letterSpacing:
 const heroSub = { fontSize: 13, color: 'var(--ink2)', marginTop: 8 };
 const heroCta = { display: 'inline-flex', alignItems: 'center', marginTop: 16, background: 'var(--grad)', color: 'var(--accentInk)', fontWeight: 800, fontSize: 14, padding: '10px 18px', borderRadius: 12, boxShadow: 'var(--glow)' };
 
-const featRow = { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 };
-const feat = { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 15, padding: '15px 6px', boxShadow: 'var(--shadow)' };
-const featIc = { width: 38, height: 38, borderRadius: 11, display: 'grid', placeItems: 'center', background: 'var(--chipBg)', color: 'var(--accent)' };
+const spGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 };
+const spCell = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 15, padding: '16px 8px', minHeight: 76, boxShadow: 'var(--shadow)' };
+const spLogo = { height: 24, width: 'auto', maxWidth: '92%', objectFit: 'contain' };
+const spTag = { fontSize: 10.5, fontWeight: 700, color: 'var(--gray)' };
 
 const adBlock = { display: 'flex', alignItems: 'center', gap: 12, background: 'var(--card)', border: '1px dashed var(--line2)', borderRadius: 16, padding: '13px 15px' };
 const adTag = { fontSize: 10, fontWeight: 800, color: 'var(--gray)', border: '1px solid var(--line2)', borderRadius: 5, padding: '2px 6px', flexShrink: 0 };

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import { resolveTheme } from '../../lib/theme';
 import { DEMO_EVENT } from './data/mockData';
 import styles from './ViewerApp.module.css';
 import { AppHeader } from './components/AppHeader';
@@ -37,13 +38,17 @@ export function ViewerApp() {
   const [openCourt, setOpenCourt] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const scrollRef = useRef(null);
+  // 탭 바꾸면 스크롤 맨 위로 (다가오는 대회→일정 등에서 중간부터 보이는 문제 방지)
+  useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [tab]);
 
   // 드로어 메뉴 → 화면 이동 (탭 전환 또는 라우트)
   const onDrawerItem = (it) => {
     setDrawerOpen(false);
     const L = it.label || '';
     if (L.includes('로그인')) navigate('/signup');
-    else if (L.includes('알림') || L.includes('설정')) navigate('/settings/demo');
+    else if (L.includes('알림')) navigate('/alarm/demo');
+    else if (L.includes('설정')) navigate('/settings/demo');
     else if (L.includes('대회 일정') || L.includes('즐겨찾기')) setTab('cal');
     else if (L.includes('영상')) setTab('vod');
     else if (L.includes('대회 선택') || L.includes('전체 대회')) setTab('home');
@@ -51,17 +56,13 @@ export function ViewerApp() {
   };
 
   // 다크/라이트 테마 (기본 다크) — 선택 유지
-  const [theme, setThemeState] = useState(() => {
+  // 테마는 설정(/settings/demo)에서 관리. 여기선 적용 값만 읽어 .app data-theme에 반영.
+  const [theme] = useState(() => {
     try {
       const q = new URLSearchParams(window.location.search).get('theme');
       if (q === 'light' || q === 'dark') return q;
-      return localStorage.getItem('mp_theme') || 'dark';
-    } catch { return 'dark'; }
-  });
-  const toggleTheme = () => setThemeState((t) => {
-    const next = t === 'dark' ? 'light' : 'dark';
-    try { localStorage.setItem('mp_theme', next); } catch { /* ignore */ }
-    return next;
+    } catch { /* ignore */ }
+    return resolveTheme(); // 모드(다크/라이트/시스템) 해석 → 실제 적용 테마
   });
 
   useEffect(() => {
@@ -118,13 +119,12 @@ export function ViewerApp() {
         title={HEAD.title}
         subtitle={HEAD.subtitle}
         live={HEAD.live}
-        theme={theme}
-        onToggleTheme={toggleTheme}
         onMenu={() => setDrawerOpen(true)}
         onBell={() => setNotifOpen(true)}
+        onProfile={tab !== 'my' ? () => setTab('my') : undefined}
       />
 
-      <div className={styles.scroll}>
+      <div className={styles.scroll} ref={scrollRef}>
         {tab === 'home' && <HomeTab event={event} onGo={setTab} />}
         {tab === 'live' && <LiveTab courts={courts} onOpenCourt={setOpenCourt} />}
         {tab === 'vod' && <VodTab />}

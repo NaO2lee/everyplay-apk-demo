@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { ModalProvider } from './components/Modal';
-import ThemeToggle from './components/ThemeToggle';
 import AdminLogin from './pages/AdminLogin';
 import AdminRoute from './components/AdminRoute';
 import EventList from './pages/EventList';
@@ -48,6 +47,7 @@ import CompetitionDetail from './features/competition/CompetitionDetail';
 import ApplyFlow from './features/competition/ApplyFlow';
 import GroupApply from './features/competition/GroupApply';
 import Settings from './pages/Settings';
+import AlarmSettings from './pages/AlarmSettings';
 import JudgeScore from './features/judge/JudgeScore';
 import AnnounceConsole from './features/operator/AnnounceConsole';
 import ScoreboardScreen from './features/scoreboard/ScoreboardScreen';
@@ -58,7 +58,6 @@ function App() {
   return (
     <BrowserRouter>
       <ModalProvider>
-      <ThemeToggle />
       <Routes>
         {/* 데모 빌드 진입점 — 우리가 만든 화면 런처 (실제 앱은 /home = Home) */}
         <Route path="/" element={<DemoLauncher />} />
@@ -85,6 +84,7 @@ function App() {
         <Route path="/apply/demo" element={<ApplyFlow />} />
         <Route path="/apply/group/demo" element={<GroupApply />} />
         <Route path="/settings/demo" element={<Settings />} />
+        <Route path="/alarm/demo" element={<AlarmSettings />} />
         {/* 심판 채점 (앱 디자인) — 5월 /judge-grid 로직 재사용 */}
         <Route path="/judge-app" element={<JudgeScore />} />
         {/* AI 음성 호명 (앱 디자인) — 5월 /operate 로직 재사용 */}

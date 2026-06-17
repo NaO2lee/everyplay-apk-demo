@@ -59,24 +59,26 @@ export function ScheduleTab() {
 
   return (
     <div className={styles.pageFade}>
-      <div className={styles.schMonth}>
-        <button aria-label="이전 달">‹</button>
-        <b>{SCHEDULE_MONTH}</b>
-        <button aria-label="다음 달">›</button>
-      </div>
+      <div className={styles.schSticky}>
+        <div className={styles.schMonth}>
+          <button aria-label="이전 달">‹</button>
+          <b>{SCHEDULE_MONTH}</b>
+          <button aria-label="다음 달">›</button>
+        </div>
 
-      <div className={styles.schtabs}>
-        {SCHEDULE_STATUS_TABS.map((t) => (
-          <button key={t} className={`${styles.schtab} ${status === t ? styles.schtabOn : ''}`} onClick={() => setStatus(t)}>{t}</button>
-        ))}
-      </div>
-      <div className={styles.schtabs2}>
-        {SCHEDULE_EVENT_TABS.map((t) => (
-          <button key={t} className={`${styles.schtab2} ${event === t ? styles.schtab2On : ''}`} onClick={() => setEvent(t)}>{t}</button>
-        ))}
-      </div>
+        <div className={styles.schtabs}>
+          {SCHEDULE_STATUS_TABS.map((t) => (
+            <button key={t} className={`${styles.schtab} ${status === t ? styles.schtabOn : ''}`} onClick={() => setStatus(t)}>{t}</button>
+          ))}
+        </div>
+        <div className={styles.schtabs2}>
+          {SCHEDULE_EVENT_TABS.map((t) => (
+            <button key={t} className={`${styles.schtab2} ${event === t ? styles.schtab2On : ''}`} onClick={() => setEvent(t)}>{t}</button>
+          ))}
+        </div>
 
-      <div className={styles.schSearch}>🔍 대회명 검색</div>
+        <div className={styles.schSearch}>🔍 대회명 검색</div>
+      </div>
 
       {groups.length === 0 ? (
         <div className={styles.schEmpty}>조건에 맞는 대회가 없어요</div>

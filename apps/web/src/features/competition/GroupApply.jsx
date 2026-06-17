@@ -119,7 +119,7 @@ export function GroupApply() {
 
             {adding && (
               <div className={styles.addForm}>
-                <input className={styles.fin} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="선수 이름" autoFocus />
+                <input className={styles.fin} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="선수 이름" />
                 <div className={styles.addLbl}>참가부</div>
                 <div className={styles.miniChips}>{DIVS.map((d) => <button key={d} className={`${styles.miniChip} ${f.div === d ? styles.miniChipOn : ''}`} onClick={() => setF({ ...f, div: d })}>{d}</button>)}</div>
                 <div className={styles.addLbl}>출전 종목 (복수 선택)</div>
