@@ -45,7 +45,8 @@ export function ScheduleTab() {
       case '관심': return favs.has(it.id);
       case '모집중': return ['접수중', '임박'].includes(it.status);
       case '모집예정': return it.status === '모집예정';
-      default: return true; // 전체 / My
+      case 'My': return !!it.applied; // 내가 신청한 대회
+      default: return true; // 전체
     }
   };
   const matchEvent = (it) => event === '전체' || it.event === event;
@@ -93,6 +94,7 @@ export function ScheduleTab() {
                 <div className={styles.schDate}>
                   <span className={`${styles.schDay} ${it.main ? styles.schDayMain : ''}`}>{it.day}</span>
                   <span className={styles.schDow}>{it.dow}</span>
+                  {it.applied && <span className={styles.schApplied}>✓신청</span>}
                 </div>
                 <div className={styles.schDivV} />
                 <div className={styles.schBody}>

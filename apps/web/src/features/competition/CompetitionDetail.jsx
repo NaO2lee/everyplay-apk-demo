@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import styles from './Competition.module.css';
+
+const PER_PAGE = 10; // 참가자 명단 페이지당 최대 인원
 
 /* 대회 상세 (데모) — /competition/demo. 2026 전국 한마당 줄넘기대회 기반.
    탭: 요강 · 참가자(응원♥) · 대진표(공개일) · 공지·문의. TODO(backend): 대회 상세 API. */
@@ -13,7 +15,7 @@ const INFO = [
   { ic: '🤸', k: '대상', v: '유치부 ~ 일반부 (개인/단체)' },
   { ic: '🗓️', k: '접수', v: '~ 6. 26.(금) 18:00 마감', hot: true },
   { ic: '💳', k: '참가비', v: '개인 20,000원 · 단체 팀당 40,000원' },
-  { ic: '🏦', k: '계좌', v: '농협 351-1172-5792-93 (대한민국줄넘기협회)', copy: true },
+  { ic: '🏦', k: '계좌', v: '농협 351-1172-5792-93 (경기도줄넘기협회)', copy: true },
   { ic: '📞', k: '문의', v: '031-000-0000 · krsa@skiprope.co.kr' },
 ];
 const EVENTS = ['⚡ 30초 스피드', '⚡ 2인 릴레이', '⚡ 4인 릴레이', '⚡ 더블더치 릴레이', '🤸 개인 프리스타일', '🤸 팀쇼'];
@@ -30,7 +32,7 @@ const DOCS = [
   { name: '출전 자격 · 연령 기준표', type: '한글 HWP', size: '320KB', file: '#', ic: '📑' },
   { name: '단체 참가 신청서 양식', type: '한글 HWP', size: '210KB', file: '#', ic: '📝' },
 ];
-// 참가자 명단 (+응원 ♥) — TODO(backend): GET /events/{code}/participants
+// 참가자 명단 (+응원 ♥) — 검색·부·종목 필터. TODO(backend): GET /events/{code}/participants?q=&div=&event= (300명+ 페이지네이션)
 const PARTICIPANTS = [
   { id: 'p1', name: '김도윤', club: '서울 줄넘기클럽', div: '초등부', ev: '30초 스피드', cheers: 24 },
   { id: 'p2', name: '이서아', club: '부산 스피드', div: '초등부', ev: '30초 스피드', cheers: 18 },
@@ -40,13 +42,38 @@ const PARTICIPANTS = [
   { id: 'p6', name: '윤채원', club: '천안 로프', div: '중등부', ev: '더블더치', cheers: 14 },
   { id: 'p7', name: '서지안', club: '국가대표 A', div: '일반부', ev: '팀쇼', cheers: 42 },
   { id: 'p8', name: '최유나', club: '인천 점프', div: '초등부', ev: '4인 릴레이', cheers: 7 },
+  { id: 'p9', name: '박지호', club: '서울 줄넘기클럽', div: '초등부', ev: '30초 스피드', cheers: 5 },
+  { id: 'p10', name: '한지우', club: '대구 로프', div: '고등부', ev: '개인 프리스타일', cheers: 11 },
+  { id: 'p11', name: '정유나', club: '광주 줄넘기', div: '중등부', ev: '더블더치', cheers: 8 },
+  { id: 'p12', name: '김하준', club: '서울 줄넘기클럽', div: '유치부', ev: '30초 스피드', cheers: 3 },
+  { id: 'p13', name: 'Mei Lin', club: 'Beijing RC', div: '일반부', ev: '팀쇼', cheers: 27 },
+  { id: 'p14', name: '오지안', club: '수원 프리스타일', div: '고등부', ev: '4인 릴레이', cheers: 6 },
+  { id: 'p15', name: '이도현', club: '대전 로프', div: '중등부', ev: '2인 릴레이', cheers: 10 },
+  { id: 'p16', name: '최서윤', club: '인천 점프', div: '초등부', ev: '개인 프리스타일', cheers: 15 },
+  { id: 'p17', name: '강하늘', club: '제주 점프', div: '일반부', ev: '30초 스피드', cheers: 19 },
+  { id: 'p18', name: '윤서준', club: '천안 로프', div: '고등부', ev: '더블더치', cheers: 4 },
 ];
-// 대진표(조편성) — Tennis-Town식: 공개일에 오픈
+const TOTAL_PARTICIPANTS = 312; // 실제 접수 인원 (데모는 일부만 표시)
+const P_DIVS = ['전체', '유치부', '초등부', '중등부', '고등부', '일반부'];
+const P_EVENTS = ['전체', '30초 스피드', '더블더치', '개인 프리스타일', '4인 릴레이', '2인 릴레이', '팀쇼'];
+
+// 대진표(조편성) — 종목별. 공개일에 오픈. TODO(backend): GET /events/{code}/bracket?event=
 const BRACKET_OPEN = '7/15(화) 18:00';
-const GROUPS = [
-  { name: 'A조', court: '코트 1', players: ['김도윤', '이서아', 'Yuki Tanaka', '박지호'] },
-  { name: 'B조', court: '코트 2', players: ['최하준', 'Mei Lin', '정유나', '한지우'] },
-  { name: 'C조', court: '코트 3', players: ['강민재', '윤채원', 'Liam Park'] },
+const BRACKET = [
+  { ev: '30초 스피드', groups: [
+    { name: 'A조', court: '코트 1', players: ['김도윤', '이서아', 'Yuki Tanaka', '박지호'] },
+    { name: 'B조', court: '코트 2', players: ['강하늘', '김하준', '최하준', '이준'] },
+  ] },
+  { ev: '더블더치', groups: [
+    { name: 'A조', court: '코트 3', players: ['강민재', '윤채원', '정유나', '윤서준'] },
+    { name: 'B조', court: '코트 4', players: ['한지우', 'Liam Park', '박서진', '오시우'] },
+  ] },
+  { ev: '개인 프리스타일', groups: [
+    { name: 'A조', court: '코트 1', players: ['오세훈', '한지우', '최서윤'] },
+  ] },
+  { ev: '팀쇼', groups: [
+    { name: 'A조', court: '코트 2', players: ['서지안', 'Mei Lin', '국가대표 A팀'] },
+  ] },
 ];
 const NOTICES = [
   { id: 'no1', title: '대진표는 7/15(화) 18시에 공개됩니다', date: '6/14' },
@@ -61,6 +88,32 @@ const QNA = [
 
 const TABS = [['guide', '요강'], ['players', '참가자'], ['bracket', '대진표'], ['qna', '공지·문의']];
 
+// 연령·종목 선택용 아코디언 드롭다운 (화살표 ▾, 탭하면 옵션 펼침)
+function Dropdown({ label, value, options, onChange }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={styles.dd}>
+      <button className={`${styles.ddBtn} ${open ? styles.ddBtnOpen : ''}`} onClick={() => setOpen((o) => !o)}>
+        <span className={styles.ddLabel}>{label}</span>
+        <span className={styles.ddVal}>{value}</span>
+        <span className={`${styles.ddArrow} ${open ? styles.ddArrowOpen : ''}`}>▾</span>
+      </button>
+      {open && (
+        <>
+          <div className={styles.ddDim} onClick={() => setOpen(false)} />
+          <div className={styles.ddPanel}>
+            {options.map((o) => (
+              <button key={o} className={`${styles.ddOpt} ${o === value ? styles.ddOptOn : ''}`} onClick={() => { onChange(o); setOpen(false); }}>
+                {o}{o === value && ' ✓'}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function CompetitionDetail() {
   const navigate = useNavigate();
   const [tab, setTab] = useState(() => {
@@ -70,8 +123,24 @@ export function CompetitionDetail() {
   const [cheered, setCheered] = useState({});
   const [ask, setAsk] = useState('');
   const [asked, setAsked] = useState(false);
+  const [pSearch, setPSearch] = useState('');
+  const [pDiv, setPDiv] = useState('전체');
+  const [pEv, setPEv] = useState('전체');
+  const [bEv, setBEv] = useState(BRACKET[0].ev);
+  const [pPage, setPPage] = useState(0);
   const copyAccount = () => { try { navigator.clipboard.writeText('351-1172-5792-93'); alert('계좌번호가 복사됐어요'); } catch { /* ignore */ } };
   const toggleCheer = (id) => setCheered((c) => ({ ...c, [id]: !c[id] }));
+
+  const q = pSearch.trim().toLowerCase();
+  const filteredP = PARTICIPANTS.filter((p) =>
+    (pDiv === '전체' || p.div === pDiv)
+    && (pEv === '전체' || p.ev === pEv)
+    && (!q || p.name.toLowerCase().includes(q) || p.club.toLowerCase().includes(q)));
+  // 필터·검색 바뀌면 1페이지로
+  useEffect(() => { setPPage(0); }, [pDiv, pEv, pSearch]);
+  const totalPages = Math.max(1, Math.ceil(filteredP.length / PER_PAGE));
+  const pageP = filteredP.slice(pPage * PER_PAGE, pPage * PER_PAGE + PER_PAGE);
+  const bracketGroups = BRACKET.find((b) => b.ev === bEv)?.groups || [];
 
   return (
     <div className={styles.screen}>
@@ -83,7 +152,7 @@ export function CompetitionDetail() {
       <div className={styles.ctabs}>
         {TABS.map(([k, label]) => (
           <button key={k} className={`${styles.ctab} ${tab === k ? styles.ctabOn : ''}`} onClick={() => setTab(k)}>
-            {label}{k === 'players' && ` ${PARTICIPANTS.length}`}
+            {label}{k === 'players' && ` ${TOTAL_PARTICIPANTS}`}
           </button>
         ))}
       </div>
@@ -130,22 +199,41 @@ export function CompetitionDetail() {
 
         {tab === 'players' && (
           <>
-            <div className={styles.sec} style={{ marginTop: 16 }}>🙋 참가자 명단 <span className={styles.secHint}>응원 ♥로 선수에게 힘을</span></div>
-            {PARTICIPANTS.map((p) => {
-              const on = !!cheered[p.id];
-              return (
-                <div key={p.id} className={styles.prow}>
-                  <span className={styles.pav}>{p.name.charAt(0)}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className={styles.pnm}>{p.name}<small>{p.div}</small></div>
-                    <div className={styles.pmeta}>{p.club} · {p.ev}</div>
+            <div className={styles.sec} style={{ marginTop: 16 }}>🙋 참가자 명단 <span className={styles.secHint}>총 {TOTAL_PARTICIPANTS}명 접수</span></div>
+            <input className={styles.pSearch} value={pSearch} onChange={(e) => setPSearch(e.target.value)} placeholder="🔍 이름·소속 검색" />
+            <div className={styles.ddRow}>
+              <Dropdown label="연령" value={pDiv} options={P_DIVS} onChange={setPDiv} />
+              <Dropdown label="종목" value={pEv} options={P_EVENTS} onChange={setPEv} />
+            </div>
+            <div className={styles.pCount}>{filteredP.length}명{(pDiv !== '전체' || pEv !== '전체' || q) ? ' (필터 적용)' : ' 접수'} · {pPage + 1}/{totalPages} 페이지</div>
+            {filteredP.length === 0 ? (
+              <div className={styles.pEmpty}>검색·필터 결과가 없어요</div>
+            ) : (
+              <>
+                {pageP.map((p) => {
+                  const on = !!cheered[p.id];
+                  return (
+                    <div key={p.id} className={styles.prow}>
+                      <span className={styles.pav}>{p.name.charAt(0)}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className={styles.pnm}>{p.name}<small>{p.div}</small></div>
+                        <div className={styles.pmeta}>{p.club} · {p.ev}</div>
+                      </div>
+                      <button className={`${styles.cheer} ${on ? styles.cheerOn : ''}`} onClick={() => toggleCheer(p.id)} aria-label="응원">
+                        {on ? '♥' : '♡'} <span className={styles.cheerN}>{p.cheers + (on ? 1 : 0)}</span>
+                      </button>
+                    </div>
+                  );
+                })}
+                {totalPages > 1 && (
+                  <div className={styles.pager}>
+                    <button className={styles.pagerBtn} disabled={pPage === 0} onClick={() => setPPage((pg) => Math.max(0, pg - 1))}>‹ 이전</button>
+                    <span className={styles.pagerNum}>{pPage + 1} / {totalPages}</span>
+                    <button className={styles.pagerBtn} disabled={pPage >= totalPages - 1} onClick={() => setPPage((pg) => Math.min(totalPages - 1, pg + 1))}>다음 ›</button>
                   </div>
-                  <button className={`${styles.cheer} ${on ? styles.cheerOn : ''}`} onClick={() => toggleCheer(p.id)} aria-label="응원">
-                    {on ? '♥' : '♡'} <span className={styles.cheerN}>{p.cheers + (on ? 1 : 0)}</span>
-                  </button>
-                </div>
-              );
-            })}
+                )}
+              </>
+            )}
           </>
         )}
 
@@ -153,9 +241,13 @@ export function CompetitionDetail() {
           <>
             <div className={styles.bracketNote}>
               <Info size={16} style={{ color: 'var(--blue)', flexShrink: 0, marginTop: 1 }} />
-              <span>대진표(조편성)는 <b>{BRACKET_OPEN}</b>에 공개돼요. 아래는 미리보기예요 — 확정되면 알림으로 알려드릴게요.</span>
+              <span>대진표(조편성)는 <b>{BRACKET_OPEN}</b>에 <b>종목별로</b> 공개돼요. 아래는 미리보기예요 — 확정되면 알림으로 알려드릴게요.</span>
             </div>
-            {GROUPS.map((g) => (
+            <div className={styles.ddRow}>
+              <Dropdown label="종목" value={bEv} options={BRACKET.map((b) => b.ev)} onChange={setBEv} />
+            </div>
+            <div className={styles.pCount}>{bEv} · {bracketGroups.length}개 조</div>
+            {bracketGroups.map((g) => (
               <div key={g.name} className={styles.grp}>
                 <div className={styles.grpHd}>{g.name}<span className={styles.grpCourt}>{g.court}</span></div>
                 <div className={styles.grpP}>{g.players.map((pl) => <span key={pl} className={styles.grpChip}>{pl}</span>)}</div>

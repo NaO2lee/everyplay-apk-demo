@@ -17,9 +17,8 @@ const SPONSORS = [
   { name: 'NARIA 스탠와이어', tag: '공식 줄넘기', logo: null },
 ];
 
-export function HomeTab({ event, onGo }) {
+export function HomeTab({ event, onGo, live = false }) {
   const navigate = useNavigate();
-  const live = event?.status === 'active';
   const courts = (event?.stations || []).length;
   const upcoming = SCHEDULE.flatMap((w) => w.items).filter((i) => i.status !== '마감').slice(0, 3);
   const highlights = (VOD_GROUPS[0]?.clips || []).concat(VOD_GROUPS[1]?.clips || []).slice(0, 5);

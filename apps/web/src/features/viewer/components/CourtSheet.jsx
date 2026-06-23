@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw } from 'lucide-react';
 import styles from '../ViewerApp.module.css';
 import { useStationHeat, extractYouTubeId } from '../hooks/useStationHeat';
-import { CHAT_SEED, CHAT_MORE, CHEER_PRESETS, DEMO_MATCH } from '../data/mockData';
+import { DEMO_MATCH } from '../data/mockData';
+import { ChatPanel } from './ChatPanel';
 
 // 경과 시간 타이머 (매초 강제 리렌더, 값은 렌더에서 계산 — 이펙트 내 setState 회피)
 function fmtElapsed(startedAt) {
@@ -22,39 +22,13 @@ function LiveTimer({ startedAt }) {
 }
 
 // 코트 상세 — 아래에서 올라오는 바텀시트 (뒤로가기 버튼 없음, ↓밀기/바깥탭 닫기)
-export function CourtSheet({ station, open, onClose }) {
+export function CourtSheet({ station, open, onClose, live = true }) {
   const navigate = useNavigate();
   const heat = useStationHeat(station?.id);
   const videoId = extractYouTubeId(station?.youtube_stream_url);
   const isLive = heat.status === 'live';
   const videoRef = useRef(null);
-  const chatRef = useRef(null);
-  const [msgs, setMsgs] = useState(CHAT_SEED);
-  const [text, setText] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const moreRef = useRef(0);
-  const hm = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
-  const send = (t) => {
-    const v = (t ?? text).trim();
-    if (!v) return;
-    setMsgs((m) => [...m, { id: `me${m.length}`, name: '나', color: '#33D6D6', text: v, time: hm() }]);
-    setText('');
-  };
-  // 실시간 푸시 대신 새로고침(요청 시에만 로드) — 서버 부하↓ (백엔드 권고)
-  const refresh = () => {
-    if (refreshing) return;
-    setRefreshing(true);
-    setTimeout(() => {
-      const next = CHAT_MORE[moreRef.current];
-      if (next) { setMsgs((m) => [...m, next]); moreRef.current += 1; }
-      setRefreshing(false);
-    }, 500);
-  };
-
-  // 새 메시지 → 채팅 내부 스크롤만 맨 아래로 (화면 전체는 안 밀림)
-  useEffect(() => {
-    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
-  }, [msgs]);
+  const [showPlayers, setShowPlayers] = useState(false);
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -105,13 +79,26 @@ export function CourtSheet({ station, open, onClose }) {
                 <span className={`${styles.matchTag} ${styles.matchTagCyan}`}>HIT {heat.heat_number ?? DEMO_MATCH.hit}</span>
                 <span className={styles.matchTag}>{heat.event_type || DEMO_MATCH.event}</span>
               </div>
-              <div className={styles.chips} style={{ marginBottom: 14 }}>
-                {(heat.participants?.length ? heat.participants.map((p) => ({ name: nameOf(p), flag: '🇰🇷' })) : DEMO_MATCH.players).map((p, i) => (
-                  <span key={i} className={styles.chip}>
-                    <span className={styles.chipAv}>{String(p.name).charAt(0)}</span>{p.flag} {p.name}
-                  </span>
-                ))}
-              </div>
+              {/* 출전 선수 — 아코디언 더보기 (영상 준비중일 때 깔끔하게 접어둠) */}
+              {(() => {
+                const players = heat.participants?.length ? heat.participants.map((p) => ({ name: nameOf(p), flag: '🇰🇷' })) : DEMO_MATCH.players;
+                return (
+                  <div style={{ marginBottom: 14 }}>
+                    <button className={styles.accBtn} onClick={() => setShowPlayers((v) => !v)}>
+                      🤸 출전 선수 {players.length}명 <span className={styles.accArrow}>{showPlayers ? '▴ 접기' : '▾ 더보기'}</span>
+                    </button>
+                    {showPlayers && (
+                      <div className={styles.chips} style={{ marginTop: 10 }}>
+                        {players.map((p, i) => (
+                          <span key={i} className={styles.chip}>
+                            <span className={styles.chipAv}>{String(p.name).charAt(0)}</span>{p.flag} {p.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
               {isLive ? (
                 <>
                   <div className={styles.statrow}>
@@ -172,39 +159,8 @@ export function CourtSheet({ station, open, onClose }) {
                 <span style={{ fontSize: 18, fontWeight: 800 }}>›</span>
               </button>
 
-              <div className={styles.chatWrap}>
-                <div className={styles.chatHd}>
-                  <span className={styles.chatHdT}>💬 응원 댓글 <span style={{ color: 'var(--gray)', fontWeight: 600 }}>· {msgs.length}</span></span>
-                  <button className={styles.chatRefresh} onClick={refresh} disabled={refreshing}>
-                    <RefreshCw size={13} /> {refreshing ? '불러오는 중' : '새로고침'}
-                  </button>
-                </div>
-                <div className={styles.cheerRow}>
-                  {CHEER_PRESETS.map((p) => (
-                    <button key={p} className={styles.cheerChip} onClick={() => send(p)}>{p}</button>
-                  ))}
-                </div>
-                <div className={styles.chat} ref={chatRef}>
-                  {msgs.map((m) => (
-                    <div key={m.id} className={styles.chatMsg}>
-                      <span className={styles.chatAv} style={{ background: m.color }}>{m.name.charAt(0)}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div><span className={styles.chatName}>{m.name}</span><span className={styles.chatTime}>{m.time || '방금'}</span></div>
-                        <div className={styles.chatText}>{m.text}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className={styles.chatInput}>
-                  <input
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
-                    placeholder="댓글 남기기…"
-                  />
-                  <button className={styles.chatSend} onClick={() => send()}>등록</button>
-                </div>
-              </div>
+              {/* 공용 응원 채팅 — 모든 코트 공용. 이 코트(번호)로 태그되어 등록됨 */}
+              <ChatPanel court={station.station_number} live={live} />
             </div>
           </>
         )}

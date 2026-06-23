@@ -5,7 +5,7 @@ import styles from '../ViewerApp.module.css';
 const TABS = [
   { key: 'home', Icon: Home, label: '홈' },
   { key: 'live', Icon: Tv, label: '중계' },
-  { key: 'vod', Icon: Film, label: '기록영상' },
+  { key: 'vod', Icon: Film, label: '대회 영상' },
   { key: 'cal', Icon: CalendarDays, label: '대회일정' },
   { key: 'my', Icon: User, label: 'MY' },
 ];

@@ -8,6 +8,7 @@ import { AppHeader } from './components/AppHeader';
 import { BottomNav } from './components/BottomNav';
 import { Drawer } from './components/Drawer';
 import { CourtSheet } from './components/CourtSheet';
+import { extractYouTubeId } from './hooks/useStationHeat';
 import { NotifSheet, SearchSheet } from './components/AppSheets';
 import { HomeTab } from './tabs/HomeTab';
 import { LiveTab } from './tabs/LiveTab';
@@ -90,6 +91,8 @@ export function ViewerApp() {
     () => (event?.stations || []).slice().sort((a, b) => a.station_number - b.station_number),
     [event],
   );
+  // 실제 라이브 중계 중 여부 = 영상 송출 중인 코트가 하나라도 있을 때만 (event.status='active'만으론 부족)
+  const liveNow = courts.some((c) => !!extractYouTubeId(c.youtube_stream_url));
 
   if (loading) {
     return <div className={styles.center} data-theme={theme}><div><div className={styles.spinner} />로딩 중...</div></div>;
@@ -106,9 +109,9 @@ export function ViewerApp() {
   }
 
   const HEAD = {
-    home: { title: '모두의플레이', subtitle: '줄넘기 대회 · 실시간 중계', live: event.status === 'active' },
-    live: { title: event.name, subtitle: `${formatDate(event.date)} · 코트 ${courts.length}개`, live: event.status === 'active' },
-    vod: { title: '기록 영상', subtitle: '지난 대회 다시보기', live: false },
+    home: { title: '모두의플레이', subtitle: '줄넘기 대회 · 실시간 중계', live: liveNow },
+    live: { title: event.name, subtitle: `${formatDate(event.date)} · 코트 ${courts.length}개`, live: liveNow },
+    vod: { title: '대회 영상', subtitle: '지난 대회 다시보기', live: false },
     cal: { title: '대회 일정', subtitle: '국내 대회 한눈에', live: false },
     my: { title: '마이페이지', subtitle: '내 기록 · 영상 · 참가내역', live: false },
   }[tab];
@@ -125,8 +128,8 @@ export function ViewerApp() {
       />
 
       <div className={styles.scroll} ref={scrollRef}>
-        {tab === 'home' && <HomeTab event={event} onGo={setTab} />}
-        {tab === 'live' && <LiveTab courts={courts} onOpenCourt={setOpenCourt} />}
+        {tab === 'home' && <HomeTab event={event} onGo={setTab} live={liveNow} />}
+        {tab === 'live' && <LiveTab courts={courts} onOpenCourt={setOpenCourt} live={event.status === 'active'} liveNow={liveNow} />}
         {tab === 'vod' && <VodTab />}
         {tab === 'cal' && <ScheduleTab />}
         {tab === 'my' && <MyTab />}
@@ -140,7 +143,7 @@ export function ViewerApp() {
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} onItem={onDrawerItem} />
 
-      <CourtSheet station={openCourt} open={!!openCourt} onClose={() => setOpenCourt(null)} />
+      <CourtSheet station={openCourt} open={!!openCourt} onClose={() => setOpenCourt(null)} live={event.status === 'active'} />
       <NotifSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
       <SearchSheet open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>

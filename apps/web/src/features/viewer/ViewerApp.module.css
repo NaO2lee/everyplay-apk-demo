@@ -96,6 +96,34 @@
 .courtWatch:active{filter:brightness(.95)}
 .badgeInline{display:inline-flex;align-items:center;gap:4px;background:var(--live);color:#fff;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:auto}
 
+/* 컴팩트 코트 목록 (3열: 코트명 / 상태 / 보기) */
+.courtList{display:flex;flex-direction:column;gap:8px}
+.courtRow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line2);border-radius:13px;padding:12px 13px;cursor:pointer;font-family:inherit;color:var(--ink)}
+.courtRow:active{filter:brightness(1.06)}
+.crCol{min-width:0;display:flex;flex-direction:column}
+.crNum{font-size:15px;font-weight:800;white-space:nowrap}
+.crEv{font-size:11.5px;color:var(--gray);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crWait{color:var(--gray);background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.crLive{display:inline-flex;align-items:center;gap:5px;color:var(--live);background:color-mix(in srgb,var(--live) 14%,transparent);border:1px solid color-mix(in srgb,var(--live) 32%,transparent);border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:800;white-space:nowrap}
+.crPlay{display:inline-flex;align-items:center;gap:3px;font-size:13px;font-weight:800;color:var(--chipInk);background:var(--chipBg);border-radius:10px;padding:8px 13px;white-space:nowrap}
+
+/* 중계 공용 채팅 버튼 + 1행 티커 */
+.chatBtn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--chipInk);background:var(--chipBg);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;cursor:pointer;font-family:inherit}
+.chatBtn:active{filter:brightness(.95)}
+/* 응원 티커 — 밝은 블럭 + 남색 글씨, 닉네임+내용+시각. 새 응원이 아래→위로 */
+.tickerLight{display:flex;align-items:center;gap:10px;width:100%;margin:2px 0 14px;background:#EAF0FA;border:1px solid #D6E0F0;border-radius:13px;padding:11px 14px;box-shadow:0 2px 10px rgba(20,30,60,.18)}
+.tickerLive{width:8px;height:8px;border-radius:50%;background:#22B07A;flex:none;animation:pulse 1.4s infinite}
+.tickerClip{flex:1;min-width:0;height:19px;overflow:hidden}
+.tkLine{display:flex;align-items:center;gap:8px;width:100%;height:19px}
+.tkTxt{flex:1;min-width:0;font-size:13px;font-weight:600;color:#1A2649;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:19px}
+.tkNm{font-weight:800;color:#1A2649}
+.tkTime{flex:none;font-size:10px;font-weight:700;color:#6B7894;white-space:nowrap;line-height:19px}
+.tickerUp{animation:tickerUp .5s cubic-bezier(.22,.61,.36,1)}
+@keyframes tickerUp{from{transform:translateY(110%);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* 채팅 메시지의 코트 태그 */
+.courtTag{display:inline-block;font-size:9.5px;font-weight:800;color:var(--accentInk);background:var(--grad);border-radius:5px;padding:1px 6px;margin-right:6px;vertical-align:middle}
+
 /* VOD */
 .datehd{font-size:14px;font-weight:800;color:var(--ink);margin:16px 2px 10px;display:flex;align-items:center;gap:7px}
 .datehd::before{content:"";width:4px;height:15px;background:var(--cyan);border-radius:2px}
@@ -151,6 +179,7 @@
 .schDay{font-size:25px;font-weight:800;line-height:1;color:var(--blue)}
 .schDayMain{color:var(--butter)}
 .schDow{font-size:11px;color:var(--gray);font-weight:700;margin-top:3px}
+.schApplied{margin-top:5px;font-size:9px;font-weight:800;color:var(--mint);background:color-mix(in srgb,var(--mint) 18%,transparent);border:1px solid color-mix(in srgb,var(--mint) 32%,transparent);border-radius:6px;padding:2px 4px;white-space:nowrap;line-height:1.1}
 .schDivV{width:1px;background:var(--line);margin:1px 0}
 .schBody{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
 .schTitle{font-size:14.5px;font-weight:800;line-height:1.35;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -179,6 +208,28 @@
 .vodSearch::placeholder{color:var(--gray)}
 .vAward{font-size:13px;margin-left:6px}
 .vEmpty{text-align:center;color:var(--gray);font-size:13px;padding:30px 0}
+/* 기록영상 대회·일차 그룹 헤더 + 재생 모달 정보 */
+.vodGroupHd{margin:16px 2px 10px}
+.vodComp{font-size:14px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:7px}
+.vodComp::before{content:"";width:4px;height:15px;background:var(--cyan);border-radius:2px;flex:none}
+.vodDate{font-size:11.5px;color:var(--gray);font-weight:600;margin-top:4px;margin-left:11px}
+.vodPlayComp{font-size:12px;color:var(--cyan);font-weight:800}
+.vodPlayTitle{font-size:17px;font-weight:800;color:var(--ink);margin-top:5px;display:flex;align-items:center;gap:6px}
+.vodPlayWho{font-size:13px;color:var(--ink2);margin-top:4px;font-weight:600}
+/* 대회영상 검색·필터 아코디언·로딩(위플레이 로고)·내 선수 강조 */
+.vodSearchRow{display:flex;gap:8px;margin:6px 0 10px}
+.vodSearchIn{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:13.5px;color:var(--ink);font-family:inherit;outline:none}
+.vodSearchBtn{flex:none;background:var(--grad);color:var(--accentInk);border:0;border-radius:11px;padding:0 17px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit}
+.vodFilterToggle{display:flex;align-items:center;gap:8px;width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:13.5px;font-weight:800;color:var(--ink);cursor:pointer;font-family:inherit}
+.vodFilterBadge{background:var(--blue);color:#fff;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-grid;place-items:center;padding:0 5px}
+.vodAccordion{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px;margin-top:8px}
+.vodFLabel{font-size:11.5px;font-weight:800;color:var(--ink3,#8A8FA8);margin-bottom:7px}
+.vodApplyBtn{width:100%;margin-top:13px;background:var(--grad);color:var(--accentInk);border:0;border-radius:11px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+.vodMine{border-color:color-mix(in srgb,var(--butter) 40%,var(--line));background:color-mix(in srgb,var(--butter) 7%,transparent)}
+.vodLoading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:60px 0}
+.vodLoadingLogo{width:64px;height:64px;object-fit:contain;animation:vodPulse 1.1s ease-in-out infinite}
+.vodLoadingT{font-size:13px;color:var(--gray);font-weight:700}
+@keyframes vodPulse{0%,100%{transform:scale(.86);opacity:.55}50%{transform:scale(1.04);opacity:1}}
 
 /* 코트 시청 — 경기 정보 바 (일차·종목·HIT·선수) */
 .matchBar{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:12px}
@@ -240,6 +291,54 @@
 .info2S{font-size:12px;color:var(--gray);margin-top:2px}
 .score{font-size:15px;font-weight:800;color:var(--ink);flex-shrink:0}
 
+/* MY 2탭 (크롬 탭식) */
+.myTabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:18px 0 6px}
+.myTab{flex:1;background:none;border:0;padding:13px 2px;font-size:14px;font-weight:700;color:var(--gray);cursor:pointer;position:relative;font-family:inherit}
+.myTabOn{color:var(--ink);font-weight:800}
+.myTabOn::after{content:'';position:absolute;left:10px;right:10px;bottom:-1px;height:2.5px;border-radius:3px;background:var(--grad)}
+/* 참가한 대회 카드(펼침: 종목 결과·영상·공유) */
+.histCard{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:9px;overflow:hidden;box-shadow:var(--shadow)}
+.histHead{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;background:none;border:0;cursor:pointer;font-family:inherit;text-align:left;color:var(--ink)}
+.histChev{margin-left:auto;color:var(--gray);font-size:12px;flex:none}
+.histBody{padding:4px 13px 13px;border-top:1px solid var(--line)}
+.evRow{display:flex;align-items:center;gap:8px;font-size:13px;padding:9px 0;border-bottom:1px solid var(--line);color:var(--ink);font-weight:600}
+.evRow:last-of-type{border-bottom:0}
+.evRow b{margin-left:auto;font-weight:800;color:var(--ink)}
+.histActions{display:flex;gap:7px;margin-top:11px}
+.histAct{flex:1;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:9px;font-size:12px;font-weight:800;color:var(--ink2);cursor:pointer;font-family:inherit;white-space:nowrap}
+.histAct:active{filter:brightness(.95)}
+/* 참가 예정 경기 카드 (D-day 크게 + 대회명·종목·준비물 + 알림 종) */
+.regCard{background:var(--card);border:1px solid color-mix(in srgb,var(--blue) 26%,var(--line));border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.regTop{display:flex;gap:13px;padding:14px 14px 12px;align-items:flex-start}
+.regDday{flex:none;width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--grad);border-radius:13px;padding:12px 4px;color:var(--accentInk)}
+.regDday b{font-size:21px;font-weight:900;line-height:1;letter-spacing:-.02em}
+.regDday span{font-size:10px;font-weight:700;margin-top:5px;opacity:.92}
+.regBody{flex:1;min-width:0}
+.regTitle{font-size:15.5px;font-weight:800;color:var(--ink);line-height:1.3;word-break:keep-all}
+.regRow{font-size:12.5px;color:var(--ink2);margin-top:6px;display:flex;gap:6px;font-weight:600;word-break:keep-all}
+.regRow span{flex:none}
+.bellBtn{flex:none;width:38px;height:38px;border-radius:11px;background:var(--surface2);border:1px solid var(--line2);font-size:17px;cursor:pointer;display:grid;place-items:center}
+.bellOn{background:color-mix(in srgb,var(--butter) 20%,transparent);border-color:color-mix(in srgb,var(--butter) 45%,transparent)}
+.regFoot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-top:1px solid var(--line);background:var(--surface2)}
+.regStatus{font-size:12px;font-weight:700;color:var(--mint)}
+.regMore{background:none;border:0;color:var(--blue);font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit}
+/* 알림 설정 팝업 (토글 스위치) */
+.alarmHd{font-size:17px;font-weight:800;color:var(--ink)}
+.alarmSub{font-size:12.5px;color:var(--ink2);margin:5px 0 14px;font-weight:600;word-break:keep-all}
+.swRow{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:13px 0;cursor:pointer;font-family:inherit;text-align:left}
+.swT{font-size:14px;font-weight:700;color:var(--ink)}
+.swD{font-size:11.5px;color:var(--gray);margin-top:3px;word-break:keep-all}
+.sw{flex:none;width:46px;height:27px;border-radius:14px;background:var(--line2);position:relative;transition:background .18s}
+.swOn{background:var(--blue)}
+.swKnob{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .18s}
+.swOn .swKnob{transform:translateX(19px)}
+.alarmModeHd,.alarmExHd{font-size:12.5px;font-weight:800;color:var(--ink3,#8A8FA8);margin:16px 0 8px}
+.alarmModeRow{display:flex;gap:8px}
+.alarmModeBtn{flex:1;background:var(--surface2);border:1px solid var(--line2);border-radius:11px;padding:11px;font-size:13.5px;font-weight:800;color:var(--ink2);cursor:pointer;font-family:inherit}
+.alarmModeOn{background:var(--blue);color:#fff;border-color:transparent}
+.alarmNote{font-size:11.5px;color:var(--gray);margin-top:9px;font-weight:600}
+.alarmEx{font-size:12.5px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-bottom:6px;font-weight:600;word-break:keep-all}
+
 /* MY 기록 그래프 (주식차트식) */
 .myLv{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line2);color:var(--cyan);margin-left:6px}
 .myStars{margin-top:7px;font-size:12px;letter-spacing:1px}
@@ -280,6 +379,42 @@
 .aiTxt{font-size:13px;color:var(--ink);line-height:1.65;word-break:keep-all}
 .aiTxt b{color:var(--cyan)}
 
+/* MY 이번 주 훈련 리포트 (레퍼런스 패턴: 큰 숫자 + 주간 요약) */
+.weekCard{background:radial-gradient(420px 160px at 90% -25%,rgba(51,214,214,.18),transparent 62%),var(--card);border:1px solid var(--line2);border-radius:18px;padding:16px;box-shadow:var(--glow)}
+.weekTop{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.weekBig{font-size:36px;font-weight:800;line-height:1;color:var(--ink);letter-spacing:-.5px}
+.weekBig small{font-size:16px;font-weight:700;color:var(--gray);margin-left:3px}
+.weekBigK{font-size:12px;color:var(--ink2);font-weight:700;margin-top:6px}
+.weekChange{font-size:11.5px;color:var(--gray);font-weight:600;text-align:right;line-height:1.5}
+.weekChange b{color:var(--mint)}
+.weekStats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:15px}
+.weekStat{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 6px;text-align:center}
+.weekStatV{font-size:17px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.weekStatV small{font-size:10px;color:var(--gray);font-weight:700;margin-left:1px}
+.weekStatK{font-size:10.5px;color:var(--gray);font-weight:700;margin-top:3px}
+.weekGoal{margin-top:15px}
+.weekGoalTop{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.weekBar{height:8px;border-radius:999px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}
+.weekBarFill{height:100%;border-radius:999px;background:var(--grad)}
+
+/* MY 인사이트 */
+.insightRow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.insightIc{font-size:17px;flex:none}
+.insightTx{font-size:13px;color:var(--ink);font-weight:600;line-height:1.45;word-break:keep-all}
+.insightRow[data-tone="mint"]{border-color:color-mix(in srgb,var(--mint) 32%,var(--line))}
+.insightRow[data-tone="butter"]{border-color:color-mix(in srgb,var(--butter) 34%,var(--line))}
+.insightRow[data-tone="blue"]{border-color:color-mix(in srgb,var(--blue) 32%,var(--line))}
+
+/* MY 훈련 플랜(루틴) */
+.planCard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;box-shadow:var(--shadow)}
+.planTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.planNm{font-size:14.5px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.planSub{font-size:11.5px;color:var(--gray);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.planPct{font-size:15px;font-weight:800;color:var(--cyan);flex:none;font-variant-numeric:tabular-nums}
+.planBar{height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;border:1px solid var(--line);margin:10px 0 9px}
+.planBarFill{height:100%;border-radius:999px}
+.planToday{font-size:12px;color:var(--ink2);font-weight:600;background:var(--soft);border-radius:9px;padding:8px 11px;word-break:keep-all}
+
 /* shared cards */
 .dcard{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;box-shadow:var(--shadow)}
 .lbl{font-size:11.5px;color:var(--gray);font-weight:800;margin-bottom:9px}
@@ -319,6 +454,9 @@
 .chipNext{background:var(--soft);color:var(--ink2)}
 .chipAv{width:20px;height:20px;border-radius:50%;background:var(--surface);color:var(--accent);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .muted{color:var(--gray);font-size:13px}
+.accBtn{display:flex;align-items:center;gap:8px;width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:13.5px;font-weight:800;color:var(--ink);cursor:pointer;font-family:inherit}
+.accBtn:active{filter:brightness(.96)}
+.accArrow{margin-left:auto;color:var(--gray);font-size:12px;font-weight:700}
 
 /* drawer (hamburger) */
 .ddim{position:fixed;inset:0;background:var(--dim);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}
